@@ -84,8 +84,11 @@ film it with `node .claude/skills/stageshow/scripts/film.mjs http://localhost:30
    redirect `https://<project>.supabase.co/auth/v1/callback`) and keep **Email** with magic links.
 3. **Authentication → URL configuration**: Site URL = your production URL; add
    `https://<your-domain>/auth/callback` and `http://localhost:3000/auth/callback` to the redirect list.
-4. Seed cities from your machine against the project's **direct** connection string
-   (Project Settings → Database): `DATABASE_URL=postgres://… pnpm db:seed:cities`.
+4. Seed cities. With a database connection (the **Session pooler** string from the
+   dashboard's **Connect** button): `DATABASE_URL=postgres://… pnpm db:seed:cities`.
+   Where only HTTPS is allowed, seed through the Data API instead. First run in the SQL Editor:
+   `grant usage on schema public to service_role; grant all on all tables in schema public to service_role; grant all on all sequences in schema public to service_role;`
+   then `SUPABASE_URL=https://<ref>.supabase.co SUPABASE_SERVICE_ROLE_KEY=… pnpm tsx scripts/seed-cities-rest.ts`.
 
 ### 2. Vercel
 

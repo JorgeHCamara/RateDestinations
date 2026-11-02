@@ -61,9 +61,24 @@ async function download(name: string) {
   return target;
 }
 
-async function main() {
-  const url = process.env.DATABASE_URL;
-  if (!url) throw new Error("DATABASE_URL is not set");
+export type CountryRow = { code: string; name: string; continent: string };
+export type CityRow = {
+  geonames_id: number;
+  name: string;
+  ascii_name: string;
+  search_name: string;
+  alt_names: string[];
+  country_code: string;
+  admin1: string | null;
+  population: number;
+  lat: number;
+  lng: number;
+  slug: string;
+  timezone: string | null;
+};
+
+/** Download (once, into ./data) and parse GeoNames into country and city rows with unique slugs. */
+export async function loadGeoNames(): Promise<{ countries: CountryRow[]; rows: CityRow[] }> {
   await mkdir(dataDir, { recursive: true });
 
   const zip = await download("cities15000.zip");
@@ -74,7 +89,7 @@ async function main() {
   const cities = await readFile(txt, "utf8");
 
   // --- countries ---
-  const countries: { code: string; name: string; continent: string }[] = [];
+  const countries: CountryRow[] = [];
   for (const line of countryInfo.split("\n")) {
     if (!line || line.startsWith("#")) continue;
     const c = line.split("\t");
@@ -89,21 +104,7 @@ async function main() {
   }
 
   // --- cities ---
-  type Row = {
-    geonames_id: number;
-    name: string;
-    ascii_name: string;
-    search_name: string;
-    alt_names: string[];
-    country_code: string;
-    admin1: string | null;
-    population: number;
-    lat: number;
-    lng: number;
-    slug: string;
-    timezone: string | null;
-  };
-  const rows: Row[] = [];
+  const rows: CityRow[] = [];
   const countryCodes = new Set(countries.map((c) => c.code));
   for (const line of cities.split("\n")) {
     if (!line) continue;
@@ -154,6 +155,13 @@ async function main() {
     taken.add(`${r.country_code}/${slug}`);
   }
   console.log(`parsed ${countries.length} countries, ${rows.length} cities`);
+  return { countries, rows };
+}
+
+async function main() {
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error("DATABASE_URL is not set");
+  const { countries, rows } = await loadGeoNames();
 
   const client = new Client({ connectionString: url });
   await client.connect();
@@ -209,7 +217,9 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.filename === path.resolve(process.argv[1])) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
