@@ -1,0 +1,263 @@
+{
+  "version": 0.6,
+  "generator": "fixture",
+  "elements": [
+    {
+      "type": "node",
+      "id": 376811896,
+      "lat": 38.7166133,
+      "lon": -9.141757,
+      "tags": {
+        "addr:city": "Lisboa",
+        "addr:street": "Praça dos Restauradores",
+        "air_conditioning": "yes",
+        "amenity": "restaurant",
+        "branch": "Lisboa",
+        "brand": "Hard Rock Cafe",
+        "brand:wikidata": "Q918151",
+        "check_date": "2026-02-07",
+        "cuisine": "american",
+        "diet:vegetarian": "yes",
+        "indoor_seating": "yes",
+        "name": "Hard Rock Cafe",
+        "opening_hours": "Mo-Su 11:30-02:00",
+        "outdoor_seating": "no",
+        "smoking": "no",
+        "source": "knowledge",
+        "wheelchair": "yes",
+        "wikidata": "Q1092410",
+        "wikimedia_commons": "Category:Hard Rock Cafe Lisbon",
+        "wikipedia": "de:Cinema Condes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 489793044,
+      "lat": 38.7119452,
+      "lon": -9.1417003,
+      "tags": {
+        "addr:city": "Lisboa",
+        "addr:housenumber": "18A",
+        "addr:postcode": "1200-468",
+        "addr:street": "Rua da Trindade",
+        "amenity": "restaurant",
+        "cuisine": "seafood",
+        "name": "Aqui há Peixe",
+        "opening_hours": "Tu-Sa 12:00-22:30",
+        "phone": "+351 910 161 444",
+        "toilets": "yes",
+        "website": "https://aquihapeixe.pt/",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 491102939,
+      "lat": 38.7121651,
+      "lon": -9.1434568,
+      "tags": {
+        "addr:city": "Lisboa",
+        "addr:housenumber": "69",
+        "addr:street": "Rua das Gáveas",
+        "amenity": "restaurant",
+        "name": "Lisboà Noite",
+        "website": "https://www.lisboanoite.com/en/homepage/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 569495728,
+      "lat": 38.7174766,
+      "lon": -9.1444252,
+      "tags": {
+        "addr:housenumber": "21",
+        "addr:postcode": "1250-079",
+        "addr:street": "Rua da Conceição da Glória",
+        "amenity": "restaurant",
+        "check_date": "2026-03-30",
+        "cuisine": "portuguese",
+        "fixme": "confirmar localização",
+        "internet_access": "wlan",
+        "name": "Restaurante As Velhas",
+        "phone": "+351 21 342 2490",
+        "self_service": "no",
+        "website": "https://www.asvelhaslisboa.com/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1194934441,
+      "lat": 38.7146586,
+      "lon": -9.1448577,
+      "tags": {
+        "amenity": "restaurant",
+        "name": "100 Maneiras",
+        "website": "https://www.restaurante100maneiras.com"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1312317217,
+      "lat": 38.7111788,
+      "lon": -9.1437928,
+      "tags": {
+        "addr:city": "Lisboa",
+        "addr:housenumber": "17-19",
+        "addr:postcode": "1200-283",
+        "addr:street": "Rua do Norte",
+        "amenity": "restaurant",
+        "cuisine": "indian",
+        "name": "Calcuta",
+        "phone": "+351 213 428295",
+        "website": "http://www.restaurantcalcuta.com/"
+      }
+    },
+    {
+      "type": "node",
+      "id": 289048230,
+      "lat": 38.7318639,
+      "lon": -9.1522811,
+      "tags": {
+        "amenity": "restaurant",
+        "name": "Saraiva"
+      }
+    },
+    {
+      "type": "node",
+      "id": 371083164,
+      "lat": 38.7243442,
+      "lon": -9.1500561,
+      "tags": {
+        "amenity": "restaurant",
+        "name": "The Great American Disaster",
+        "wheelchair": "yes"
+      }
+    },
+    {
+      "type": "node",
+      "id": 402593471,
+      "lat": 38.7305751,
+      "lon": -9.147032,
+      "tags": {
+        "amenity": "restaurant",
+        "brand": "Pizza Hut",
+        "brand:wikidata": "Q191615",
+        "cuisine": "pizza",
+        "name": "Pizza Hut",
+        "source": "knowledge"
+      }
+    },
+    {
+      "type": "node",
+      "id": 402605346,
+      "lat": 38.7181699,
+      "lon": -9.1455694,
+      "tags": {
+        "addr:housenumber": "50",
+        "addr:street": "Praça da Alegria",
+        "amenity": "restaurant",
+        "name": "Notalho",
+        "source": "local_knowledge"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1001,
+      "center": {
+        "lat": 38.7,
+        "lon": -9.14
+      },
+      "tags": {
+        "leisure": "park",
+        "name": "Jardim Teste",
+        "wikidata": "Q90"
+      }
+    },
+    {
+      "type": "relation",
+      "id": 1002,
+      "center": {
+        "lat": 38.71,
+        "lon": -9.15
+      },
+      "tags": {
+        "tourism": "museum",
+        "name": "Museu Teste",
+        "name:en": "Test Museum",
+        "website": "museu.example",
+        "opening_hours": "Mo-Su 10:00-18:00",
+        "wikipedia": "pt:Museu Teste"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1003,
+      "lat": 38.7,
+      "lon": -9.1,
+      "tags": {
+        "amenity": "restaurant"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1004,
+      "lat": 38.7,
+      "lon": -9.1,
+      "tags": {
+        "amenity": "bank",
+        "name": "Banco"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1005,
+      "lat": 38.7,
+      "lon": -9.1,
+      "tags": {
+        "amenity": "place_of_worship",
+        "name": "Igreja Pequena"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1006,
+      "lat": 38.7,
+      "lon": -9.1,
+      "tags": {
+        "amenity": "place_of_worship",
+        "name": "Sé de Lisboa",
+        "wikidata": "Q1234",
+        "building": "cathedral",
+        "heritage": "2"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1007,
+      "lat": 38.7,
+      "lon": -9.1,
+      "tags": {
+        "amenity": "pub",
+        "name": "Dup"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1007,
+      "lat": 38.7,
+      "lon": -9.1,
+      "tags": {
+        "amenity": "pub",
+        "name": "Dup"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1008,
+      "tags": {
+        "amenity": "cafe",
+        "name": "No coords"
+      }
+    }
+  ]
+}
