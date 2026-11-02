@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { claimAndImport } from "@/lib/import/import-city";
 import { isAuthorizedCronRequest } from "@/lib/import/auth";
+import { refreshExternalRatings } from "@/lib/providers/ratings/refresh";
 
 export const maxDuration = 300;
 
@@ -9,6 +10,7 @@ export const maxDuration = 300;
  * GET /api/cron/refresh — daily maintenance (see vercel.json):
  *  - re-import a few cities whose OSM data is older than 90 days
  *  - retry recent failed imports
+ *  - refresh external ratings (Google) when that provider is enabled, within its caching terms
  *  - recompute city stats (cheap, keeps aggregates honest after any manual data fix)
  */
 export async function GET(request: Request) {
@@ -36,6 +38,12 @@ export async function GET(request: Request) {
     }
   }
 
+  const external = await refreshExternalRatings(100).catch((err) => ({
+    provider: "error",
+    looked: 0,
+    found: 0,
+    error: (err as Error).message,
+  }));
   await query(`select refresh_city_stats(city_id) from city_stats`);
-  return NextResponse.json({ refreshed, durationMs: Date.now() - started });
+  return NextResponse.json({ refreshed, external, durationMs: Date.now() - started });
 }

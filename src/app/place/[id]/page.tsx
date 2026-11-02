@@ -127,8 +127,10 @@ async function PlaceDetail({ params }: { params: Props["params"] }) {
               <p className="text-muted-foreground rounded-xl border border-dashed p-6 text-sm">
                 No ratings yet. The score above is an estimate from how well documented this place
                 is on OpenStreetMap
-                {place.external_rating ? " and its external rating" : ""}. Be the first to say what
-                it&apos;s really like.
+                {place.external_rating
+                  ? ` and its Google rating (${place.external_rating.toFixed(1)} from ${place.external_rating_count ?? 0} reviews)`
+                  : ""}
+                . Be the first to say what it&apos;s really like.
               </p>
             ) : (
               <ul className="space-y-3">
