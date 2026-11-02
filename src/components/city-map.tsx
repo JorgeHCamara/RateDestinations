@@ -3,6 +3,7 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import Link from "next/link";
 import { useState } from "react";
+import { setWorkerUrl } from "maplibre-gl";
 import Map, { Marker, NavigationControl, Popup } from "react-map-gl/maplibre";
 import { CATEGORY_META, type PlaceCategory } from "@/lib/import/categories";
 import { toTenScale, toneFor } from "@/lib/scoring";
@@ -20,6 +21,8 @@ export type MapPin = {
 };
 
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
+// Served from /public by scripts/copy-maplibre-worker.mjs (bundler worker URLs break under Turbopack).
+setWorkerUrl("/maplibre-gl-worker.mjs");
 const pinTone = {
   good: "bg-good",
   ok: "bg-ok",

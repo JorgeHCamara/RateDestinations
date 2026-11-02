@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CitySearch } from "@/components/city-search";
+import { HeroDemo } from "@/components/hero-demo/HeroDemo";
 import { ScorePill } from "@/components/score";
 import { getFeaturedCities, getTrendingCities, type TrendingCity } from "@/lib/queries/cities";
 
@@ -11,24 +12,32 @@ export default function HomePage() {
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_80%_at_70%_-10%,var(--brand-soft),transparent)]"
         />
-        <div className="container-page relative py-16 sm:py-24">
-          <p className="text-brand mb-3 text-xs font-semibold tracking-[0.2em] uppercase">
-            The whole city, rated
-          </p>
-          <h1 className="font-display max-w-3xl text-4xl leading-[1.05] font-semibold tracking-tight sm:text-6xl">
-            Know a city before you go.{" "}
-            <span className="text-muted-foreground">The good and the bad.</span>
-          </h1>
-          <p className="text-muted-foreground mt-4 max-w-2xl text-base sm:text-lg">
-            One honest guide per city: the restaurants, parks and sights worth your time, plus the
-            places, scams and streets travellers say to avoid.
-          </p>
-          <div className="mt-8 max-w-2xl">
-            <CitySearch autoFocus />
+        <div className="container-page relative grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,620px)]">
+          <div>
+            <p className="text-brand mb-3 text-xs font-semibold tracking-[0.2em] uppercase">
+              The whole city, rated
+            </p>
+            <h1 className="font-display max-w-3xl text-4xl leading-[1.05] font-semibold tracking-tight sm:text-5xl xl:text-6xl">
+              Know a city before you go.{" "}
+              <span className="text-muted-foreground">The good and the bad.</span>
+            </h1>
+            <p className="text-muted-foreground mt-4 max-w-2xl text-base sm:text-lg">
+              One honest guide per city: the restaurants, parks and sights worth your time, plus the
+              places, scams and streets travellers say to avoid.
+            </p>
+            <div className="mt-8 max-w-2xl">
+              <CitySearch autoFocus />
+            </div>
+            <p className="text-muted-foreground mt-3 text-xs">
+              31,000+ cities worldwide · built from OpenStreetMap, scored by travellers like you
+            </p>
           </div>
-          <p className="text-muted-foreground mt-3 text-xs">
-            31,000+ cities worldwide · built from OpenStreetMap, scored by travellers like you
-          </p>
+          <div
+            className="min-w-0"
+            aria-label="Demo: a traveller flags a tourist trap and the city guide updates"
+          >
+            <HeroDemo />
+          </div>
         </div>
       </section>
 

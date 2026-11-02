@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored Stageshow kit (see .claude/skills/stageshow); its lint rules are its own.
+    "src/stageshow/kit/**",
+    "public/**",
+    ".claude/**",
   ]),
 ]);
 

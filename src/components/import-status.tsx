@@ -11,8 +11,16 @@ type Status = "none" | "pending" | "done" | "failed";
 
 export function ImportStatus({ cityId, initialStatus }: { cityId: number; initialStatus: Status }) {
   const router = useRouter();
-  const [status, setStatus] = useState<Status>(initialStatus);
+  // A fresh or previously failed city is being (re)built as soon as this mounts: show it as pending.
+  const [status, setStatus] = useState<Status>(initialStatus === "done" ? "done" : "pending");
   const [elapsed, setElapsed] = useState(0);
+
+  // First visit (or a retry after a failure): ask the server to build the guide. The
+  // endpoint claims the city, so repeat calls and concurrent visitors are no-ops.
+  useEffect(() => {
+    if (initialStatus !== "none" && initialStatus !== "failed") return;
+    fetch(`/api/cities/${cityId}/build`, { method: "POST" }).catch(() => {});
+  }, [cityId, initialStatus]);
 
   useEffect(() => {
     if (status === "done") return;

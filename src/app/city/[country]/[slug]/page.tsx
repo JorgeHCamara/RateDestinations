@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { after } from "next/server";
 import { Suspense } from "react";
 import { CategorySection } from "@/components/category-section";
 import { CityMapLazy, type MapPinInput } from "@/components/city-map-lazy";
@@ -10,24 +9,23 @@ import { CityRatingForm } from "@/components/rating/city-rating-form";
 import { ScoreRing } from "@/components/score";
 import { WatchOutList } from "@/components/watch-out-list";
 import { CATEGORY_META, PLACE_CATEGORIES } from "@/lib/import/categories";
-import { claimAndImport } from "@/lib/import/import-city";
 import {
   getCityBasic,
   getCityBySlug,
   getCityGuide,
-  getTopCitySlugs,
+  getFeaturedCities,
   type City,
 } from "@/lib/queries/cities";
 import { getRatingTags } from "@/lib/queries/places";
 import { getMyCityRatings } from "@/lib/queries/ratings";
 import { getSessionUser } from "@/lib/supabase/server";
 
-export const maxDuration = 300;
-
 type Props = PageProps<"/city/[country]/[slug]">;
 
+// Only the featured cities are prerendered at build time; every other city gets the App
+// Shell on first visit and is cached from then on (ISR with Cache Components).
 export async function generateStaticParams() {
-  const rows = await getTopCitySlugs(60);
+  const rows = await getFeaturedCities();
   return rows.map((r) => ({ country: r.country_code.toLowerCase(), slug: r.slug }));
 }
 
@@ -57,18 +55,6 @@ async function CityGuide({ params }: { params: Props["params"] }) {
   const city = await getCityBySlug(country, slug);
   if (!city) notFound();
 
-  const needsImport = city.import_status === "none" || city.import_status === "failed";
-  if (needsImport) {
-    // First visit (or a retry): build the guide in the background, after the response is sent.
-    after(async () => {
-      try {
-        await claimAndImport(city.id);
-      } catch (err) {
-        console.error(`[import] city ${city.id} (${city.name}) failed:`, (err as Error).message);
-      }
-    });
-  }
-
   const building = city.import_status !== "done";
   const guide = building ? null : await getCityGuide(city.id, city.imported_at ?? "0");
   const returnTo = `/city/${country.toLowerCase()}/${slug}`;
@@ -84,12 +70,7 @@ async function CityGuide({ params }: { params: Props["params"] }) {
 
       <div className="container-page grid gap-10 py-8 lg:grid-cols-[1fr_20rem]">
         <div className="min-w-0 space-y-12">
-          {building && (
-            <ImportStatus
-              cityId={city.id}
-              initialStatus={city.import_status === "failed" ? "pending" : city.import_status}
-            />
-          )}
+          {building && <ImportStatus cityId={city.id} initialStatus={city.import_status} />}
 
           {guide && (
             <>
