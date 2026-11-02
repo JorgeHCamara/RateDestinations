@@ -1,5 +1,5 @@
-import { Bar, Stage, Text, Window, Row, Avatar } from '../../kit'
-import './card.css'
+import { Bar, Stage, Text, Window, Row, Avatar } from "../../kit";
+import "./card.css";
 
 // A feature card (400 × 300) with the product masked inside it: the window is
 // pinned top-left, runs off the right and bottom, and a detail card straddles
@@ -9,18 +9,23 @@ import './card.css'
 // Three real rows (the selected one and its neighbors), bars only on the
 // rows the crop takes
 const ROWS: { selected?: boolean; name?: number | string; amount?: number | string }[] = [
-  { name: 'Halvorsen & Co', amount: '$1,240' },
+  { name: "Halvorsen & Co", amount: "$1,240" },
   { selected: true },
-  { name: 'Lumen Studio', amount: '$860' },
+  { name: "Lumen Studio", amount: "$860" },
   { name: 84, amount: 38 },
   { name: 64, amount: 48 },
   { name: 78, amount: 40 },
-]
-const NAV = ['Overview', 'Customers', 'Invoices', 'Reports']
+];
+const NAV = ["Overview", "Customers", "Invoices", "Reports"];
 
 export default function StaticCard() {
   return (
-    <Stage width={400} height={300} compact={{ below: 400, width: 358, height: 300 }} className="sc-card">
+    <Stage
+      width={400}
+      height={300}
+      compact={{ below: 400, width: 358, height: 300 }}
+      className="sc-card"
+    >
       {() => (
         <>
           <Window url="dashboard.northwind.co" className="sc-window">
@@ -43,12 +48,36 @@ export default function StaticCard() {
               <div className="sc-list">
                 {ROWS.map((row, i) =>
                   row.selected ? (
-                    <Row key={i} pad={0} selected className="sc-row" data-target="selected" lead={<Avatar name="Jackson Hot Yoga" tone="accent" size={18} />} title={<Text className="sc-name">Jackson Hot Yoga</Text>}>
+                    <Row
+                      key={i}
+                      pad={0}
+                      selected
+                      className="sc-row"
+                      data-target="selected"
+                      lead={<Avatar name="Jackson Hot Yoga" tone="accent" size={18} />}
+                      title={<Text className="sc-name">Jackson Hot Yoga</Text>}
+                    >
                       <Bar w={40} tone={4} />
                     </Row>
                   ) : (
-                    <Row key={i} pad={0} className="sc-row" lead={<Bar w={18} h={18} r={9} tone={2} />} title={typeof row.name === 'string' ? <Text className="sc-rowname">{row.name}</Text> : <Bar w={row.name!} tone={3} />}>
-                      {typeof row.amount === 'string' ? <Text className="sc-rowamount">{row.amount}</Text> : <Bar w={row.amount!} tone={2} />}
+                    <Row
+                      key={i}
+                      pad={0}
+                      className="sc-row"
+                      lead={<Bar w={18} h={18} r={9} tone={2} />}
+                      title={
+                        typeof row.name === "string" ? (
+                          <Text className="sc-rowname">{row.name}</Text>
+                        ) : (
+                          <Bar w={row.name!} tone={3} />
+                        )
+                      }
+                    >
+                      {typeof row.amount === "string" ? (
+                        <Text className="sc-rowamount">{row.amount}</Text>
+                      ) : (
+                        <Bar w={row.amount!} tone={2} />
+                      )}
                     </Row>
                   ),
                 )}
@@ -78,5 +107,5 @@ export default function StaticCard() {
         </>
       )}
     </Stage>
-  )
+  );
 }

@@ -413,10 +413,26 @@
   box-shadow: 0 0 0 1px var(--ss-accent);
 }
 
-.fg-select i[data-c="tl"] { left: 0; top: 0; }
-.fg-select i[data-c="tr"] { right: 0; top: 0; margin-right: -3px; }
-.fg-select i[data-c="bl"] { left: 0; bottom: 0; margin-bottom: -3px; }
-.fg-select i[data-c="br"] { right: 0; bottom: 0; margin-right: -3px; margin-bottom: -3px; }
+.fg-select i[data-c="tl"] {
+  left: 0;
+  top: 0;
+}
+.fg-select i[data-c="tr"] {
+  right: 0;
+  top: 0;
+  margin-right: -3px;
+}
+.fg-select i[data-c="bl"] {
+  left: 0;
+  bottom: 0;
+  margin-bottom: -3px;
+}
+.fg-select i[data-c="br"] {
+  right: 0;
+  bottom: 0;
+  margin-right: -3px;
+  margin-bottom: -3px;
+}
 
 /* ---- Maya ---- */
 
@@ -482,14 +498,19 @@
   /* Rises by top, not transform, so its text lands without a hop */
   top: 6px;
   visibility: hidden;
-  transition: opacity 0.2s ease, top 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), visibility 0s 0.3s;
+  transition:
+    opacity 0.2s ease,
+    top 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+    visibility 0s 0.3s;
 }
 
 .fg-props-layer[data-show] {
   opacity: 1;
   top: 0;
   visibility: visible;
-  transition: opacity 0.2s ease, top 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition:
+    opacity 0.2s ease,
+    top 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .fg-section {
@@ -571,7 +592,8 @@
   overflow: hidden;
   /* The clip would cut a shadow drawn inside it, so it's drawn outside */
   --ss-popover-shadow: none;
-  filter: drop-shadow(0 0 0.5px rgba(0, 0, 0, 0.3)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.12)) drop-shadow(0 12px 24px rgba(0, 0, 0, 0.08));
+  filter: drop-shadow(0 0 0.5px rgba(0, 0, 0, 0.3)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.12))
+    drop-shadow(0 12px 24px rgba(0, 0, 0, 0.08));
 }
 
 .fg-picker-head {
@@ -598,7 +620,8 @@
   position: relative;
   height: 100px;
   border-radius: 6px;
-  background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, var(--hue));
+  background:
+    linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, var(--hue));
 }
 
 .fg-picker[data-layout="compact"] .fg-sv {
@@ -611,7 +634,10 @@
   height: 12px;
   margin: -6px;
   border-radius: 50%;
-  box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 3px rgba(0, 0, 0, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .fg-sliders {
@@ -635,7 +661,16 @@
 }
 
 .fg-hue {
-  background: linear-gradient(to right, #f00, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00);
+  background: linear-gradient(
+    to right,
+    #f00,
+    #ff0 17%,
+    #0f0 33%,
+    #0ff 50%,
+    #00f 67%,
+    #f0f 83%,
+    #f00
+  );
 }
 
 .fg-alpha {
@@ -651,7 +686,10 @@
   height: 12px;
   margin: -6px;
   border-radius: 50%;
-  box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 3px rgba(0, 0, 0, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .fg-picker-hex {

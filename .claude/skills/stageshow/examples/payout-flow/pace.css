@@ -19,8 +19,12 @@
     background: radial-gradient(50% 60% at 100% 0%, rgba(99, 91, 255, 0.16), transparent 70%);
   }
 
-  .sp-strong { font-weight: 600; }
-  .sp-muted { color: var(--ss-text); }
+  .sp-strong {
+    font-weight: 600;
+  }
+  .sp-muted {
+    color: var(--ss-text);
+  }
 
   /* Reveals centered, then slides aside to make room */
   .sp-balance {
@@ -42,11 +46,18 @@
     align-content: start;
     /* A retained layer carries the type through both the rise and travel. */
     will-change: transform;
-    transition: opacity 0.9s ease, transform 1.2s var(--sp-ease);
+    transition:
+      opacity 0.9s ease,
+      transform 1.2s var(--sp-ease);
   }
 
-  .sp-balance[data-in] { opacity: 1; --sp-y: 0px; }
-  .sp-balance[data-aside] { --sp-x: -130px; }
+  .sp-balance[data-in] {
+    opacity: 1;
+    --sp-y: 0px;
+  }
+  .sp-balance[data-aside] {
+    --sp-x: -130px;
+  }
 
   .sp-total {
     margin: 2px 0 2px;
@@ -76,10 +87,16 @@
     transform: translateY(10px);
     opacity: 0;
     will-change: transform;
-    transition: opacity 0.7s ease, transform 0.9s var(--sp-ease);
+    transition:
+      opacity 0.7s ease,
+      transform 0.9s var(--sp-ease);
   }
 
-  .sp-row[data-in] { opacity: 1; transform: translateY(0); transition-timing-function: ease, cubic-bezier(0.25, 0.8, 0.25, 1); }
+  .sp-row[data-in] {
+    opacity: 1;
+    transform: translateY(0);
+    transition-timing-function: ease, cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
 
   .sp-bank {
     width: 22px;
@@ -89,11 +106,15 @@
     box-shadow: inset 0 0 0 1px var(--ss-line);
   }
 
-  .sp-amount { font-variant-numeric: tabular-nums; }
+  .sp-amount {
+    font-variant-numeric: tabular-nums;
+  }
 
   .sp-paid {
     padding: 2px 7px;
-    transition: background 0.4s ease, color 0.4s ease;
+    transition:
+      background 0.4s ease,
+      color 0.4s ease;
     border-radius: 6px;
     background: var(--ss-success-soft);
     color: var(--ss-success-text);
@@ -117,10 +138,16 @@
     opacity: 0;
     transform: translateX(32px);
     will-change: transform;
-    transition: opacity 0.8s ease 0.2s, transform 1.1s var(--sp-ease) 0.2s;
+    transition:
+      opacity 0.8s ease 0.2s,
+      transform 1.1s var(--sp-ease) 0.2s;
   }
 
-  .sp-instant[data-in] { opacity: 1; transform: translateX(0); transition-timing-function: ease, cubic-bezier(0.25, 0.8, 0.25, 1); }
+  .sp-instant[data-in] {
+    opacity: 1;
+    transform: translateX(0);
+    transition-timing-function: ease, cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
 
   /* Its contents follow it in, 70ms apart */
   .sp-instant > * {
@@ -128,13 +155,23 @@
     transform: translateY(8px);
     opacity: 0;
     will-change: transform;
-    transition: opacity 0.6s ease, transform 0.9s var(--sp-ease);
+    transition:
+      opacity 0.6s ease,
+      transform 0.9s var(--sp-ease);
     transition-delay: calc(0.45s + var(--i) * 70ms);
   }
 
-  .sp-instant[data-in] > * { opacity: 1; transform: translateY(0); transition-timing-function: ease, cubic-bezier(0.25, 0.8, 0.25, 1); }
+  .sp-instant[data-in] > * {
+    opacity: 1;
+    transform: translateY(0);
+    transition-timing-function: ease, cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
 
-  .sp-instant__head { display: flex; align-items: center; gap: 10px; }
+  .sp-instant__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
   .sp-instant__mark {
     display: grid;
@@ -146,9 +183,15 @@
     color: var(--ss-accent);
   }
 
-  .sp-instant__amount { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; }
+  .sp-instant__amount {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
 
-  .sp-fields { display: grid; }
+  .sp-fields {
+    display: grid;
+  }
 
   .sp-field {
     display: flex;
@@ -158,8 +201,16 @@
     border-top: 1px solid var(--ss-line-faint);
   }
 
-  .sp-dest { display: flex; align-items: center; gap: 8px; }
-  .sp-bank--sm { width: 18px; height: 18px; border-radius: 5px; }
+  .sp-dest {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sp-bank--sm {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+  }
 
   .sp-button {
     display: flex;
@@ -179,7 +230,7 @@
   /* Any blend of purple and green passes through teal, so the change is quick
      enough (about 200ms) that the in-between never registers */
   .sp-button::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     z-index: -1;
@@ -189,9 +240,13 @@
     transition: opacity 0.2s ease;
   }
 
-  .sp-button[data-sent]::before { opacity: 1; }
+  .sp-button[data-sent]::before {
+    opacity: 1;
+  }
 
-  .sp-button { display: grid; }
+  .sp-button {
+    display: grid;
+  }
 
   .sp-state {
     display: flex;
@@ -204,7 +259,10 @@
     position: relative;
     transform: translateY(4px);
     will-change: transform;
-    transition: opacity 0.18s ease, filter 0.18s ease, transform 0.18s ease;
+    transition:
+      opacity 0.18s ease,
+      filter 0.18s ease,
+      transform 0.18s ease;
   }
 
   /* The outgoing state is gone before the next arrives */
@@ -212,7 +270,10 @@
     opacity: 1;
     filter: none;
     transform: translateY(0);
-    transition: opacity 0.35s ease 0.12s, filter 0.35s ease 0.12s, transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) 0.12s;
+    transition:
+      opacity 0.35s ease 0.12s,
+      filter 0.35s ease 0.12s,
+      transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) 0.12s;
   }
 
   .sp-note {
@@ -225,25 +286,54 @@
     opacity: 0;
     transform: translateY(8px);
     will-change: transform;
-    transition: opacity 0.6s ease, transform 0.9s var(--sp-ease);
+    transition:
+      opacity 0.6s ease,
+      transform 0.9s var(--sp-ease);
   }
 
-  .sp-note[data-in] { opacity: 1; transform: translateY(0); transition-timing-function: ease, cubic-bezier(0.25, 0.8, 0.25, 1); }
+  .sp-note[data-in] {
+    opacity: 1;
+    transform: translateY(0);
+    transition-timing-function: ease, cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
 
   /* The payout sits below its source on the phone; type remains at design size. */
-  & .ss-stage[data-layout='compact'] .sp-balance { left: 16px; top: 24px; width: 326px; height: 640px; }
-  & .ss-stage[data-layout='compact'] .sp-balance[data-aside] { --sp-x: 0px; }
-  & .ss-stage[data-layout='compact'] .sp-instant { left: 40px; top: 302px; width: 302px; }
-  & .ss-stage[data-layout='compact'] .sp-row:nth-last-child(-n + 2) { display: none; }
+  & .ss-stage[data-layout="compact"] .sp-balance {
+    left: 16px;
+    top: 24px;
+    width: 326px;
+    height: 640px;
+  }
+  & .ss-stage[data-layout="compact"] .sp-balance[data-aside] {
+    --sp-x: 0px;
+  }
+  & .ss-stage[data-layout="compact"] .sp-instant {
+    left: 40px;
+    top: 302px;
+    width: 302px;
+  }
+  & .ss-stage[data-layout="compact"] .sp-row:nth-last-child(-n + 2) {
+    display: none;
+  }
 }
 
 /* The Check on a filled button: a white ring and arc while sending, then a
    white disc with the tick in the button's green */
-.sp-button .ss-check__ring { stroke: rgb(255 255 255 / 0.45); }
-.sp-button .ss-check__arc { stroke: #fff; }
-.sp-button .ss-check__fill { fill: #fff; }
-.sp-button .ss-check__tick { stroke: var(--ss-success); }
+.sp-button .ss-check__ring {
+  stroke: rgb(255 255 255 / 0.45);
+}
+.sp-button .ss-check__arc {
+  stroke: #fff;
+}
+.sp-button .ss-check__fill {
+  fill: #fff;
+}
+.sp-button .ss-check__tick {
+  stroke: var(--ss-success);
+}
 
 /* The label trimmed to cap height, so the Check centers on the letters, not
    on a line box that sits system-ui capitals low */
-.sp-button .ss-swap { text-box: trim-both cap alphabetic; }
+.sp-button .ss-swap {
+  text-box: trim-both cap alphabetic;
+}

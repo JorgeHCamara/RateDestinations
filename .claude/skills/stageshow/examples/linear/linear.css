@@ -48,14 +48,20 @@
   --ln-key-line: #e3e3e1;
   --ln-key-active: #e6e6e4;
   --ln-caret: #1d1d1c;
-  --ln-cmd-shadow: 0 0 0 1px rgba(0, 0, 0, 0.07), 0 24px 56px -16px rgba(0, 0, 0, 0.16), 0 8px 18px -8px rgba(0, 0, 0, 0.08);
+  --ln-cmd-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.07), 0 24px 56px -16px rgba(0, 0, 0, 0.16),
+    0 8px 18px -8px rgba(0, 0, 0, 0.08);
   --ln-panel-shadow: 0 0 0 1px var(--ss-line), 0 1px 2px rgba(0, 0, 0, 0.03);
 
   overflow: hidden;
   border-radius: 16px;
   background: var(--ss-well);
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
-  font-family: Inter, system-ui, -apple-system, sans-serif;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 /* The same scene in Linear's refreshed dark theme: warm-neutral grays, no
@@ -100,7 +106,9 @@
   --ln-key-line: #333332;
   --ln-key-active: #3a3a39;
   --ln-caret: #ededec;
-  --ln-cmd-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 24px 60px -12px rgba(0, 0, 0, 0.7), 0 8px 20px -8px rgba(0, 0, 0, 0.5);
+  --ln-cmd-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08), 0 24px 60px -12px rgba(0, 0, 0, 0.7),
+    0 8px 20px -8px rgba(0, 0, 0, 0.5);
   --ln-panel-shadow: 0 0 0 1px var(--ss-line);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
@@ -401,9 +409,15 @@
   border-radius: 50%;
 }
 
-.ln-chip__dot[data-tone="0"] { background: #eb5757; }
-.ln-chip__dot[data-tone="1"] { background: #bb87fc; }
-.ln-chip__dot[data-tone="2"] { background: #4ea7fc; }
+.ln-chip__dot[data-tone="0"] {
+  background: #eb5757;
+}
+.ln-chip__dot[data-tone="1"] {
+  background: #bb87fc;
+}
+.ln-chip__dot[data-tone="2"] {
+  background: #4ea7fc;
+}
 
 .ln-date {
   display: flex;
@@ -484,9 +498,18 @@
   fill: var(--ln-unassigned);
 }
 
-.ln-avatar[data-face="0"] { background: #c08a6a; color: #fff; }
-.ln-avatar[data-face="1"] { background: #6f8fae; color: #fff; }
-.ln-avatar[data-face="2"] { background: #8d7fae; color: #fff; }
+.ln-avatar[data-face="0"] {
+  background: #c08a6a;
+  color: #fff;
+}
+.ln-avatar[data-face="1"] {
+  background: #6f8fae;
+  color: #fff;
+}
+.ln-avatar[data-face="2"] {
+  background: #8d7fae;
+  color: #fff;
+}
 
 /* The unassigned mark and the avatar share one slot and crossfade; the
    avatar's disc grows a touch as it arrives while its initial only fades
@@ -499,7 +522,9 @@
 
 .ln-who__swap > * {
   grid-area: 1 / 1;
-  transition: opacity 0.35s ease, scale 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition:
+    opacity 0.35s ease,
+    scale 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .ln-who__me {
@@ -510,7 +535,7 @@
 }
 
 .ln-who__me::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   z-index: -1;

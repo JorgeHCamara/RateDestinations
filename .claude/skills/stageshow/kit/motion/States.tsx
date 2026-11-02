@@ -1,6 +1,6 @@
-import type { CSSProperties, ReactNode } from 'react'
-import { useReducedMotion } from '../reduced-motion'
-import './States.css'
+import type { CSSProperties, ReactNode } from "react";
+import { useReducedMotion } from "../reduced-motion";
+import "./States.css";
 
 /**
  * The states of one control stacked in one place and crossfaded: a button's
@@ -15,15 +15,40 @@ import './States.css'
  * button's "Sending" then "Sent"): the held box leaves the shorter word off
  * center. Use `Swap` there, so the group re-centers as the label changes.
  */
-export function States<K extends string>({ value, states, align = 'center', className, style, ...rest }: { value: K; states: Record<K, ReactNode>; /** Where a smaller state sits in the box: start for text in a row, center for a button's label, end for a right-aligned value. */ align?: 'start' | 'center' | 'end'; className?: string; style?: CSSProperties } & Record<`data-${string}`, unknown>) {
-  const reduced = useReducedMotion()
+export function States<K extends string>({
+  value,
+  states,
+  align = "center",
+  className,
+  style,
+  ...rest
+}: {
+  value: K;
+  states: Record<K, ReactNode>;
+  /** Where a smaller state sits in the box: start for text in a row, center for a button's label, end for a right-aligned value. */ align?:
+    "start" | "center" | "end";
+  className?: string;
+  style?: CSSProperties;
+} & Record<`data-${string}`, unknown>) {
+  const reduced = useReducedMotion();
   return (
-    <span {...rest} className={`ss-states${className ? ` ${className}` : ''}`} data-align={align} data-reduced={reduced || undefined} style={style}>
+    <span
+      {...rest}
+      className={`ss-states${className ? ` ${className}` : ""}`}
+      data-align={align}
+      data-reduced={reduced || undefined}
+      style={style}
+    >
       {(Object.keys(states) as K[]).map((k) => (
-        <span key={k} className="ss-states__item" data-on={k === value || undefined} aria-hidden={k !== value || undefined}>
+        <span
+          key={k}
+          className="ss-states__item"
+          data-on={k === value || undefined}
+          aria-hidden={k !== value || undefined}
+        >
           {states[k]}
         </span>
       ))}
     </span>
-  )
+  );
 }

@@ -12,7 +12,7 @@
   translate: -50% 0;
 }
 
-.ld .ss-stage[data-layout='compact'] .ld-win {
+.ld .ss-stage[data-layout="compact"] .ld-win {
   width: 326px;
 }
 
@@ -22,7 +22,7 @@
   background: var(--ss-surface);
 }
 
-.ld .ss-stage[data-layout='compact'] .ld-body {
+.ld .ss-stage[data-layout="compact"] .ld-body {
   padding: 18px 16px 0;
 }
 
@@ -75,7 +75,7 @@
   white-space: nowrap;
 }
 
-.ld .ss-stage[data-layout='compact'] .ld-row {
+.ld .ss-stage[data-layout="compact"] .ld-row {
   grid-template-columns: minmax(0, 1fr) 72px 70px;
   gap: 10px;
 }
@@ -131,7 +131,7 @@
 
 /* Faint, slow shimmer while waiting */
 .ld-sk::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.55), transparent);
@@ -140,7 +140,9 @@
 }
 
 @keyframes ld-shimmer {
-  to { translate: 100% 0; }
+  to {
+    translate: 100% 0;
+  }
 }
 
 .ld-real {

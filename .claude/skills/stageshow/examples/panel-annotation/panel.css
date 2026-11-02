@@ -106,7 +106,11 @@
   border-radius: 6px;
   box-shadow: 0 0 0 1px var(--ss-line);
   color: var(--ss-text);
-  font: 500 11px ui-monospace, SFMono-Regular, Menlo, monospace;
+  font:
+    500 11px ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
 }
 
 .pa-chip {
@@ -126,27 +130,33 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  box-shadow: 0 0 0 2px var(--ss-surface), 0 0 0 2px transparent;
+  box-shadow:
+    0 0 0 2px var(--ss-surface),
+    0 0 0 2px transparent;
   transition: box-shadow 0.25s ease;
 }
 
 .pa-swatch[data-on] {
-  box-shadow: 0 0 0 2px var(--ss-surface), 0 0 0 3.5px var(--ss-text-strong);
+  box-shadow:
+    0 0 0 2px var(--ss-surface),
+    0 0 0 3.5px var(--ss-text-strong);
 }
 
 /* Narrow: the panel on top, the checkout under it full width with only its
    chrome covered, so the form and Pay stay whole */
-.pa .ss-stage[data-layout='compact'] .pa-win {
+.pa .ss-stage[data-layout="compact"] .pa-win {
   top: 196px;
   left: 16px;
   width: 326px;
 }
 
-.pa .ss-stage[data-layout='compact'] .pa-panel {
+.pa .ss-stage[data-layout="compact"] .pa-panel {
   top: 16px;
   left: 94px;
 }
 
 /* The leader is annotation, not product: neutral ink, so it never reads as
    the accent the panel just replaced */
-.pa .ss-connector { --ss-accent: var(--ss-text-strong); }
+.pa .ss-connector {
+  --ss-accent: var(--ss-text-strong);
+}

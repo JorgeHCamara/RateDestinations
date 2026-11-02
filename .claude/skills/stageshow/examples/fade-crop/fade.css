@@ -45,7 +45,6 @@
   border-radius: 0;
 }
 
-
 .fc-commit {
   color: var(--ss-text-strong);
   font-size: 13px;
@@ -60,15 +59,15 @@
 
 /* Narrow: a gutter each side, the window keeps its size and runs off the
    right; the commit and the status stay whole */
-.fc .ss-stage[data-layout='compact'] .fc-mask {
+.fc .ss-stage[data-layout="compact"] .fc-mask {
   padding: 32px 0 0 16px;
 }
 
-.fc .ss-stage[data-layout='compact'] .fc-win {
+.fc .ss-stage[data-layout="compact"] .fc-win {
   width: 420px;
 }
 
-.fc .ss-stage[data-layout='compact'] .fc-age {
+.fc .ss-stage[data-layout="compact"] .fc-age {
   display: none;
 }
 

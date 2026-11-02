@@ -12,14 +12,14 @@ Use a fixed, local soft mask where a track enters and leaves. Its settled text s
 
 ## Timing has different jobs
 
-| Job | Decision |
-| --- | --- |
-| Direct feedback | Start on the input; a presentation delay feels unresponsive. |
-| Travel between stable positions | A departure, a stretch of clear travel and a soft arrival. Length alone does not make it fluid. |
-| Related data updates | Recognition, transfer and the accumulated result can each take a different time. The result still follows its cause. |
-| Introducing a composition | A small front-loaded movement can settle for longer than its busy part. Don't scale readable text much. |
-| Replacing content | Keep the container, alignment and reading interval; mask only the moving slot. |
-| Holding a result | Stop. A useful still needs no new pulse or repeated count. |
+| Job                             | Decision                                                                                                             |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Direct feedback                 | Start on the input; a presentation delay feels unresponsive.                                                         |
+| Travel between stable positions | A departure, a stretch of clear travel and a soft arrival. Length alone does not make it fluid.                      |
+| Related data updates            | Recognition, transfer and the accumulated result can each take a different time. The result still follows its cause. |
+| Introducing a composition       | A small front-loaded movement can settle for longer than its busy part. Don't scale readable text much.              |
+| Replacing content               | Keep the container, alignment and reading interval; mask only the moving slot.                                       |
+| Holding a result                | Stop. A useful still needs no new pulse or repeated count.                                                           |
 
 ## Choose the curve for the movement
 

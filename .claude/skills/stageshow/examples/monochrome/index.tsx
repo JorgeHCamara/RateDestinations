@@ -1,5 +1,5 @@
-import { Bar, Stage, Text, Window } from '../../kit'
-import './mono.css'
+import { Bar, Stage, Text, Window } from "../../kit";
+import "./mono.css";
 
 // Monochrome customers: three customers' sites side by side in grayscale,
 // fading out at the foot. A still, for a "built on" or showcase section.
@@ -18,20 +18,25 @@ import './mono.css'
 // Real strings: the three URLs and headlines.
 
 const SITES = [
-  { url: 'lumen.studio', head: 'Light for small rooms', hue: '#d97706', tone: 'warm' },
-  { url: 'halvorsen.co', head: 'Accounting, without the paperwork', hue: '#2563eb', tone: 'cool' },
-  { url: 'tidepool.app', head: 'Swim lessons, booked in a tap', hue: '#059669', tone: 'fresh' },
-]
+  { url: "lumen.studio", head: "Light for small rooms", hue: "#d97706", tone: "warm" },
+  { url: "halvorsen.co", head: "Accounting, without the paperwork", hue: "#2563eb", tone: "cool" },
+  { url: "tidepool.app", head: "Swim lessons, booked in a tap", hue: "#059669", tone: "fresh" },
+];
 
 export default function Monochrome() {
   return (
-    <Stage width={720} height={320} compact={{ below: 600, width: 358, height: 320 }} className="mn">
+    <Stage
+      width={720}
+      height={320}
+      compact={{ below: 600, width: 358, height: 320 }}
+      className="mn"
+    >
       {() => (
         <div className="mn-fade">
           <div className="mn-row">
             {SITES.map((site) => (
               <Window key={site.url} url={site.url} className="mn-win">
-                <div className="mn-site" style={{ ['--mn-hue' as string]: site.hue }}>
+                <div className="mn-site" style={{ ["--mn-hue" as string]: site.hue }}>
                   <div className="mn-nav">
                     <Bar w={18} h={18} r={5} style={{ background: site.hue }} />
                     <Bar w={40} h={6} r={3} tone={2} />
@@ -48,5 +53,5 @@ export default function Monochrome() {
         </div>
       )}
     </Stage>
-  )
+  );
 }

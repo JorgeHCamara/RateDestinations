@@ -4,7 +4,9 @@
   .ss-slot {
     flex-shrink: 0;
     border-radius: var(--ss-radius-md);
-    transition: height 0.45s cubic-bezier(0.45, 0, 0.2, 1), margin-top 0.45s cubic-bezier(0.45, 0, 0.2, 1);
+    transition:
+      height 0.45s cubic-bezier(0.45, 0, 0.2, 1),
+      margin-top 0.45s cubic-bezier(0.45, 0, 0.2, 1);
   }
 
   /* The dashed mark is drawn at the slot's full height and only fades: a

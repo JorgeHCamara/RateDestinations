@@ -1,5 +1,5 @@
-import { Badge, Bar, Stage, Text } from '../../kit'
-import './many.css'
+import { Badge, Bar, Stage, Text } from "../../kit";
+import "./many.css";
 
 // Many of one: a grid of the same small thing, one of them in focus. Here,
 // preview deployments, one per branch. A still.
@@ -17,22 +17,33 @@ import './many.css'
 //
 // Real strings: the focus tile's branch, its commit and its status.
 
-const COLS = 5
-const ROWS = 4
-const FOCUS = { col: 2, row: 1 }
+const COLS = 5;
+const ROWS = 4;
+const FOCUS = { col: 2, row: 1 };
 
-const W = [[96, 64], [80, 52], [104, 70], [72, 58], [90, 46]]
+const W = [
+  [96, 64],
+  [80, 52],
+  [104, 70],
+  [72, 58],
+  [90, 46],
+];
 
 export default function ManyOfOne() {
   return (
-    <Stage width={640} height={360} compact={{ below: 600, width: 358, height: 360 }} className="mo">
+    <Stage
+      width={640}
+      height={360}
+      compact={{ below: 600, width: 358, height: 360 }}
+      className="mo"
+    >
       {() => (
         <div className="mo-grid">
           {Array.from({ length: ROWS * COLS }, (_, i) => {
-            const col = i % COLS
-            const row = Math.floor(i / COLS)
-            const focus = col === FOCUS.col && row === FOCUS.row
-            const [a, b] = W[(i * 3) % W.length]!
+            const col = i % COLS;
+            const row = Math.floor(i / COLS);
+            const focus = col === FOCUS.col && row === FOCUS.row;
+            const [a, b] = W[(i * 3) % W.length]!;
             return focus ? (
               <div key={i} className="mo-tile" data-focus>
                 <div className="mo-thumb mo-thumb--focus">
@@ -42,7 +53,9 @@ export default function ManyOfOne() {
                 </div>
                 <div className="mo-meta">
                   <Text className="mo-branch">pricing-copy</Text>
-                  <Badge tone="success" dot>Ready</Badge>
+                  <Badge tone="success" dot>
+                    Ready
+                  </Badge>
                 </div>
                 <Text className="mo-commit">New annual plan wording</Text>
               </div>
@@ -55,10 +68,10 @@ export default function ManyOfOne() {
                 </div>
                 <Bar w={b} h={7} r={3.5} tone={2} />
               </div>
-            )
+            );
           })}
         </div>
       )}
     </Stage>
-  )
+  );
 }

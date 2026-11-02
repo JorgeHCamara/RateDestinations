@@ -14,8 +14,8 @@
   --wk-soft: #f8f9fa;
   --wk-hover: #eaecf0;
   --wk-active: #dadde3;
-  --wk-serif: 'Linux Libertine', 'Georgia', 'Times', serif;
-  --wk-sans: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --wk-serif: "Linux Libertine", "Georgia", "Times", serif;
+  --wk-sans: -apple-system, "Helvetica Neue", Arial, sans-serif;
   overflow: hidden;
   background: var(--ss-well);
 }
@@ -116,7 +116,9 @@
   padding: 0 10px;
   border: 1px solid var(--wk-border);
   border-radius: 2px 0 0 2px;
-  transition: border-color 0.1s ease, box-shadow 0.1s ease;
+  transition:
+    border-color 0.1s ease,
+    box-shadow 0.1s ease;
 }
 
 /* Codex's focus: a progressive-blue border doubled by an inset ring */
@@ -190,8 +192,12 @@
 }
 
 @keyframes wk-blink {
-  0% { opacity: 1; }
-  50% { opacity: 0; }
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 .wk-button {
@@ -219,7 +225,9 @@
   --ss-popover-bg: #fff;
   /* The hairline sits inside the box, so the menu's edges line up with the
      field's, as on wikipedia.org; no top line, the field's border is it */
-  --ss-popover-shadow: inset 1px 0 0 var(--wk-border), inset -1px 0 0 var(--wk-border), inset 0 -1px 0 var(--wk-border), 0 4px 4px rgba(0, 0, 0, 0.06), 0 0 8px rgba(0, 0, 0, 0.06);
+  --ss-popover-shadow:
+    inset 1px 0 0 var(--wk-border), inset -1px 0 0 var(--wk-border),
+    inset 0 -1px 0 var(--wk-border), 0 4px 4px rgba(0, 0, 0, 0.06), 0 0 8px rgba(0, 0, 0, 0.06);
   top: 32px;
   left: 0;
   width: 316px;
@@ -346,13 +354,17 @@
   transform: translateY(8px);
   /* Kept on its layer, so the article's text doesn't hop as the rise lands */
   will-change: transform;
-  transition: opacity 0.2s ease, transform 0s linear 0.2s;
+  transition:
+    opacity 0.2s ease,
+    transform 0s linear 0.2s;
 }
 
 .wk-pg[data-show] {
   opacity: 1;
   transform: none;
-  transition: opacity 0.45s cubic-bezier(0.25, 0.8, 0.25, 1) 0.1s, transform 0.7s cubic-bezier(0.25, 0.8, 0.25, 1) 0.1s;
+  transition:
+    opacity 0.45s cubic-bezier(0.25, 0.8, 0.25, 1) 0.1s,
+    transform 0.7s cubic-bezier(0.25, 0.8, 0.25, 1) 0.1s;
 }
 
 /* ---- Title, tabs ---- */
@@ -458,11 +470,11 @@
 /* Real photos, both CC0 on Wikimedia Commons: "Fuji Kawaguchi 465.JPG" and
    "Kawaguchiko, Part III - Kawaguchiko6782.jpg" */
 [data-img="fuji"] {
-  background: #9fb6cc url('./fuji.jpg') center 30% / cover;
+  background: #9fb6cc url("./fuji.jpg") center 30% / cover;
 }
 
 [data-img="lake"] {
-  background: #c9d4dc url('./kawaguchiko.jpg') center / cover;
+  background: #c9d4dc url("./kawaguchiko.jpg") center / cover;
 }
 
 .wk-infobox__img {
@@ -548,9 +560,20 @@
   animation-name: wk-row-out;
 }
 
-@keyframes wk-row-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes wk-row-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
-@keyframes wk-row-out { to { opacity: 0; } }
+@keyframes wk-row-out {
+  to {
+    opacity: 0;
+  }
+}
 
 .wk-h2 {
   margin: 18px 0 8px;
@@ -573,5 +596,7 @@
 /* Picking a result navigates, so the menu goes quickly rather than hanging
    half-faded over the article underneath (the kit's 0.3s close) */
 .wk-menu.ss-popover:not([data-show]) {
-  transition: opacity 0.15s ease, transform 0.15s cubic-bezier(0.4, 0, 1, 1);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s cubic-bezier(0.4, 0, 1, 1);
 }

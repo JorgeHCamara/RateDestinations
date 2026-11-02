@@ -17,10 +17,12 @@
     pointer-events: none;
     opacity: 0;
     transform: translate(-50%, -2px);
-    transition: opacity 0.1s ease, transform 0.1s ease;
+    transition:
+      opacity 0.1s ease,
+      transform 0.1s ease;
   }
 
-  .ss-tooltip[data-side='above'] {
+  .ss-tooltip[data-side="above"] {
     transform: translate(-50%, calc(-100% + 2px));
   }
 
@@ -30,7 +32,7 @@
     transition-duration: 0.15s;
   }
 
-  .ss-tooltip[data-side='above'][data-show] {
+  .ss-tooltip[data-side="above"][data-show] {
     transform: translate(-50%, -100%);
   }
 

@@ -54,7 +54,7 @@
 
 /* The bar runs up behind the status bar, as iOS's navigation bar does */
 .im-head::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: -54px 0 100%;
   background: inherit;

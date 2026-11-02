@@ -1,7 +1,7 @@
 /* Camera */
 
 @property --ss-feather {
-  syntax: '<length>';
+  syntax: "<length>";
   inherits: false;
   initial-value: 0px;
 }
@@ -14,8 +14,20 @@
     inset: 0;
     overflow: clip;
     mask-image:
-      linear-gradient(to right, transparent, #000 var(--ss-feather), #000 calc(100% - var(--ss-feather)), transparent),
-      linear-gradient(to bottom, transparent, #000 var(--ss-feather), #000 calc(100% - var(--ss-feather)), transparent);
+      linear-gradient(
+        to right,
+        transparent,
+        #000 var(--ss-feather),
+        #000 calc(100% - var(--ss-feather)),
+        transparent
+      ),
+      linear-gradient(
+        to bottom,
+        transparent,
+        #000 var(--ss-feather),
+        #000 calc(100% - var(--ss-feather)),
+        transparent
+      );
     mask-composite: intersect;
   }
 

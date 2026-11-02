@@ -32,7 +32,6 @@
   padding: 18px 20px 0;
 }
 
-
 .wr-label {
   color: var(--ss-text);
   font-size: 13px;
@@ -52,12 +51,12 @@
 
 /* Narrow: no room for a row. The neighbors would be slivers, so the hero
    stands alone, a gutter in from each side, and runs off the bottom */
-.wr .ss-stage[data-layout='compact'] .wr-win--left,
-.wr .ss-stage[data-layout='compact'] .wr-win--right {
+.wr .ss-stage[data-layout="compact"] .wr-win--left,
+.wr .ss-stage[data-layout="compact"] .wr-win--right {
   display: none;
 }
 
-.wr .ss-stage[data-layout='compact'] .wr-win--hero {
+.wr .ss-stage[data-layout="compact"] .wr-win--hero {
   left: 16px;
   width: 326px;
 }

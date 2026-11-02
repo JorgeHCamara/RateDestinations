@@ -1,4 +1,7 @@
-.cm-stage .ss-stage { background: var(--ss-well); border-radius: 16px; }
+.cm-stage .ss-stage {
+  background: var(--ss-well);
+  border-radius: 16px;
+}
 /* Cursor styles share one moving outline. */
 .cm-frame {
   position: absolute;

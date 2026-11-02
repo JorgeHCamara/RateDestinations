@@ -7,8 +7,12 @@
   gap: 16px;
 }
 
-.kx-tall { grid-area: 1 / 4 / 4 / 5; }
-.kx-wide { grid-column: span 2; }
+.kx-tall {
+  grid-area: 1 / 4 / 4 / 5;
+}
+.kx-wide {
+  grid-column: span 2;
+}
 
 .kx-chips,
 .kx-row,
@@ -18,9 +22,17 @@
   gap: 8px;
 }
 
-.kx-row { gap: 12px; }
-.kx-chips { gap: 6px; justify-self: start; }
-.kx-glyphs { gap: 9px; color: var(--ss-icon); }
+.kx-row {
+  gap: 12px;
+}
+.kx-chips {
+  gap: 6px;
+  justify-self: start;
+}
+.kx-glyphs {
+  gap: 9px;
+  color: var(--ss-icon);
+}
 
 .kx-add {
   display: inline-grid;
@@ -40,12 +52,22 @@
   color: var(--ss-text-strong);
 }
 
-.kx-para .ss-swap__in { width: 124px; }
+.kx-para .ss-swap__in {
+  width: 124px;
+}
 
-.kx-meter { width: 100%; }
+.kx-meter {
+  width: 100%;
+}
 
-.kx-menu { width: 100%; }
-.kx-menu .ss-menu { position: static; width: 100%; box-sizing: border-box; }
+.kx-menu {
+  width: 100%;
+}
+.kx-menu .ss-menu {
+  position: static;
+  width: 100%;
+  box-sizing: border-box;
+}
 
 .kx-screen {
   position: relative;
@@ -69,11 +91,17 @@
   background: var(--ss-accent);
 }
 
-.kx-card--ghost { background: var(--ss-ink-1); }
+.kx-card--ghost {
+  background: var(--ss-ink-1);
+}
 
-.kx-expand { pointer-events: none; }
+.kx-expand {
+  pointer-events: none;
+}
 
-.kx-expand .ss-expand__content { background: var(--ss-surface); }
+.kx-expand .ss-expand__content {
+  background: var(--ss-surface);
+}
 
 .kx-art {
   height: 92px;

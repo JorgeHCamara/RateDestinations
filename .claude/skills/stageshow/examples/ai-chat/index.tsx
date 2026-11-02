@@ -1,14 +1,4 @@
-import {
-  Bar,
-  Collapse,
-  Field,
-  Stage,
-  States,
-  Stream,
-  Text,
-  Window,
-  type Act,
-} from "../../kit";
+import { Bar, Collapse, Field, Stage, States, Stream, Text, Window, type Act } from "../../kit";
 import "./chat.css";
 
 // An assistant answering in a desktop window. Beats: a question is typed into
@@ -107,10 +97,10 @@ export default function AiChat() {
                   Thinking closes, so the thread grows once, smoothly, and the
                   earlier turns move up with it. Before the send neither takes
                   any room */}
-              <Collapse open={s.phase === 'thinking'}>
+              <Collapse open={s.phase === "thinking"}>
                 <Text className="ac-thinking">Thinking</Text>
               </Collapse>
-              <Collapse open={s.phase === 'answer'}>
+              <Collapse open={s.phase === "answer"}>
                 <div className="ac-a" data-on>
                   <Stream className="ac-stream" text={A} count={s.words} />
                   <div className="ac-sources" data-on={s.sources || undefined}>

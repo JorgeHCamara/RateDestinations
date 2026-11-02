@@ -103,13 +103,17 @@
   opacity: 0;
   transform: translateY(4px);
   pointer-events: none;
-  transition: opacity 0.16s ease, transform 0.16s ease;
+  transition:
+    opacity 0.16s ease,
+    transform 0.16s ease;
 }
 
 .rc-page[data-show] {
   opacity: 1;
   transform: none;
-  transition: opacity 0.24s ease 0.06s, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) 0.06s;
+  transition:
+    opacity 0.24s ease 0.06s,
+    transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) 0.06s;
 }
 
 /* Search bar */
@@ -205,11 +209,15 @@
 }
 
 .rc-filter.ss-collapse {
-  transition: grid-template-rows 0.22s cubic-bezier(0.3, 0.75, 0.1, 1) 0.04s, opacity 0.12s ease;
+  transition:
+    grid-template-rows 0.22s cubic-bezier(0.3, 0.75, 0.1, 1) 0.04s,
+    opacity 0.12s ease;
 }
 
 .rc-filter.ss-collapse[data-open] {
-  transition: grid-template-rows 0.24s cubic-bezier(0.3, 0.75, 0.1, 1), opacity 0.2s ease 0.04s;
+  transition:
+    grid-template-rows 0.24s cubic-bezier(0.3, 0.75, 0.1, 1),
+    opacity 0.2s ease 0.04s;
 }
 
 .rc-row {
@@ -411,7 +419,9 @@
 .rc-stage .ss-key {
   background: rgba(250, 250, 252, 0.94);
   color: #1c1c1e;
-  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.12), 0 6px 16px rgba(0, 0, 0, 0.35);
+  box-shadow:
+    inset 0 -2px 0 rgba(0, 0, 0, 0.12),
+    0 6px 16px rgba(0, 0, 0, 0.35);
 }
 
 .rc-heads {

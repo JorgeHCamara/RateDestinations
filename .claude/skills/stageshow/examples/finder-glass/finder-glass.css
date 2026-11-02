@@ -19,7 +19,9 @@
   --ss-icon: #3d3e44;
   --ss-icon-faint: #b6b7bd;
   --fgl-glass: rgba(255, 255, 255, 0.9);
-  --fgl-btn-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.07), inset 0 0.5px 0 rgba(255, 255, 255, 1), 0 1px 2px rgba(20, 30, 60, 0.05), 0 5px 16px rgba(20, 30, 60, 0.09);
+  --fgl-btn-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.07), inset 0 0.5px 0 rgba(255, 255, 255, 1),
+    0 1px 2px rgba(20, 30, 60, 0.05), 0 5px 16px rgba(20, 30, 60, 0.09);
   /* A Tahoe wallpaper: deep blue, lighter toward the top left */
   background:
     radial-gradient(110% 80% at 10% 0%, #cfe0f7 0%, rgba(207, 224, 247, 0) 62%),
@@ -237,7 +239,9 @@
   padding: 6px 0;
   /* A layer it keeps, so the column's text never hops as it slides in */
   will-change: transform;
-  transition: opacity 0.16s ease, transform 0.16s ease;
+  transition:
+    opacity 0.16s ease,
+    transform 0.16s ease;
 }
 
 /* Every column closes with a hairline on its right, the last one too */
@@ -253,7 +257,9 @@
 }
 
 .fgl .fgl-col[data-open] {
-  transition: opacity 0.3s ease-out, transform 0.42s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition:
+    opacity 0.3s ease-out,
+    transform 0.42s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .fgl .fgl-col:not([data-open]) .fgl-row {
@@ -271,7 +277,9 @@
   border-radius: 6px;
   font-size: 12.5px;
   color: var(--ss-text-strong);
-  transition: background-color 0.12s ease, color 0.12s ease;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
 }
 
 .fgl .fgl-row__name {
@@ -321,7 +329,9 @@
   height: 12px;
   border-radius: 2px;
   overflow: hidden;
-  box-shadow: 0 0 0 1px #fff, 0 0 0 1.5px rgba(0, 0, 0, 0.14);
+  box-shadow:
+    0 0 0 1px #fff,
+    0 0 0 1.5px rgba(0, 0, 0, 0.14);
 }
 
 .fgl .fgl-photo {
@@ -342,7 +352,10 @@
   overflow: hidden;
   border-radius: 18px;
   background: #f5f6f9;
-  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.16), 0 26px 60px -10px rgba(10, 30, 80, 0.4), 0 10px 22px -10px rgba(10, 30, 80, 0.24);
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.16),
+    0 26px 60px -10px rgba(10, 30, 80, 0.4),
+    0 10px 22px -10px rgba(10, 30, 80, 0.24);
   opacity: 0;
   pointer-events: none;
   will-change: transform;
@@ -350,14 +363,22 @@
   --fgl-open: 0.46s cubic-bezier(0.3, 0.75, 0.1, 1);
   /* Closing waits for the bar's words to fade before the box moves */
   transition:
-    left var(--fgl-close) 0.1s, top var(--fgl-close) 0.1s, width var(--fgl-close) 0.1s, height var(--fgl-close) 0.1s, border-radius var(--fgl-close) 0.1s,
+    left var(--fgl-close) 0.1s,
+    top var(--fgl-close) 0.1s,
+    width var(--fgl-close) 0.1s,
+    height var(--fgl-close) 0.1s,
+    border-radius var(--fgl-close) 0.1s,
     opacity 0.2s ease-in 0.24s;
 }
 
 .fgl .fgl-ql[data-open] {
   opacity: 1;
   transition:
-    left var(--fgl-open), top var(--fgl-open), width var(--fgl-open), height var(--fgl-open), border-radius var(--fgl-open),
+    left var(--fgl-open),
+    top var(--fgl-open),
+    width var(--fgl-open),
+    height var(--fgl-open),
+    border-radius var(--fgl-open),
     opacity 0.24s ease-out;
 }
 

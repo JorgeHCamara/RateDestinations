@@ -51,31 +51,31 @@ node scripts/film.mjs <host-url> --select "#feature-demo" --report shots/report.
 
 Not candidates for judgment: fix the cause and re-shoot. `film.mjs --gate` ends `rehearsal passed` only when all are at 0. Clearing a line by hiding, removing or marking (`data-crop`, `data-snap`) the thing it points at is a bug, and the fresh eye re-judges every line you call intentional.
 
-| Line | What it means |
-|---|---|
-| `framing:` | A gutter, bleed, crop or window shape `framing.md` forbids; a hero floating whole; a popover against an edge |
-| `cut by the crop:` | An action or chip sliced by the stage edge; filler bleeds, actions read whole or not at all |
+| Line                            | What it means                                                                                                     |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `framing:`                      | A gutter, bleed, crop or window shape `framing.md` forbids; a hero floating whole; a popover against an edge      |
+| `cut by the crop:`              | An action or chip sliced by the stage edge; filler bleeds, actions read whole or not at all                       |
 | `tight stack:` / `loose stack:` | A title on its subtitle with under 3px of ink between, or drifting past 10px in a small label (4 to 6px is right) |
-| `tight mark:` | A status dot within 5px of the avatar or text, or outside its row (6px clear) |
-| `tight inset:` | Words under 8px from a window's, card's or row's edge (12px is right) |
-| `skeleton ladder:` | At realistic fidelity, a list in frame (4+ rows) where the wordless rows (at least 3) outnumber the worded ones |
-| `onion skin:` | See-through fills overlapping at rest |
-| `kit override:` | Your CSS reshaping a kit part's geometry (rows, bubbles, stamps, avatars, phones) |
-| `unit wrapped:` | A stat's unit on its own line |
-| `clipped glyph:` | An icon drawn past its box |
-| `loose list:` | Rows spread out to fill a pane |
-| `fat row:` | A one-line row three times taller than its words |
-| `empty pane:` | A void under a pane's or screen's content |
-| `emoji icon:` | An emoji where an icon belongs |
-| `anchor drift:` | An open popover moving as its list changes height |
-| `uneven padding:` | A card or tile whose content sits about a third closer to one edge than the side inset, or past it |
-| `mixed icons:` | Filled and outline glyphs side by side in one nav, list or toolbar |
-| `tight control:` | A button or chip with under 8px between it and the field, line or card edge above it |
-| `invented mark:` | A one-letter tile in a brand color beside a real company's name |
-| `uneven inset:` | A bar, pill or row of controls whose children sit much closer to one end than the other |
-| `uneven gutters:` | A window or panel in a tile much closer to one side than the other |
-| `avatar alignment:` | A body under an avatar row starting under the avatar instead of at the name's edge |
-| `spills its slot:` | Content running past the width it was laid out in, or closing its row's gap |
+| `tight mark:`                   | A status dot within 5px of the avatar or text, or outside its row (6px clear)                                     |
+| `tight inset:`                  | Words under 8px from a window's, card's or row's edge (12px is right)                                             |
+| `skeleton ladder:`              | At realistic fidelity, a list in frame (4+ rows) where the wordless rows (at least 3) outnumber the worded ones   |
+| `onion skin:`                   | See-through fills overlapping at rest                                                                             |
+| `kit override:`                 | Your CSS reshaping a kit part's geometry (rows, bubbles, stamps, avatars, phones)                                 |
+| `unit wrapped:`                 | A stat's unit on its own line                                                                                     |
+| `clipped glyph:`                | An icon drawn past its box                                                                                        |
+| `loose list:`                   | Rows spread out to fill a pane                                                                                    |
+| `fat row:`                      | A one-line row three times taller than its words                                                                  |
+| `empty pane:`                   | A void under a pane's or screen's content                                                                         |
+| `emoji icon:`                   | An emoji where an icon belongs                                                                                    |
+| `anchor drift:`                 | An open popover moving as its list changes height                                                                 |
+| `uneven padding:`               | A card or tile whose content sits about a third closer to one edge than the side inset, or past it                |
+| `mixed icons:`                  | Filled and outline glyphs side by side in one nav, list or toolbar                                                |
+| `tight control:`                | A button or chip with under 8px between it and the field, line or card edge above it                              |
+| `invented mark:`                | A one-letter tile in a brand color beside a real company's name                                                   |
+| `uneven inset:`                 | A bar, pill or row of controls whose children sit much closer to one end than the other                           |
+| `uneven gutters:`               | A window or panel in a tile much closer to one side than the other                                                |
+| `avatar alignment:`             | A body under an avatar row starting under the avatar instead of at the name's edge                                |
+| `spills its slot:`              | Content running past the width it was laid out in, or closing its row's gap                                       |
 
 A `[stageshow] selection drift` kit warning (a text selection that isn't under the I-beam) fails the gate too.
 

@@ -34,7 +34,9 @@
   }
 
   @keyframes ss-fly-bud {
-    from { opacity: 0; }
+    from {
+      opacity: 0;
+    }
   }
 
   /* A small lift mid-flight that is gone before it lands */
@@ -45,7 +47,14 @@
   }
 
   @keyframes ss-fly-lift {
-    30% { transform: scale(1.12); filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.18)); }
-    85%, 100% { transform: none; filter: none; }
+    30% {
+      transform: scale(1.12);
+      filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.18));
+    }
+    85%,
+    100% {
+      transform: none;
+      filter: none;
+    }
   }
 }

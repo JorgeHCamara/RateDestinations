@@ -4,18 +4,18 @@
      demo on the page can't restyle it. The grid is the page's (container
      queries on the section); each picture is its own Stage at 1:1, pinned to
      its tile's bottom and cropped by the tile. */
-    --pad: 28px;
-    --gap: 14px;
-    --tile: #f3f3f4;
-    --ink: #1d1d1f;
-    --ink-2: #6e6e73;
-    --accent: #3d5afe;
-    container-type: inline-size;
-    /* No padding of its own: on a page, the tiles span the content column */
-    box-sizing: border-box;
-    background: #fff;
-    font-family: var(--kb-font, inherit);
-    -webkit-font-smoothing: antialiased;
+  --pad: 28px;
+  --gap: 14px;
+  --tile: #f3f3f4;
+  --ink: #1d1d1f;
+  --ink-2: #6e6e73;
+  --accent: #3d5afe;
+  container-type: inline-size;
+  /* No padding of its own: on a page, the tiles span the content column */
+  box-sizing: border-box;
+  background: #fff;
+  font-family: var(--kb-font, inherit);
+  -webkit-font-smoothing: antialiased;
 
   & .kb-grid {
     display: grid;
@@ -24,7 +24,7 @@
     margin: 0 auto;
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: 410px 300px 320px 320px 320px;
-    grid-template-areas: 'hero' 'stat' 'card' 'approve' 'code';
+    grid-template-areas: "hero" "stat" "card" "approve" "code";
   }
 
   /* The column of a docs page, a tablet: the hero across the top, then pairs */
@@ -32,7 +32,7 @@
     & .kb-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       grid-template-rows: 380px 320px 320px;
-      grid-template-areas: 'hero hero' 'stat card' 'approve code';
+      grid-template-areas: "hero hero" "stat card" "approve code";
     }
   }
 
@@ -41,7 +41,7 @@
     & .kb-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
       grid-template-rows: 380px 320px;
-      grid-template-areas: 'hero hero stat' 'card approve code';
+      grid-template-areas: "hero hero stat" "card approve code";
     }
   }
 
@@ -60,11 +60,21 @@
     background: var(--tile);
   }
 
-  & .kb-tile--hero { grid-area: hero; }
-  & .kb-tile--stat { grid-area: stat; }
-  & .kb-tile--card { grid-area: card; }
-  & .kb-tile--approve { grid-area: approve; }
-  & .kb-tile--code { grid-area: code; }
+  & .kb-tile--hero {
+    grid-area: hero;
+  }
+  & .kb-tile--stat {
+    grid-area: stat;
+  }
+  & .kb-tile--card {
+    grid-area: card;
+  }
+  & .kb-tile--approve {
+    grid-area: approve;
+  }
+  & .kb-tile--code {
+    grid-area: code;
+  }
 
   /* Run-in copy: the bold lead and its gray continuation at one size */
   & .kb-copy {
@@ -126,7 +136,10 @@
     width: max(780px, calc(100% + var(--pad)));
     height: 380px;
     --ss-canvas: #fff;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 10px 30px -10px rgba(30, 30, 60, 0.18), 0 2px 6px rgba(0, 0, 0, 0.04);
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.06),
+      0 10px 30px -10px rgba(30, 30, 60, 0.18),
+      0 2px 6px rgba(0, 0, 0, 0.04);
   }
 
   & .kb-window--compact {
@@ -257,11 +270,16 @@
     padding: 5px 3px;
     border-radius: 4px;
     background: #fff;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.06);
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.08),
+      0 2px 4px rgba(0, 0, 0, 0.06);
     opacity: 0;
     transform: translate(46px, -54px) rotate(9deg) scale(1.5);
     will-change: transform;
-    transition: transform 0.9s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease, box-shadow 0.9s ease;
+    transition:
+      transform 0.9s cubic-bezier(0.25, 0.8, 0.25, 1),
+      opacity 0.3s ease,
+      box-shadow 0.9s ease;
   }
 
   & .kb-slot[data-on] .kb-receipt {
@@ -295,12 +313,12 @@
     white-space: nowrap;
   }
 
-  & .kb-pill[data-tone='warning'] {
+  & .kb-pill[data-tone="warning"] {
     background: #fdf1e2;
     color: #a4570c;
   }
 
-  & .kb-pill[data-tone='success'] {
+  & .kb-pill[data-tone="success"] {
     background: #e6f6ec;
     color: #177a3e;
   }
@@ -368,7 +386,10 @@
     background:
       radial-gradient(120% 140% at 0% 0%, rgba(255, 255, 255, 0.16), transparent 55%),
       linear-gradient(140deg, #3550f0 0%, #2437b8 55%, #1a2788 100%);
-    box-shadow: 0 0 0 1px rgba(18, 26, 90, 0.25), 0 22px 40px -14px rgba(28, 40, 140, 0.45), 0 6px 12px -6px rgba(0, 0, 0, 0.2);
+    box-shadow:
+      0 0 0 1px rgba(18, 26, 90, 0.25),
+      0 22px 40px -14px rgba(28, 40, 140, 0.45),
+      0 6px 12px -6px rgba(0, 0, 0, 0.2);
     color: #fff;
     transform: translateY(46px);
     will-change: transform;
@@ -381,10 +402,15 @@
 
   /* A sheen crosses once as it rises */
   & .kb-card::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: -40%;
-    background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.16) 50%, transparent 60%);
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      rgba(255, 255, 255, 0.16) 50%,
+      transparent 60%
+    );
     transform: translateX(-60%);
     transition: transform 1.6s cubic-bezier(0.45, 0, 0.1, 1) 0.15s;
   }
@@ -416,7 +442,9 @@
     color: rgba(255, 255, 255, 0.92);
   }
 
-  & .kb-card-name { left: 20px; }
+  & .kb-card-name {
+    left: 20px;
+  }
 
   & .kb-card-last {
     right: 20px;
@@ -435,7 +463,9 @@
     padding: 18px;
     border-radius: 16px;
     background: #fff;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 10px 26px -10px rgba(30, 30, 60, 0.2);
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.05),
+      0 10px 26px -10px rgba(30, 30, 60, 0.2);
   }
 
   & .kb-request-who {
@@ -546,7 +576,9 @@
     padding: 0 12px 0 8px;
     border-radius: 11px;
     background: #fff;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 2px 6px -2px rgba(0, 0, 0, 0.08);
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.05),
+      0 2px 6px -2px rgba(0, 0, 0, 0.08);
     font-size: 13px;
     font-weight: 500;
     color: var(--ink);
@@ -578,7 +610,9 @@
     line-height: 18px;
     border-radius: 12px;
     background: #fff;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 2px 6px -2px rgba(0, 0, 0, 0.08);
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.06),
+      0 2px 6px -2px rgba(0, 0, 0, 0.08);
     font-size: 14px;
     font-weight: 600;
     color: var(--ink);
@@ -586,7 +620,9 @@
   }
 
   & .kb-account[data-on] {
-    box-shadow: 0 0 0 1.5px var(--accent), 0 6px 16px -6px rgba(61, 90, 254, 0.4);
+    box-shadow:
+      0 0 0 1.5px var(--accent),
+      0 6px 16px -6px rgba(61, 90, 254, 0.4);
   }
 
   & .kb-account-code {
@@ -601,18 +637,26 @@
     --ss-accent: var(--accent);
   }
 
-  & .kb-line--1 path { transition-delay: 0.09s; }
-  & .kb-line--2 path { transition-delay: 0.18s; }
+  & .kb-line--1 path {
+    transition-delay: 0.09s;
+  }
+  & .kb-line--2 path {
+    transition-delay: 0.18s;
+  }
 
   & .kb-tick {
     flex: none;
   }
-
-
 }
 
 @keyframes kb-press {
-  0% { transform: scale(1); }
-  35% { transform: scale(0.96); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+  }
 }

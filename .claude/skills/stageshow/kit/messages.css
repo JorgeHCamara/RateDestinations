@@ -79,13 +79,15 @@
     isolation: isolate;
     color: var(--t);
     overflow-wrap: break-word;
-    transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1), height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      width 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   /* The fill is its own layer, so it can grow from the tail corner while the
      text only rises and fades: text that ends a scale hops as it lands */
   .ss-bubble::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     z-index: -1;
@@ -125,11 +127,17 @@
      growing out of its edge, so the thread moves with it, not after it; it
      closes only once the reaction has gone */
   .ss-bubble {
-    transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1), height 0.35s cubic-bezier(0.22, 1, 0.36, 1), margin-bottom 0.3s cubic-bezier(0.22, 1, 0.36, 1) 0.12s;
+    transition:
+      width 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      height 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      margin-bottom 0.3s cubic-bezier(0.22, 1, 0.36, 1) 0.12s;
   }
 
   .ss-bubble[data-tapback] {
-    transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1), height 0.35s cubic-bezier(0.22, 1, 0.36, 1), margin-bottom 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      width 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      height 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      margin-bottom 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   /* A true circle, overlapping only the bubble's bottom padding (6px), never
@@ -147,13 +155,17 @@
     padding: 0;
     border-radius: 50%;
     background: var(--ss-thread-ground, #fff);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 0 0 0.5px rgba(0, 0, 0, 0.05);
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.08),
+      0 0 0 0.5px rgba(0, 0, 0, 0.05);
     font-size: 13px;
     line-height: 1;
     pointer-events: none;
     transform-origin: 50% 50%;
     transform: scale(0);
-    transition: transform 0.45s cubic-bezier(0.22, 1.4, 0.36, 1), opacity 0.1s ease;
+    transition:
+      transform 0.45s cubic-bezier(0.22, 1.4, 0.36, 1),
+      opacity 0.1s ease;
   }
 
   .ss-bubble-row[data-from="me"] .ss-tapback {
@@ -173,7 +185,9 @@
   .ss-tapback:not([data-show]) {
     opacity: 0;
     transform: scale(0.5);
-    transition: transform 0.16s ease, opacity 0.14s ease;
+    transition:
+      transform 0.16s ease,
+      opacity 0.14s ease;
   }
 
   .ss-tapback__emoji {
@@ -266,7 +280,9 @@
     /* Retracted into the bubble's corner unless this bubble closes its run */
     opacity: 0;
     transform: scale(0.2);
-    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.18s ease;
+    transition:
+      transform 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+      opacity 0.18s ease;
   }
 
   .ss-bubble[data-tail] > .ss-bubble__tail {
@@ -291,7 +307,10 @@
   }
 
   @keyframes ss-tail-in {
-    from { opacity: 0; transform: scale(0.2); }
+    from {
+      opacity: 0;
+      transform: scale(0.2);
+    }
   }
 
   .ss-bubble__bar {
@@ -331,7 +350,9 @@
   }
 
   @keyframes ss-typing {
-    0%, 60%, 100% {
+    0%,
+    60%,
+    100% {
       opacity: 0.4;
       transform: none;
     }
@@ -370,30 +391,41 @@
     position: relative;
     top: 0;
     will-change: transform;
-    transition: top var(--ss-scroll), grid-template-rows var(--ss-scroll), opacity 0.25s ease;
+    transition:
+      top var(--ss-scroll),
+      grid-template-rows var(--ss-scroll),
+      opacity 0.25s ease;
     opacity: 0;
   }
 
   /* Delivered to Read: the old word lifts out as the new one rises in, the two
      overlapping so there is never an empty moment, pinned to the right edge */
-  .ss-receipt .ss-roll[data-variant='fade'] .ss-roll__item[data-out] {
+  .ss-receipt .ss-roll[data-variant="fade"] .ss-roll__item[data-out] {
     animation: ss-receipt-out 0.3s ease both;
   }
 
-  .ss-receipt .ss-roll[data-variant='fade'] .ss-roll__char {
+  .ss-receipt .ss-roll[data-variant="fade"] .ss-roll__char {
     animation: ss-receipt-in 0.4s cubic-bezier(0.25, 1, 0.5, 1) 0.08s both;
   }
 
-  .ss-receipt .ss-roll[data-variant='fade'] .ss-roll__mid {
+  .ss-receipt .ss-roll[data-variant="fade"] .ss-roll__mid {
     transition-duration: 0.45s;
   }
 
   @keyframes ss-receipt-out {
-    to { opacity: 0; filter: blur(1.5px); transform: translateY(-0.5em); }
+    to {
+      opacity: 0;
+      filter: blur(1.5px);
+      transform: translateY(-0.5em);
+    }
   }
 
   @keyframes ss-receipt-in {
-    from { opacity: 0; filter: blur(1.5px); transform: translateY(0.5em); }
+    from {
+      opacity: 0;
+      filter: blur(1.5px);
+      transform: translateY(0.5em);
+    }
   }
 
   .ss-receipt > span {

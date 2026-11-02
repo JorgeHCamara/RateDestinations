@@ -1,5 +1,5 @@
-import { Bar, Connector, Roll, Stage, Text, Window, type Act } from '../../kit'
-import './panel.css'
+import { Bar, Connector, Roll, Stage, Text, Window, type Act } from "../../kit";
+import "./panel.css";
 
 // A settings panel over the product it changes, with one annotation tying a
 // setting to what it does. Beats: the cursor picks a new accent in the
@@ -24,42 +24,52 @@ import './panel.css'
 // Real strings: the merchant, the amount, Pay, the panel's title and its two
 // color rows.
 
-type S = { accent: number; linked: boolean }
+type S = { accent: number; linked: boolean };
 
 const ACCENTS = [
-  { hex: '#2563EB', name: 'blue' },
-  { hex: '#7C3AED', name: 'violet' },
-  { hex: '#059669', name: 'green' },
-  { hex: '#EA580C', name: 'orange' },
-]
+  { hex: "#2563EB", name: "blue" },
+  { hex: "#7C3AED", name: "violet" },
+  { hex: "#059669", name: "green" },
+  { hex: "#EA580C", name: "orange" },
+];
 
-const initial: S = { accent: 0, linked: false }
-const poster: S = { accent: 1, linked: true }
+const initial: S = { accent: 0, linked: false };
+const poster: S = { accent: 1, linked: true };
 
 async function script(a: Act<S>) {
-  await a.wait(1000)
-  a.mark('pick')
-  await a.click({ at: 'swatch-1', x: 0.5, y: 0.5 })
-  a.put({ accent: 1 })
-  await a.wait(500)
-  a.mark('link')
-  a.put({ linked: true })
-  await a.move({ at: 'panel', x: 0.6, y: 1.15 })
-  await a.wait(2600)
+  await a.wait(1000);
+  a.mark("pick");
+  await a.click({ at: "swatch-1", x: 0.5, y: 0.5 });
+  a.put({ accent: 1 });
+  await a.wait(500);
+  a.mark("link");
+  a.put({ linked: true });
+  await a.move({ at: "panel", x: 0.6, y: 1.15 });
+  await a.wait(2600);
 }
 
 export default function PanelAnnotation() {
   return (
-    <Stage width={640} height={440} compact={{ below: 600, width: 358, height: 600 }} initial={initial} poster={poster} script={script} play="once" cursor={{ at: { x: 600, y: 410 } }} className="pa">
+    <Stage
+      width={640}
+      height={440}
+      compact={{ below: 600, width: 358, height: 600 }}
+      initial={initial}
+      poster={poster}
+      script={script}
+      play="once"
+      cursor={{ at: { x: 600, y: 410 } }}
+      className="pa"
+    >
       {(s, rect, layout) => {
-        const accent = ACCENTS[s.accent]!.hex
-        const panel = rect('panel')
-        const swatch = rect(`swatch-${s.accent}`)
-        const pay = rect('pay')
+        const accent = ACCENTS[s.accent]!.hex;
+        const panel = rect("panel");
+        const swatch = rect(`swatch-${s.accent}`);
+        const pay = rect("pay");
         return (
           <>
             <Window url="checkout.northwind.co" className="pa-win">
-              <div className="pa-checkout" style={{ ['--pa-accent' as string]: accent }}>
+              <div className="pa-checkout" style={{ ["--pa-accent" as string]: accent }}>
                 <Text className="pa-merchant">Northwind</Text>
                 <Text className="pa-amount">$60.00</Text>
                 <div className="pa-fields">
@@ -70,7 +80,9 @@ export default function PanelAnnotation() {
                     <Bar w="100%" h={30} r={6} tone={1} />
                   </div>
                 </div>
-                <span className="pa-pay" data-target="pay">Pay $60.00</span>
+                <span className="pa-pay" data-target="pay">
+                  Pay $60.00
+                </span>
               </div>
             </Window>
 
@@ -79,7 +91,10 @@ export default function PanelAnnotation() {
               <Text className="pa-hint">How your brand shows on checkout</Text>
               <div className="pa-row">
                 <Text className="pa-label">Brand color</Text>
-                <span className="pa-value"><span className="pa-chip" style={{ background: '#111827' }} />#111827</span>
+                <span className="pa-value">
+                  <span className="pa-chip" style={{ background: "#111827" }} />
+                  #111827
+                </span>
               </div>
               <div className="pa-row" data-target="accent-row">
                 <Text className="pa-label">Accent color</Text>
@@ -90,7 +105,14 @@ export default function PanelAnnotation() {
               </div>
               <div className="pa-swatches">
                 {ACCENTS.map((c, i) => (
-                  <span key={c.hex} className="pa-swatch" data-target={`swatch-${i}`} data-cursor="pointer" data-on={i === s.accent || undefined} style={{ background: c.hex }} />
+                  <span
+                    key={c.hex}
+                    className="pa-swatch"
+                    data-target={`swatch-${i}`}
+                    data-cursor="pointer"
+                    data-on={i === s.accent || undefined}
+                    style={{ background: c.hex }}
+                  />
                 ))}
               </div>
               <div className="pa-row pa-row--quiet">
@@ -99,12 +121,17 @@ export default function PanelAnnotation() {
               </div>
             </section>
 
-            {layout !== 'compact' && panel.width > 0 && pay.width > 0 && (
-              <Connector show={s.linked} from={{ x: swatch.x + swatch.width / 2, y: panel.y + panel.height + 6 }} to={{ x: pay.x + pay.width + 6, y: pay.y + pay.height / 2 }} route="v" />
+            {layout !== "compact" && panel.width > 0 && pay.width > 0 && (
+              <Connector
+                show={s.linked}
+                from={{ x: swatch.x + swatch.width / 2, y: panel.y + panel.height + 6 }}
+                to={{ x: pay.x + pay.width + 6, y: pay.y + pay.height / 2 }}
+                route="v"
+              />
             )}
           </>
-        )
+        );
       }}
     </Stage>
-  )
+  );
 }

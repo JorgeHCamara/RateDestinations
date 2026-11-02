@@ -23,7 +23,8 @@
   --ss-danger: #e5484d; /* red 9 */
 
   /* Type: the system stack Radix Themes ships */
-  --ss-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", system-ui, sans-serif;
+  --ss-font:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", system-ui, sans-serif;
 
   /* Shape: radius 2 (4px) for small controls, 3 (6px) for fields, 4 (8px)
      for panels, 5 (12px) for the window, full for badges */

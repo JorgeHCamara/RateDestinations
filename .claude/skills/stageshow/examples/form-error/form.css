@@ -66,7 +66,7 @@
 
 /* Layers in one cell, crossfading in place */
 .fe-button {
-  grid-template-areas: 'stack';
+  grid-template-areas: "stack";
 }
 
 .fe-layer {
@@ -76,7 +76,9 @@
   gap: 8px;
   opacity: 0;
   filter: blur(2px);
-  transition: opacity 0.25s ease, filter 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    filter 0.25s ease;
   text-box: trim-both cap alphabetic;
 }
 
@@ -95,7 +97,9 @@
   grid-area: 1 / 1;
   opacity: 0;
   filter: blur(2px);
-  transition: opacity 0.25s ease, filter 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    filter 0.25s ease;
 }
 
 .fe-label[data-on] {
@@ -104,18 +108,26 @@
   transition-delay: 0.08s;
 }
 
-.fe-button .ss-check__ring { stroke: rgb(255 255 255 / 0.45); }
-.fe-button .ss-check__arc { stroke: #fff; }
-.fe-button .ss-check__fill { fill: #fff; }
-.fe-button .ss-check__tick { stroke: var(--ss-success); }
+.fe-button .ss-check__ring {
+  stroke: rgb(255 255 255 / 0.45);
+}
+.fe-button .ss-check__arc {
+  stroke: #fff;
+}
+.fe-button .ss-check__fill {
+  fill: #fff;
+}
+.fe-button .ss-check__tick {
+  stroke: var(--ss-success);
+}
 
 /* Narrow: a gutter each side */
-.fe .ss-stage[data-layout='compact'] .fe-win {
+.fe .ss-stage[data-layout="compact"] .fe-win {
   left: 16px;
   width: 326px;
 }
 
-.fe .ss-stage[data-layout='compact'] .fe-card {
+.fe .ss-stage[data-layout="compact"] .fe-card {
   padding: 24px 22px;
 }
 

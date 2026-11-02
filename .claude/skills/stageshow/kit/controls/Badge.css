@@ -21,7 +21,9 @@
     color: var(--ss-text-strong);
     white-space: nowrap;
     /* A tone change (Working to Ready) eases on the same pill, no swap */
-    transition: background-color 0.35s ease, color 0.35s ease;
+    transition:
+      background-color 0.35s ease,
+      color 0.35s ease;
   }
 
   /* A round mark before the words reads as further in than text does, so
@@ -31,13 +33,25 @@
     padding-left: 7px;
   }
 
-  .ss-badge[data-tone="accent"] { background: var(--ss-accent-soft); color: var(--ss-accent-text); }
+  .ss-badge[data-tone="accent"] {
+    background: var(--ss-accent-soft);
+    color: var(--ss-accent-text);
+  }
 
-  .ss-badge[data-tone="success"] { background: var(--ss-success-soft); color: var(--ss-success-text); }
+  .ss-badge[data-tone="success"] {
+    background: var(--ss-success-soft);
+    color: var(--ss-success-text);
+  }
 
-  .ss-badge[data-tone="danger"] { background: var(--ss-danger-soft); color: var(--ss-danger-text); }
+  .ss-badge[data-tone="danger"] {
+    background: var(--ss-danger-soft);
+    color: var(--ss-danger-text);
+  }
 
-  .ss-badge[data-tone="warning"] { background: var(--ss-warning-soft); color: var(--ss-warning-text); }
+  .ss-badge[data-tone="warning"] {
+    background: var(--ss-warning-soft);
+    color: var(--ss-warning-text);
+  }
 
   /* The label's line box trimmed to cap height and baseline, so the words
      center on their own ink; a plain line box keeps descender room and sits

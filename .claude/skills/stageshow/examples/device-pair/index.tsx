@@ -1,5 +1,17 @@
-import { Badge, Bar, Chart, Icon, LockScreen, Notification, Phone, Stage, Text, Window, WALLPAPER } from '../../kit'
-import './payments.css'
+import {
+  Badge,
+  Bar,
+  Chart,
+  Icon,
+  LockScreen,
+  Notification,
+  Phone,
+  Stage,
+  Text,
+  Window,
+  WALLPAPER,
+} from "../../kit";
+import "./payments.css";
 
 // "Get paid anywhere": a device pair. The dashboard is pinned top-left and
 // runs off the bottom; the phone straddles its right edge over empty margin
@@ -8,7 +20,7 @@ import './payments.css'
 // goes and both devices keep their true size: the window runs off the right,
 // the phone stands a gutter in from it, whole across, its notification whole.
 
-const REVENUE = [18, 22, 20, 27, 25, 31, 29, 36, 34, 41, 39, 47]
+const REVENUE = [18, 22, 20, 27, 25, 31, 29, 36, 34, 41, 39, 47];
 
 const ROWS = [
   { name: 74, amount: 40 },
@@ -16,13 +28,18 @@ const ROWS = [
   { name: 82, amount: 36 },
   { name: 64, amount: 44 },
   { name: 70, amount: 38 },
-]
+];
 
-const WALL = WALLPAPER
+const WALL = WALLPAPER;
 
 export default function PaymentsStatic() {
   return (
-    <Stage width={640} height={400} compact={{ below: 600, width: 358, height: 400 }} className="ps-section">
+    <Stage
+      width={640}
+      height={400}
+      compact={{ below: 600, width: 358, height: 400 }}
+      className="ps-section"
+    >
       {() => (
         <>
           <Window url="dashboard.northwind.co" className="ps-window">
@@ -54,7 +71,6 @@ export default function PaymentsStatic() {
                     <Bar w={22} h={4} tone={1} />
                   </div>
                 </section>
-
               </div>
 
               <div className="ps-list">
@@ -63,7 +79,7 @@ export default function PaymentsStatic() {
                   <div key={i} className="ps-row">
                     <Bar w={16} h={16} r={5} tone={2} />
                     <Bar w={row.name} tone={3} />
-                    <Bar w={row.amount} tone={2} style={{ marginLeft: 'auto' }} />
+                    <Bar w={row.amount} tone={2} style={{ marginLeft: "auto" }} />
                   </div>
                 ))}
               </div>
@@ -73,11 +89,15 @@ export default function PaymentsStatic() {
           <Phone width={236} frame="pro" dark wallpaper={WALL} className="ps-phone">
             <LockScreen size="satellite" stack="top">
               {/* The product's own app sends it: the dashboard's bolt, not Mail */}
-              <Notification icon={<Icon name="bolt" filled size={20} />} title="Payment received" body="$249.00 from Oak & Ivy" />
+              <Notification
+                icon={<Icon name="bolt" filled size={20} />}
+                title="Payment received"
+                body="$249.00 from Oak & Ivy"
+              />
             </LockScreen>
           </Phone>
         </>
       )}
     </Stage>
-  )
+  );
 }

@@ -58,81 +58,81 @@ Film the closest one before you start (step 4). The gold examples are the qualit
 
 ### Gold
 
-| Need | Example | What to learn |
-|---|---|---|
-| Still or feature card | `static-card` | Quiet hierarchy, a hard crop, one satellite, real words only on the selected customer, its neighbors and the total |
-| Dark still | `dark-bento` | One signal said once; album art keeps it a music app |
-| Animated hero, a gesture | `hero-demo` | Five beats, named targets, an annotation, a terminal coming forward |
-| Choreography, no cursor | `payout-flow` | Slow overlapping arrivals, reading time, a payoff that holds |
-| Content changing in place | `choreography` | Retained tracks, soft masks, dependent timing |
-| AI answer | `ai-chat` | The question sent, Thinking, the answer streaming in with its height, sources last; no sparkles, no purple |
-| AI with cards | `ai-cards` | A multiple-choice card answered and kept as the record, a card of options opening in the thread, booked from its own button |
-| Form validation | `form-error` | An error on the field that caused it, cleared by fixing it, then the button confirms on itself |
-| Drag to reorder | `reorder` | A row lifted by its grip, the others making room, dropped into place |
-| Chart scrub | `chart-scrub` | A hairline and dot that follow the pointer, the headline value rolling to the day under it |
-| Edit in a table | `table-edit` | A cell edited in place, then the total it feeds rolls a beat later |
-| Loading to content | `loading` | A skeleton at the content's own geometry, rows resolving top to bottom, real chrome throughout |
-| Dark hero | `dark-hero` | Depth from surface steps on black, one lit color, a status that changes on its own pill |
-| Live collaborators | `presence` | Each person one color everywhere, names riding their cursors, work shown in the doc's own marks |
-| System story | `subscriptions` | A chip flies into a row, MRR rolls, a second scene is the reset |
-| Close-up | `close-up` | One control at 1.4x with its window's chrome, the row whole, a large cursor to match |
-| Many of one | `many-of-one` | A grid of one thing off every edge, one tile in focus by depth, the only one with words |
-| Fade crop | `fade-crop` | A window fading out at its foot, over filler, instead of running off an edge |
-| Panel over product | `panel-annotation` | A settings panel over the product's margin, one leader from the setting to what it changed |
-| Overlapping windows | `overlap` | A card in front of a window, its edge on the window's sidebar line |
-| Stacked cards | `stacked-cards` | Two components at one width, a small gap, the lower one off the bottom |
-| Opposite corners | `opposite-corners` | A bento tile: copy bottom-left, the product hung from the top-right corner |
-| Tilted stack | `tilted-stack` | A loose pile of paper, small alternating angles, only the top card has words |
-| Corner chip | `corner-chip` | A small chip centered on a window's corner, half outside |
-| Monochrome | `monochrome` | Other companies' products in a row, grayscale, faded at the foot |
-| Row of windows | `window-row` | Sessions side by side at one height: focus by depth, neighbors cut by the stage, only filler cropped |
-| Window and phone | `device-pair` | A dashboard and a lock screen telling one event; the phone straddles over margin, never over the figure |
-| Related objects | `story` | An invoice, a plan, a connector, rolling totals |
-| Calendar drag | `calendar` | A populated week, one focal event, a measured pickup |
-| Free dragging | `freeform-drag` | Grab offset, a measured grid, a drop slot that snaps |
-| Phone app | `phone-touch` | A card opens into its screen as one object, and the loop folds back |
-| Dynamic Island | `dynamic-island` | One black shape, its content a separate layer |
-| Messages | `messages` | Composer, typing, receipts, a bubble's lifetime |
-| Cursors | `cursors`, `cursor-morph`, `cursor-resize` | Five styles, element-driven kinds, resize edges and corners, no cursor at all |
-| Annotations | `annotations` | Leaders, dimensions, flows and a moving target; `references/annotations.md` |
-| Feature grid | `bento` | One hero, one window, a stat, an object, a diagram |
-| Dark ruled grid | `ruled-bento` | Shared rules and technical imagery |
-| Consumer grid | `staggered-bento` | Offset tiles, graphic art, physical objects |
-| Image-led hero grid | `hero-grid` | Different grounds and materials composed as one picture |
-| Upload | `upload` | A file dragged in from the desktop, an upload row with progress that settles as a file row |
-| Share | `share` | A share popover over a document: an email becomes a chip, a role menu, a person added to the list |
-| Swipe | `swipe` | A phone swipe to archive: press, swipe, a throw at the finger's speed, the gap closes |
+| Need                      | Example                                    | What to learn                                                                                                               |
+| ------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| Still or feature card     | `static-card`                              | Quiet hierarchy, a hard crop, one satellite, real words only on the selected customer, its neighbors and the total          |
+| Dark still                | `dark-bento`                               | One signal said once; album art keeps it a music app                                                                        |
+| Animated hero, a gesture  | `hero-demo`                                | Five beats, named targets, an annotation, a terminal coming forward                                                         |
+| Choreography, no cursor   | `payout-flow`                              | Slow overlapping arrivals, reading time, a payoff that holds                                                                |
+| Content changing in place | `choreography`                             | Retained tracks, soft masks, dependent timing                                                                               |
+| AI answer                 | `ai-chat`                                  | The question sent, Thinking, the answer streaming in with its height, sources last; no sparkles, no purple                  |
+| AI with cards             | `ai-cards`                                 | A multiple-choice card answered and kept as the record, a card of options opening in the thread, booked from its own button |
+| Form validation           | `form-error`                               | An error on the field that caused it, cleared by fixing it, then the button confirms on itself                              |
+| Drag to reorder           | `reorder`                                  | A row lifted by its grip, the others making room, dropped into place                                                        |
+| Chart scrub               | `chart-scrub`                              | A hairline and dot that follow the pointer, the headline value rolling to the day under it                                  |
+| Edit in a table           | `table-edit`                               | A cell edited in place, then the total it feeds rolls a beat later                                                          |
+| Loading to content        | `loading`                                  | A skeleton at the content's own geometry, rows resolving top to bottom, real chrome throughout                              |
+| Dark hero                 | `dark-hero`                                | Depth from surface steps on black, one lit color, a status that changes on its own pill                                     |
+| Live collaborators        | `presence`                                 | Each person one color everywhere, names riding their cursors, work shown in the doc's own marks                             |
+| System story              | `subscriptions`                            | A chip flies into a row, MRR rolls, a second scene is the reset                                                             |
+| Close-up                  | `close-up`                                 | One control at 1.4x with its window's chrome, the row whole, a large cursor to match                                        |
+| Many of one               | `many-of-one`                              | A grid of one thing off every edge, one tile in focus by depth, the only one with words                                     |
+| Fade crop                 | `fade-crop`                                | A window fading out at its foot, over filler, instead of running off an edge                                                |
+| Panel over product        | `panel-annotation`                         | A settings panel over the product's margin, one leader from the setting to what it changed                                  |
+| Overlapping windows       | `overlap`                                  | A card in front of a window, its edge on the window's sidebar line                                                          |
+| Stacked cards             | `stacked-cards`                            | Two components at one width, a small gap, the lower one off the bottom                                                      |
+| Opposite corners          | `opposite-corners`                         | A bento tile: copy bottom-left, the product hung from the top-right corner                                                  |
+| Tilted stack              | `tilted-stack`                             | A loose pile of paper, small alternating angles, only the top card has words                                                |
+| Corner chip               | `corner-chip`                              | A small chip centered on a window's corner, half outside                                                                    |
+| Monochrome                | `monochrome`                               | Other companies' products in a row, grayscale, faded at the foot                                                            |
+| Row of windows            | `window-row`                               | Sessions side by side at one height: focus by depth, neighbors cut by the stage, only filler cropped                        |
+| Window and phone          | `device-pair`                              | A dashboard and a lock screen telling one event; the phone straddles over margin, never over the figure                     |
+| Related objects           | `story`                                    | An invoice, a plan, a connector, rolling totals                                                                             |
+| Calendar drag             | `calendar`                                 | A populated week, one focal event, a measured pickup                                                                        |
+| Free dragging             | `freeform-drag`                            | Grab offset, a measured grid, a drop slot that snaps                                                                        |
+| Phone app                 | `phone-touch`                              | A card opens into its screen as one object, and the loop folds back                                                         |
+| Dynamic Island            | `dynamic-island`                           | One black shape, its content a separate layer                                                                               |
+| Messages                  | `messages`                                 | Composer, typing, receipts, a bubble's lifetime                                                                             |
+| Cursors                   | `cursors`, `cursor-morph`, `cursor-resize` | Five styles, element-driven kinds, resize edges and corners, no cursor at all                                               |
+| Annotations               | `annotations`                              | Leaders, dimensions, flows and a moving target; `references/annotations.md`                                                 |
+| Feature grid              | `bento`                                    | One hero, one window, a stat, an object, a diagram                                                                          |
+| Dark ruled grid           | `ruled-bento`                              | Shared rules and technical imagery                                                                                          |
+| Consumer grid             | `staggered-bento`                          | Offset tiles, graphic art, physical objects                                                                                 |
+| Image-led hero grid       | `hero-grid`                                | Different grounds and materials composed as one picture                                                                     |
+| Upload                    | `upload`                                   | A file dragged in from the desktop, an upload row with progress that settles as a file row                                  |
+| Share                     | `share`                                    | A share popover over a document: an email becomes a chip, a role menu, a person added to the list                           |
+| Swipe                     | `swipe`                                    | A phone swipe to archive: press, swipe, a throw at the finger's speed, the gap closes                                       |
 
 ### Product studies
 
 Recognizable products (Figma, Linear, Slack, Raycast, Finder, Spotify, Notion, Gmail, Google's apps, Office, Wikipedia, Telegram, iMessage): read `references/products.md` first. Borrow the interaction, not another product's identity.
 
-| Need | Example | What to learn |
-|---|---|---|
-| Design tool | `figma` | Canvas selection, a color picker, a second cursor |
-| Issue tracker | `linear` | Command menu and assignment |
-| Chat | `slack` | Messages, a reaction, a thread reply |
-| Launcher | `raycast` | Search and clipboard history over a blurred desktop |
-| Files | `finder`, `finder-glass` | Quick Look over a file list; a file moved into a folder; the same window in frosted glass |
-| Music, dark | `spotify` | A dark desktop app with album art |
-| Docs and editors | `notion`, `google-docs` | A slash command; a comment and its reply |
-| Email | `gmail` | Hover actions, archive, an undo toast |
-| Calendar, real app | `google-calendar` | Drag to create an event, the quick-create popup |
-| Office | `powerpoint`, `excel` | Slide editing; AutoSum and a chart |
-| Browser page | `wikipedia` | Search suggestions in a browser |
-| Phone conversations | `telegram`, `imessage` | Native chat apps on an iPhone |
+| Need                | Example                  | What to learn                                                                             |
+| ------------------- | ------------------------ | ----------------------------------------------------------------------------------------- |
+| Design tool         | `figma`                  | Canvas selection, a color picker, a second cursor                                         |
+| Issue tracker       | `linear`                 | Command menu and assignment                                                               |
+| Chat                | `slack`                  | Messages, a reaction, a thread reply                                                      |
+| Launcher            | `raycast`                | Search and clipboard history over a blurred desktop                                       |
+| Files               | `finder`, `finder-glass` | Quick Look over a file list; a file moved into a folder; the same window in frosted glass |
+| Music, dark         | `spotify`                | A dark desktop app with album art                                                         |
+| Docs and editors    | `notion`, `google-docs`  | A slash command; a comment and its reply                                                  |
+| Email               | `gmail`                  | Hover actions, archive, an undo toast                                                     |
+| Calendar, real app  | `google-calendar`        | Drag to create an event, the quick-create popup                                           |
+| Office              | `powerpoint`, `excel`    | Slide editing; AutoSum and a chart                                                        |
+| Browser page        | `wikipedia`              | Search suggestions in a browser                                                           |
+| Phone conversations | `telegram`, `imessage`   | Native chat apps on an iPhone                                                             |
 
 ### Specimen and reference sheets
 
 Catalogs of parts and grounds, described in `references/kit.md` (Specimen sheets). Look up a part here; compose from a gold example.
 
-| Need | Example | What to learn |
-|---|---|---|
-| Kit specimens | `chrome`, `phones`, `controls`, `parts`, `kit-extras` | Every frame and part |
-| Glass | `glass` | Frosted surfaces over a color field |
-| Backgrounds | `backgrounds` | One interface over twenty grounds; `references/backgrounds.md` |
-| Logos | `brand-marks` | Real marks, optically sized, on light and dark; `references/brands.md` |
-| A product's look | `looks` | Type, shape and color working together |
+| Need             | Example                                               | What to learn                                                          |
+| ---------------- | ----------------------------------------------------- | ---------------------------------------------------------------------- |
+| Kit specimens    | `chrome`, `phones`, `controls`, `parts`, `kit-extras` | Every frame and part                                                   |
+| Glass            | `glass`                                               | Frosted surfaces over a color field                                    |
+| Backgrounds      | `backgrounds`                                         | One interface over twenty grounds; `references/backgrounds.md`         |
+| Logos            | `brand-marks`                                         | Real marks, optically sized, on light and dark; `references/brands.md` |
+| A product's look | `looks`                                               | Type, shape and color working together                                 |
 
 ## The kit
 

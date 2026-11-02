@@ -114,21 +114,21 @@
 
 /* Narrow: the window moves in, a narrower sidebar, and the card's right edge
    stops 24px short of its line (90 + 120 = 210) */
-.ov .ss-stage[data-layout='compact'] .ov-win {
+.ov .ss-stage[data-layout="compact"] .ov-win {
   left: 90px;
   width: 280px;
 }
 
-.ov .ss-stage[data-layout='compact'] .ov-main {
+.ov .ss-stage[data-layout="compact"] .ov-main {
   padding: 18px 28px 18px 16px;
 }
 
-.ov .ss-stage[data-layout='compact'] .ov-card {
+.ov .ss-stage[data-layout="compact"] .ov-card {
   left: 16px;
   width: 170px;
   padding: 16px 14px 16px;
 }
 
-.ov .ss-stage[data-layout='compact'] .ov-price {
+.ov .ss-stage[data-layout="compact"] .ov-price {
   font-size: 19px;
 }

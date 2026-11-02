@@ -129,22 +129,24 @@
   position: absolute;
   top: 84px;
   right: var(--gutter);
-  box-shadow: var(--ss-shadow-satellite), 0 30px 50px -20px rgba(50, 50, 93, 0.35);
+  box-shadow:
+    var(--ss-shadow-satellite),
+    0 30px 50px -20px rgba(50, 50, 93, 0.35);
 }
 
 /* Narrow: the sidebar goes; the window runs off the right under the phone */
-.ps-section .ss-stage[data-layout='compact'] {
+.ps-section .ss-stage[data-layout="compact"] {
   --gutter: 16px;
 }
 
-.ps-section .ss-stage[data-layout='compact'] .ps-sidebar {
+.ps-section .ss-stage[data-layout="compact"] .ps-sidebar {
   display: none;
 }
 
-.ps-section .ss-stage[data-layout='compact'] .ps-window {
+.ps-section .ss-stage[data-layout="compact"] .ps-window {
   width: 420px;
 }
 
-.ps-section .ss-stage[data-layout='compact'] .ps-phone {
+.ps-section .ss-stage[data-layout="compact"] .ps-phone {
   top: 150px;
 }

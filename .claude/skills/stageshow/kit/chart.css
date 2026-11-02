@@ -40,7 +40,11 @@
     transform: scale(0.4);
     transform-box: fill-box;
     transform-origin: center;
-    transition: opacity 0.2s ease, transform 0.2s ease, cx 0.8s cubic-bezier(0.45, 0, 0.2, 1), cy 0.8s cubic-bezier(0.45, 0, 0.2, 1);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease,
+      cx 0.8s cubic-bezier(0.45, 0, 0.2, 1),
+      cy 0.8s cubic-bezier(0.45, 0, 0.2, 1);
   }
 
   .ss-chart[data-show] .ss-chart__dot {
@@ -50,7 +54,9 @@
 
   .ss-chart__bar {
     fill: var(--ss-accent);
-    transition: y 0.7s cubic-bezier(0.25, 0.8, 0.25, 1), height 0.7s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition:
+      y 0.7s cubic-bezier(0.25, 0.8, 0.25, 1),
+      height 0.7s cubic-bezier(0.25, 0.8, 0.25, 1);
   }
 
   .ss-chart[data-still] * {

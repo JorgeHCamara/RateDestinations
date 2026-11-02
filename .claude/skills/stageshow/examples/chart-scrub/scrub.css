@@ -12,7 +12,7 @@
   translate: -50% 0;
 }
 
-.cs .ss-stage[data-layout='compact'] .cs-win {
+.cs .ss-stage[data-layout="compact"] .cs-win {
   top: 16px;
   width: 326px;
 }
@@ -27,7 +27,7 @@
   background: var(--ss-surface);
 }
 
-.cs .ss-stage[data-layout='compact'] .cs-body {
+.cs .ss-stage[data-layout="compact"] .cs-body {
   padding: 22px 23px 60px;
 }
 

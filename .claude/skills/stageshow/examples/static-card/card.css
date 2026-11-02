@@ -24,7 +24,9 @@
   }
 
   /* Keep the selected customer whole in the narrow crop; only filler bleeds. */
-  & [data-layout="compact"] .sc-window { left: 68px; }
+  & [data-layout="compact"] .sc-window {
+    left: 68px;
+  }
 
   .sc-window .ss-window__body {
     display: flex;

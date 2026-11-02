@@ -105,7 +105,11 @@
   color: var(--ss-text-strong);
   font-size: 13px;
   font-weight: 500;
-  transition: background-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease, opacity 0.3s ease;
+  transition:
+    background-color 0.25s ease,
+    box-shadow 0.25s ease,
+    color 0.25s ease,
+    opacity 0.3s ease;
 }
 
 .aic-reply {
@@ -155,7 +159,10 @@
   height: 46px;
   padding: 0 14px 0 12px;
   border-radius: 9px;
-  transition: background-color 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
+  transition:
+    background-color 0.25s ease,
+    box-shadow 0.25s ease,
+    opacity 0.3s ease;
 }
 
 .aic-flight[data-on] {
@@ -214,7 +221,7 @@
    so nothing moves sideways; the fill eases from quiet to accent to done */
 .aic-book {
   display: grid;
-  grid-template-areas: 'stack';
+  grid-template-areas: "stack";
   place-items: center;
   height: 38px;
   margin-top: 4px;
@@ -223,7 +230,9 @@
   color: var(--ss-text);
   font-size: 13px;
   font-weight: 600;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .aic-book[data-ready] {
@@ -242,7 +251,9 @@
   gap: 8px;
   opacity: 0;
   filter: blur(2px);
-  transition: opacity 0.25s ease, filter 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    filter 0.25s ease;
   text-box: trim-both cap alphabetic;
 }
 
@@ -252,22 +263,30 @@
   transition-delay: 0.08s;
 }
 
-.aic-book .ss-check__ring { stroke: rgb(255 255 255 / 0.45); }
-.aic-book .ss-check__arc { stroke: #fff; }
-.aic-book .ss-check__fill { fill: #fff; }
-.aic-book .ss-check__tick { stroke: var(--ss-success); }
+.aic-book .ss-check__ring {
+  stroke: rgb(255 255 255 / 0.45);
+}
+.aic-book .ss-check__arc {
+  stroke: #fff;
+}
+.aic-book .ss-check__fill {
+  fill: #fff;
+}
+.aic-book .ss-check__tick {
+  stroke: var(--ss-success);
+}
 
 /* Narrow: a gutter each side, the window the stage's width */
-.aic .ss-stage[data-layout='compact'] .aic-win {
+.aic .ss-stage[data-layout="compact"] .aic-win {
   left: 16px;
   width: 326px;
   height: 600px;
 }
 
-.aic .ss-stage[data-layout='compact'] .aic-body {
+.aic .ss-stage[data-layout="compact"] .aic-body {
   padding-inline: 14px;
 }
 
-.aic .ss-stage[data-layout='compact'] .aic-choice {
+.aic .ss-stage[data-layout="compact"] .aic-choice {
   padding: 0 10px 0 8px;
 }

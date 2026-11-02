@@ -1,23 +1,23 @@
-import type { CSSProperties, HTMLAttributes, ReactNode } from 'react'
-import { Bar } from '../window'
-import './Row.css'
+import type { CSSProperties, HTMLAttributes, ReactNode } from "react";
+import { Bar } from "../window";
+import "./Row.css";
 
-export interface RowProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
+export interface RowProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {
   /** The disc on the left: an `Avatar`, an icon tile, a thumbnail. */
-  lead?: ReactNode
+  lead?: ReactNode;
   /** The first line: a name, a title. A `Text` or a `Bar`. */
-  title: ReactNode
+  title: ReactNode;
   /** The second line: a preview, a description. A `Text` or a `Bar`. */
-  subtitle?: ReactNode
+  subtitle?: ReactNode;
   /** Trailing detail on the first line: a time, a count, a badge. */
-  meta?: ReactNode
+  meta?: ReactNode;
   /** Preview lines under the subtitle: bar widths in px for placeholder (Mail's two-line preview: `[220, 150]`), or the real text. */
-  preview?: number[] | ReactNode
+  preview?: number[] | ReactNode;
   /** An unread dot hanging in the margin left of the lead; the row never moves. */
-  unread?: boolean
-  selected?: boolean
+  unread?: boolean;
+  selected?: boolean;
   /** Inset of the row's fill, in px. 12 by default; a dense list takes 8. */
-  pad?: number
+  pad?: number;
 }
 
 /**
@@ -33,15 +33,28 @@ export interface RowProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> 
  * More lines under the subtitle (preview bars) go inside `subtitle`. Selected and hovered
  * rows take an inset, rounded fill. Build lists out of it instead of by hand.
  */
-export function Row({ lead, title, subtitle, meta, preview, unread, selected, pad = 12, className, style, children, ...rest }: RowProps) {
+export function Row({
+  lead,
+  title,
+  subtitle,
+  meta,
+  preview,
+  unread,
+  selected,
+  pad = 12,
+  className,
+  style,
+  children,
+  ...rest
+}: RowProps) {
   return (
     <div
       {...rest}
-      className={`ss-row${className ? ` ${className}` : ''}`}
+      className={`ss-row${className ? ` ${className}` : ""}`}
       data-selected={selected || undefined}
       data-unread={unread || undefined}
-      data-lead={lead ? '' : undefined}
-      style={{ '--ss-row-pad': `${pad}px`, ...style } as CSSProperties}
+      data-lead={lead ? "" : undefined}
+      style={{ "--ss-row-pad": `${pad}px`, ...style } as CSSProperties}
     >
       {unread && <span className="ss-row__dot" aria-hidden />}
       {lead && <span className="ss-row__lead">{lead}</span>}
@@ -52,16 +65,19 @@ export function Row({ lead, title, subtitle, meta, preview, unread, selected, pa
         </span>
         {subtitle && <span className="ss-row__subtitle">{subtitle}</span>}
       </span>
-      {preview && (
-        Array.isArray(preview) && preview.every((w) => typeof w === 'number') ? (
+      {preview &&
+        (Array.isArray(preview) && preview.every((w) => typeof w === "number") ? (
           <span className="ss-row__preview" aria-hidden>
-            {preview.map((w, i) => <Bar key={i} w={w} h={6} tone={2} />)}
+            {preview.map((w, i) => (
+              <Bar key={i} w={w} h={6} tone={2} />
+            ))}
           </span>
         ) : (
-          <span className="ss-row__preview" data-text>{preview}</span>
-        )
-      )}
+          <span className="ss-row__preview" data-text>
+            {preview}
+          </span>
+        ))}
       {children}
     </div>
-  )
+  );
 }

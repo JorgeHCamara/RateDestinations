@@ -1,5 +1,5 @@
-import { Badge, Bar, Row, Stage, Text, Window } from '../../kit'
-import './overlap.css'
+import { Badge, Bar, Row, Stage, Text, Window } from "../../kit";
+import "./overlap.css";
 
 // Overlapping windows: a checkout card in front of the dashboard it reports
 // to. A still. The story is two views of one payment: the buyer's side in
@@ -22,21 +22,36 @@ import './overlap.css'
 // Real strings: the card's product, price and button; the table's title,
 // its top row and the badge. Everything else is placeholder.
 
-const SIDEBAR = 150
+const SIDEBAR = 150;
 
 export default function Overlap() {
   return (
-    <Stage width={640} height={400} compact={{ below: 600, width: 358, height: 400 }} className="ov">
+    <Stage
+      width={640}
+      height={400}
+      compact={{ below: 600, width: 358, height: 400 }}
+      className="ov"
+    >
       {(_s, _rect, layout) => {
-        const side = layout === 'compact' ? 120 : SIDEBAR
+        const side = layout === "compact" ? 120 : SIDEBAR;
         return (
           <>
-            <Window url="dashboard.northwind.co" className="ov-win" style={{ ['--ov-side' as string]: `${side}px` }}>
+            <Window
+              url="dashboard.northwind.co"
+              className="ov-win"
+              style={{ ["--ov-side" as string]: `${side}px` }}
+            >
               <div className="ov-app">
                 <aside className="ov-side">
                   <Bar w={22} h={22} r={6} tone={4} style={{ marginBottom: 14 }} />
                   {[64, 80, 56, 72, 60].map((w, i) => (
-                    <Bar key={i} w={layout === 'compact' ? w * 0.7 : w} h={8} r={4} tone={i === 1 ? 4 : 2} />
+                    <Bar
+                      key={i}
+                      w={layout === "compact" ? w * 0.7 : w}
+                      h={8}
+                      r={4}
+                      tone={i === 1 ? 4 : 2}
+                    />
                   ))}
                 </aside>
                 <main className="ov-main">
@@ -45,13 +60,23 @@ export default function Overlap() {
                     pad={0}
                     className="ov-row"
                     title={<Text className="ov-amount">$49.00</Text>}
-                    subtitle={<Text className="ov-who">{layout === 'compact' ? 'Pro plan' : 'Pro plan, maya@lumen.studio'}</Text>}
+                    subtitle={
+                      <Text className="ov-who">
+                        {layout === "compact" ? "Pro plan" : "Pro plan, maya@lumen.studio"}
+                      </Text>
+                    }
                   >
                     {/* Narrow, the shorter word keeps the amount whole */}
-                    <Badge tone="success">{layout === 'compact' ? 'Paid' : 'Succeeded'}</Badge>
+                    <Badge tone="success">{layout === "compact" ? "Paid" : "Succeeded"}</Badge>
                   </Row>
                   {[132, 108, 146, 96, 120].map((w, i) => (
-                    <Row key={i} pad={0} className="ov-row" title={<Bar w={52} h={8} r={4} tone={3} />} subtitle={<Bar w={w} h={6} r={3} tone={2} />}>
+                    <Row
+                      key={i}
+                      pad={0}
+                      className="ov-row"
+                      title={<Bar w={52} h={8} r={4} tone={3} />}
+                      subtitle={<Bar w={w} h={6} r={3} tone={2} />}
+                    >
                       <Bar w={58} h={16} r={8} tone={1} />
                     </Row>
                   ))}
@@ -71,8 +96,8 @@ export default function Overlap() {
               <span className="ov-pay">Subscribe</span>
             </section>
           </>
-        )
+        );
       }}
     </Stage>
-  )
+  );
 }

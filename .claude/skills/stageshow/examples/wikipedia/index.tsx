@@ -1,6 +1,6 @@
-import { useCallback, type ReactNode } from 'react'
-import { Popover, Stage, Swap, Window, type Act, type Layout } from '../../kit'
-import './wiki.css'
+import { useCallback, type ReactNode } from "react";
+import { Popover, Stage, Swap, Window, type Act, type Layout } from "../../kit";
+import "./wiki.css";
 
 // Wikipedia (Vector 2022) in a browser, for a docs page (800 wide). Story:
 // search as you go. The reader is on Mount Fuji, clicks into the search
@@ -16,92 +16,108 @@ import './wiki.css'
 // thumbnail for an article without an image, the "Search for pages
 // containing" footer), and the icons are Codex's own paths.
 
-type Page = 'fuji' | 'lake'
+type Page = "fuji" | "lake";
 type S = {
-  focus: boolean
-  q: string
-  menu: boolean
+  focus: boolean;
+  q: string;
+  menu: boolean;
   // Which result set each row shows, so the refine can ripple down the list
-  rows: number[]
+  rows: number[];
   // The field after navigating: the query fades and the placeholder returns
-  cleared: boolean
-  page: Page
-}
-const initial: S = { focus: false, q: '', menu: false, rows: [0, 0, 0, 0], cleared: false, page: 'fuji' }
+  cleared: boolean;
+  page: Page;
+};
+const initial: S = {
+  focus: false,
+  q: "",
+  menu: false,
+  rows: [0, 0, 0, 0],
+  cleared: false,
+  page: "fuji",
+};
 
-const REST = { wide: { x: 300, y: 470 }, compact: { x: 200, y: 470 } }
+const REST = { wide: { x: 300, y: 470 }, compact: { x: 200, y: 470 } };
 
-type Thumb = 'photo' | 'baikal' | 'tahoe' | 'victoria' | 'superior' | 'kaweah' | 'kawaupaka' | 'none'
-type Result = { title: string; desc: string; thumb: Thumb }
+type Thumb =
+  "photo" | "baikal" | "tahoe" | "victoria" | "superior" | "kaweah" | "kawaupaka" | "none";
+type Result = { title: string; desc: string; thumb: Thumb };
 
 // What Wikipedia suggests for "lake", then for "lake kaw" (October 2026).
 const RESULTS: Result[][] = [
   [
-    { title: 'Lake Baikal', desc: 'Freshwater rift lake in Russia', thumb: 'baikal' },
-    { title: 'Lake Tahoe', desc: 'Lake in California and Nevada, US', thumb: 'tahoe' },
-    { title: 'Lake Victoria', desc: 'African Great Lake', thumb: 'victoria' },
-    { title: 'Lake Superior', desc: 'Largest of the Great Lakes of North America', thumb: 'superior' },
+    { title: "Lake Baikal", desc: "Freshwater rift lake in Russia", thumb: "baikal" },
+    { title: "Lake Tahoe", desc: "Lake in California and Nevada, US", thumb: "tahoe" },
+    { title: "Lake Victoria", desc: "African Great Lake", thumb: "victoria" },
+    {
+      title: "Lake Superior",
+      desc: "Largest of the Great Lakes of North America",
+      thumb: "superior",
+    },
   ],
   [
-    { title: 'Lake Kawaguchi', desc: 'Lake in Yamanashi prefecture, Japan', thumb: 'photo' },
-    { title: 'Lake Kaweah', desc: 'Reservoir in Tulare County, California', thumb: 'kaweah' },
-    { title: 'Lake Kawaupaka', desc: 'Lake in New Zealand', thumb: 'kawaupaka' },
-    { title: 'The Lake (Kawabata novel)', desc: '1954 novel by Yasunari Kawabata', thumb: 'none' },
+    { title: "Lake Kawaguchi", desc: "Lake in Yamanashi prefecture, Japan", thumb: "photo" },
+    { title: "Lake Kaweah", desc: "Reservoir in Tulare County, California", thumb: "kaweah" },
+    { title: "Lake Kawaupaka", desc: "Lake in New Zealand", thumb: "kawaupaka" },
+    { title: "The Lake (Kawabata novel)", desc: "1954 novel by Yasunari Kawabata", thumb: "none" },
   ],
-]
+];
 
 // A person's typing: uneven, but the same every loop
-const RHYTHM = [1.1, 0.8, 1.3, 0.9, 1.6, 1, 0.75, 1.2]
+const RHYTHM = [1.1, 0.8, 1.3, 0.9, 1.6, 1, 0.75, 1.2];
 
 async function typeOn(a: Act<S>, from: string, to: string) {
   for (let i = from.length + 1; i <= to.length; i++) {
-    await a.set({ q: to.slice(0, i) })
-    await a.wait(105 * RHYTHM[i % RHYTHM.length])
+    await a.set({ q: to.slice(0, i) });
+    await a.wait(105 * RHYTHM[i % RHYTHM.length]);
   }
 }
 
 async function script(a: Act<S>) {
-  const rest = REST[a.layout]
-  await a.wait(900)
+  const rest = REST[a.layout];
+  await a.wait(900);
 
   // 1. Into the search field
-  a.mark('search')
-  await a.click({ at: 'field', x: 0.72, y: 0.55 })
-  await a.set({ focus: true })
-  await a.wait(350)
+  a.mark("search");
+  await a.click({ at: "field", x: 0.72, y: 0.55 });
+  await a.set({ focus: true });
+  await a.wait(350);
 
   // 2. "lake": suggestions drop under the field
-  await typeOn(a, '', 'lake')
-  await a.wait(140)
-  await a.set({ menu: true })
-  await a.wait(900)
+  await typeOn(a, "", "lake");
+  await a.wait(140);
+  await a.set({ menu: true });
+  await a.wait(900);
 
   // 3. "kaw": the list refines in place, top row first
-  a.mark('refine')
-  await typeOn(a, 'lake', 'lake kaw')
-  await a.wait(120)
-  await a.stagger([0, 1, 2, 3], (i) => a.set((s) => ({ rows: s.rows.map((r, j) => (j === i ? 1 : r)) })), 50)
-  await a.wait(900)
+  a.mark("refine");
+  await typeOn(a, "lake", "lake kaw");
+  await a.wait(120);
+  await a.stagger(
+    [0, 1, 2, 3],
+    (i) => a.set((s) => ({ rows: s.rows.map((r, j) => (j === i ? 1 : r)) })),
+    50,
+  );
+  await a.wait(900);
 
   // 4. Pick Lake Kawaguchi: the menu closes and the page becomes the lake
-  a.mark('pick')
-  await a.move({ at: 'result', x: 0.74, y: 0.3 })
-  await a.wait(250)
-  await a.click()
-  await a.set({ menu: false })
-  await a.wait(140)
-  await a.set({ page: 'lake', focus: false, cleared: true })
-  a.mark('lake')
-  await a.move({ x: rest.x + 40, y: rest.y - 20 })
-  await a.wait(2600)
+  a.mark("pick");
+  await a.move({ at: "result", x: 0.74, y: 0.3 });
+  await a.wait(250);
+  await a.click();
+  await a.set({ menu: false });
+  await a.wait(140);
+  await a.set({ page: "lake", focus: false, cleared: true });
+  a.mark("lake");
+  await a.move({ x: rest.x + 40, y: rest.y - 20 });
+  await a.wait(2600);
 
   // 5. Back to Mount Fuji, the way a reader would
-  a.mark('back')
-  await a.click('back')
-  await a.set({ page: 'fuji' })
-  await a.snap({ q: '', cleared: false, rows: [0, 0, 0, 0] }, 'field')
-  await a.move(rest)
-  await a.wait(700)
+  a.mark("back");
+  await a.click("back");
+  await a.set({ page: "fuji" });
+  await a.snap({ q: "", cleared: false, rows: [0, 0, 0, 0] }, "field");
+  await a.move(rest);
+  await a.wait(700);
 }
 
 export default function WikipediaSearch() {
@@ -111,7 +127,7 @@ export default function WikipediaSearch() {
       height={560}
       compact={{ below: 600, width: 400, height: 560 }}
       initial={initial}
-      poster={{ ...initial, focus: true, q: 'lake kaw', menu: true, rows: [1, 1, 1, 1] }}
+      poster={{ ...initial, focus: true, q: "lake kaw", menu: true, rows: [1, 1, 1, 1] }}
       script={script}
       fidelity="realistic"
       cursor={{ at: REST }}
@@ -119,44 +135,56 @@ export default function WikipediaSearch() {
     >
       {(s, _rect, layout) => <Scene s={s} layout={layout} />}
     </Stage>
-  )
+  );
 }
 
 function Scene({ s, layout }: { s: S; layout: Layout }) {
-  const compact = layout === 'compact'
+  const compact = layout === "compact";
   // The kit's browser chrome draws its back arrow without a target; name it
   // here so the script can aim at it (see the report: a kit gap).
   const nameBack = useCallback((el: HTMLSpanElement | null) => {
-    el?.closest('.ss-stage')?.querySelector('.ss-window__nav .ss-window__chev')?.setAttribute('data-target', 'back')
-  }, [])
+    el?.closest(".ss-stage")
+      ?.querySelector(".ss-window__nav .ss-window__chev")
+      ?.setAttribute("data-target", "back");
+  }, []);
   return (
-    <Window url={`en.wikipedia.org/wiki/${s.page === 'fuji' ? 'Mount_Fuji' : 'Lake_Kawaguchi'}`} nav className="wk-window">
+    <Window
+      url={`en.wikipedia.org/wiki/${s.page === "fuji" ? "Mount_Fuji" : "Lake_Kawaguchi"}`}
+      nav
+      className="wk-window"
+    >
       <span ref={nameBack} hidden />
       <div className="wk-page">
         <Header s={s} compact={compact} />
         <div className="wk-pages" data-crop>
-          <div className="wk-pg" data-show={s.page === 'fuji' || undefined}>
+          <div className="wk-pg" data-show={s.page === "fuji" || undefined}>
             <Fuji compact={compact} />
           </div>
-          <div className="wk-pg" data-show={s.page === 'lake' || undefined}>
+          <div className="wk-pg" data-show={s.page === "lake" || undefined}>
             <Lake compact={compact} />
           </div>
         </div>
       </div>
     </Window>
-  )
+  );
 }
 
 /* ---- Header and search ---- */
 
 function Header({ s, compact }: { s: S; compact: boolean }) {
-  const typed = s.q.length > 0 && !s.cleared
+  const typed = s.q.length > 0 && !s.cleared;
   return (
     <header className="wk-header">
       <CdxIcon name="menu" />
       <Logo compact={compact} />
       <div className="wk-search">
-        <div className="wk-field" data-target="field" data-cursor="ibeam" data-focus={s.focus || undefined} data-menu={s.menu || undefined}>
+        <div
+          className="wk-field"
+          data-target="field"
+          data-cursor="ibeam"
+          data-focus={s.focus || undefined}
+          data-menu={s.menu || undefined}
+        >
           <CdxIcon name="search" size={20} className="wk-field__icon" />
           <span className="wk-field__text">
             <span className="wk-ph" data-hide={typed || undefined}>
@@ -164,7 +192,11 @@ function Header({ s, compact }: { s: S; compact: boolean }) {
             </span>
             <span className="wk-q" data-show={typed || undefined} data-snap>
               {s.q}
-              <span className="wk-caret" data-on={(s.focus && !s.cleared) || undefined} data-typing={(s.q.length > 0 && s.q.length < 8) || undefined} />
+              <span
+                className="wk-caret"
+                data-on={(s.focus && !s.cleared) || undefined}
+                data-typing={(s.q.length > 0 && s.q.length < 8) || undefined}
+              />
             </span>
           </span>
         </div>
@@ -173,10 +205,15 @@ function Header({ s, compact }: { s: S; compact: boolean }) {
         <Popover show={s.menu} origin="top center" className="wk-menu">
           <div className="wk-menu__list">
             {s.rows.map((set, i) => {
-              const r = RESULTS[set][i]
+              const r = RESULTS[set][i];
               return (
-                <div key={i} className="wk-result" data-target={i === 0 ? 'result' : undefined} data-cursor="hand">
-                  <Swap id={set} duration={360} className="wk-swap" style={{ width: '100%' }}>
+                <div
+                  key={i}
+                  className="wk-result"
+                  data-target={i === 0 ? "result" : undefined}
+                  data-cursor="hand"
+                >
+                  <Swap id={set} duration={360} className="wk-swap" style={{ width: "100%" }}>
                     <span className="wk-result__inner">
                       <ThumbImage kind={r.thumb} />
                       <span className="wk-result__text">
@@ -186,7 +223,7 @@ function Header({ s, compact }: { s: S; compact: boolean }) {
                     </span>
                   </Swap>
                 </div>
-              )
+              );
             })}
           </div>
           <div className="wk-menu__footer">
@@ -203,7 +240,7 @@ function Header({ s, compact }: { s: S; compact: boolean }) {
       {!compact && <span className="wk-userlink">Log in</span>}
       <CdxIcon name="ellipsis" />
     </header>
-  )
+  );
 }
 
 /* ---- The two articles ---- */
@@ -237,7 +274,7 @@ function Titlebar({ title, langs, compact }: { title: string; langs: number; com
         </span>
       </nav>
     </>
-  )
+  );
 }
 
 function Fuji({ compact }: { compact: boolean }) {
@@ -252,33 +289,57 @@ function Fuji({ compact }: { compact: boolean }) {
             img="fuji"
             caption="Mount Fuji from Lake Kawaguchi"
             rows={[
-              ['Elevation', '3,776 m (12,388 ft)'],
-              ['Prominence', '3,776 m (12,388 ft)'],
-              ['Coordinates', <a className="wk-link" data-cursor="hand">35°21′N 138°43′E</a>],
-              ['Native name', '富士山'],
-              ['Country', 'Japan'],
+              ["Elevation", "3,776 m (12,388 ft)"],
+              ["Prominence", "3,776 m (12,388 ft)"],
+              [
+                "Coordinates",
+                <a className="wk-link" data-cursor="hand">
+                  35°21′N 138°43′E
+                </a>,
+              ],
+              ["Native name", "富士山"],
+              ["Country", "Japan"],
             ]}
           />
         )}
         <div className="wk-tagline">From Wikipedia, the free encyclopedia</div>
         {compact && <div className="wk-figure" data-img="fuji" />}
         <p data-cursor="ibeam">
-          <b>Mount Fuji</b> is an active <a className="wk-link" data-cursor="hand">stratovolcano</a> located on the Japanese island of{' '}
-          <a className="wk-link" data-cursor="hand">Honshu</a>, with a summit elevation of 3,776.24 m (12,389 ft). It is the highest
-          mountain in Japan, and the second-highest <a className="wk-link" data-cursor="hand">volcano</a> on any Asian island.
+          <b>Mount Fuji</b> is an active{" "}
+          <a className="wk-link" data-cursor="hand">
+            stratovolcano
+          </a>{" "}
+          located on the Japanese island of{" "}
+          <a className="wk-link" data-cursor="hand">
+            Honshu
+          </a>
+          , with a summit elevation of 3,776.24 m (12,389 ft). It is the highest mountain in Japan,
+          and the second-highest{" "}
+          <a className="wk-link" data-cursor="hand">
+            volcano
+          </a>{" "}
+          on any Asian island.
         </p>
         <p data-cursor="ibeam">
-          It is located about 100 km southwest of <a className="wk-link" data-cursor="hand">Tokyo</a>, from which it is visible on clear
-          days. It has an exceptionally symmetrical cone, which is covered in snow for about five months of the year.
+          It is located about 100 km southwest of{" "}
+          <a className="wk-link" data-cursor="hand">
+            Tokyo
+          </a>
+          , from which it is visible on clear days. It has an exceptionally symmetrical cone, which
+          is covered in snow for about five months of the year.
         </p>
         <div className="wk-h2">Etymology</div>
         <p data-cursor="ibeam">
-          The current <a className="wk-link" data-cursor="hand">kanji</a> for Mount Fuji, 富 and 士, mean wealth or abundant and a man of a
-          certain status respectively.
+          The current{" "}
+          <a className="wk-link" data-cursor="hand">
+            kanji
+          </a>{" "}
+          for Mount Fuji, 富 and 士, mean wealth or abundant and a man of a certain status
+          respectively.
         </p>
       </div>
     </>
-  )
+  );
 }
 
 function Lake({ compact }: { compact: boolean }) {
@@ -293,37 +354,74 @@ function Lake({ compact }: { compact: boolean }) {
             img="lake"
             caption="Lake Kawaguchi with Mount Fuji"
             rows={[
-              ['Location', <a className="wk-link" data-cursor="hand">Yamanashi Prefecture</a>],
-              ['Surface area', '6.13 km² (2.37 sq mi)'],
-              ['Max. depth', '15.2 m (50 ft)'],
-              ['Basin countries', 'Japan'],
-              ['Surface elevation', '833 m (2,733 ft)'],
+              [
+                "Location",
+                <a className="wk-link" data-cursor="hand">
+                  Yamanashi Prefecture
+                </a>,
+              ],
+              ["Surface area", "6.13 km² (2.37 sq mi)"],
+              ["Max. depth", "15.2 m (50 ft)"],
+              ["Basin countries", "Japan"],
+              ["Surface elevation", "833 m (2,733 ft)"],
             ]}
           />
         )}
         <div className="wk-tagline">From Wikipedia, the free encyclopedia</div>
         {compact && <div className="wk-figure" data-img="lake" />}
         <p data-cursor="ibeam">
-          <b>Lake Kawaguchi</b> (河口湖, <i>Kawaguchi-ko</i>) is located in the town of{' '}
-          <a className="wk-link" data-cursor="hand">Fujikawaguchiko</a> in southern <a className="wk-link" data-cursor="hand">Yamanashi Prefecture</a> near{' '}
-          <a className="wk-link" data-cursor="hand">Mount Fuji</a>, Japan. It is the second largest of the{' '}
-          <a className="wk-link" data-cursor="hand">Fuji Five Lakes</a> in terms of surface area.
+          <b>Lake Kawaguchi</b> (河口湖, <i>Kawaguchi-ko</i>) is located in the town of{" "}
+          <a className="wk-link" data-cursor="hand">
+            Fujikawaguchiko
+          </a>{" "}
+          in southern{" "}
+          <a className="wk-link" data-cursor="hand">
+            Yamanashi Prefecture
+          </a>{" "}
+          near{" "}
+          <a className="wk-link" data-cursor="hand">
+            Mount Fuji
+          </a>
+          , Japan. It is the second largest of the{" "}
+          <a className="wk-link" data-cursor="hand">
+            Fuji Five Lakes
+          </a>{" "}
+          in terms of surface area.
         </p>
         <p data-cursor="ibeam">
-          The lake is within the borders of the <a className="wk-link" data-cursor="hand">Fuji-Hakone-Izu National Park</a>, and has the
-          longest shoreline of any of the Fuji Five Lakes.
+          The lake is within the borders of the{" "}
+          <a className="wk-link" data-cursor="hand">
+            Fuji-Hakone-Izu National Park
+          </a>
+          , and has the longest shoreline of any of the Fuji Five Lakes.
         </p>
         <div className="wk-h2">History</div>
         <p data-cursor="ibeam">
-          The lake has no natural outlet, and flooding of settlements on its shores was a problem until a canal was
-          completed in 1914 to connect it to a tributary of the <a className="wk-link" data-cursor="hand">Sagami River</a>.
+          The lake has no natural outlet, and flooding of settlements on its shores was a problem
+          until a canal was completed in 1914 to connect it to a tributary of the{" "}
+          <a className="wk-link" data-cursor="hand">
+            Sagami River
+          </a>
+          .
         </p>
       </div>
     </>
-  )
+  );
 }
 
-function Infobox({ name, tone, img, caption, rows }: { name: string; tone: 'mountain' | 'water'; img: 'fuji' | 'lake'; caption: string; rows: [string, ReactNode][] }) {
+function Infobox({
+  name,
+  tone,
+  img,
+  caption,
+  rows,
+}: {
+  name: string;
+  tone: "mountain" | "water";
+  img: "fuji" | "lake";
+  caption: string;
+  rows: [string, ReactNode][];
+}) {
   return (
     <aside className="wk-infobox">
       <div className="wk-infobox__name" data-tone={tone}>
@@ -342,7 +440,7 @@ function Infobox({ name, tone, img, caption, rows }: { name: string; tone: 'moun
         </tbody>
       </table>
     </aside>
-  )
+  );
 }
 
 /* ---- Thumbnails ---- */
@@ -353,25 +451,34 @@ function Infobox({ name, tone, img, caption, rows }: { name: string; tone: 'moun
 // 40px read as their own photos. Kawaupaka's real thumbnail is black and
 // white, so its crop is too. The novel has Codex's placeholder, as an
 // article without an image does.
-const CROPS: Record<Exclude<Thumb, 'photo' | 'none'>, { img: 'lake' | 'fuji'; size: number; at: string; filter?: string }> = {
-  baikal: { img: 'lake', size: 320, at: '0% 46%', filter: 'saturate(0.75)' },
-  tahoe: { img: 'lake', size: 260, at: '100% 88%' },
-  victoria: { img: 'fuji', size: 360, at: '0% 30%', filter: 'brightness(1.1)' },
-  superior: { img: 'fuji', size: 460, at: '100% 100%' },
-  kaweah: { img: 'lake', size: 380, at: '92% 52%' },
-  kawaupaka: { img: 'fuji', size: 320, at: '100% 72%', filter: 'grayscale(1) contrast(1.1)' },
-}
+const CROPS: Record<
+  Exclude<Thumb, "photo" | "none">,
+  { img: "lake" | "fuji"; size: number; at: string; filter?: string }
+> = {
+  baikal: { img: "lake", size: 320, at: "0% 46%", filter: "saturate(0.75)" },
+  tahoe: { img: "lake", size: 260, at: "100% 88%" },
+  victoria: { img: "fuji", size: 360, at: "0% 30%", filter: "brightness(1.1)" },
+  superior: { img: "fuji", size: 460, at: "100% 100%" },
+  kaweah: { img: "lake", size: 380, at: "92% 52%" },
+  kawaupaka: { img: "fuji", size: 320, at: "100% 72%", filter: "grayscale(1) contrast(1.1)" },
+};
 
 function ThumbImage({ kind }: { kind: Thumb }) {
-  if (kind === 'photo') return <span className="wk-thumb" data-img="lake" />
-  if (kind === 'none')
+  if (kind === "photo") return <span className="wk-thumb" data-img="lake" />;
+  if (kind === "none")
     return (
       <span className="wk-thumb" data-empty>
         <CdxIcon name="image" size={20} />
       </span>
-    )
-  const c = CROPS[kind]
-  return <span className="wk-thumb" data-img={c.img} style={{ backgroundSize: `${c.size}% auto`, backgroundPosition: c.at, filter: c.filter }} />
+    );
+  const c = CROPS[kind];
+  return (
+    <span
+      className="wk-thumb"
+      data-img={c.img}
+      style={{ backgroundSize: `${c.size}% auto`, backgroundPosition: c.at, filter: c.filter }}
+    />
+  );
 }
 
 /* ---- Logo and icons ---- */
@@ -396,13 +503,15 @@ function Logo({ compact }: { compact: boolean }) {
         </div>
       )}
     </div>
-  )
+  );
 }
 
 // Codex, Wikimedia's icon set (MIT), at its native 20px grid
 const CDX: Record<string, ReactNode> = {
   menu: <path d="M1 3h18v2H1zm0 6h18v2H1zm0 6h18v2H1z" />,
-  search: <path d="M8 1a7 7 0 015.605 11.191l5.102 5.102-1.414 1.414-5.102-5.102A7 7 0 118 1m0 2a5 5 0 100 10A5 5 0 008 3" />,
+  search: (
+    <path d="M8 1a7 7 0 015.605 11.191l5.102 5.102-1.414 1.414-5.102-5.102A7 7 0 118 1m0 2a5 5 0 100 10A5 5 0 008 3" />
+  ),
   ellipsis: <path d="M4 11.5H1v-3h3zm7.5 0h-3v-3h3zm7.5 0h-3v-3h3z" />,
   listBullet: <path d="M1 3h2v2H1zm0 6h2v2H1zm0 6h2v2H1zM5 3h14v2H5zm0 6h14v2H5zm0 6h14v2H5z" />,
   expand: <path d="m16.7 8-6 6H9.3l-6-6 1.4-1.4 5.3 5.3 5.3-5.3z" />,
@@ -416,13 +525,30 @@ const CDX: Record<string, ReactNode> = {
       <circle cx="6.5" cy="6.5" r="1.5" />
     </>
   ),
-  articleSearch: <path d="M18 20H2V0h16zM4 18h10.969l-3.343-4.347a4 4 0 111.565-1.244L16 16.06V2H4zm6-10a2 2 0 100 4 2 2 0 000-4" />,
-}
+  articleSearch: (
+    <path d="M18 20H2V0h16zM4 18h10.969l-3.343-4.347a4 4 0 111.565-1.244L16 16.06V2H4zm6-10a2 2 0 100 4 2 2 0 000-4" />
+  ),
+};
 
-function CdxIcon({ name, size = 20, className }: { name: string; size?: number; className?: string }) {
+function CdxIcon({
+  name,
+  size = 20,
+  className,
+}: {
+  name: string;
+  size?: number;
+  className?: string;
+}) {
   return (
-    <svg className={`wk-icon${className ? ` ${className}` : ''}`} width={size} height={size} viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+    <svg
+      className={`wk-icon${className ? ` ${className}` : ""}`}
+      width={size}
+      height={size}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      aria-hidden
+    >
       {CDX[name]}
     </svg>
-  )
+  );
 }

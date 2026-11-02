@@ -70,17 +70,24 @@
 
     /* Depth */
     --ss-shadow-window: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.08);
-    --ss-shadow-float: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.12), 0 12px 32px rgba(0, 0, 0, 0.08);
+    --ss-shadow-float:
+      0 0 0 1px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.12), 0 12px 32px rgba(0, 0, 0, 0.08);
     --ss-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04);
     /* Framing depth: the hero window on the stage, satellites over the hero */
     /* The ring gives every edge a line: the drop falls downward, so the top and
        a light sidebar on a light ground would otherwise vanish */
-    --ss-shadow-hero: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 30px 60px -12px rgba(50, 50, 93, 0.25), 0 18px 36px -18px rgba(0, 0, 0, 0.3);
+    --ss-shadow-hero:
+      0 0 0 1px rgba(0, 0, 0, 0.06), 0 30px 60px -12px rgba(50, 50, 93, 0.25),
+      0 18px 36px -18px rgba(0, 0, 0, 0.3);
     /* Something picked up and carried (a dragged card) */
-    --ss-shadow-lift: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 12px 28px -6px rgba(50, 50, 93, 0.28), 0 6px 12px -6px rgba(0, 0, 0, 0.16);
+    --ss-shadow-lift:
+      0 0 0 1px rgba(0, 0, 0, 0.04), 0 12px 28px -6px rgba(50, 50, 93, 0.28),
+      0 6px 12px -6px rgba(0, 0, 0, 0.16);
     /* Tight on purpose: a wide blur over a white window reads as a gray smear */
     --ss-raised: #fff;
-    --ss-shadow-satellite: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 14px 32px -8px rgba(50, 50, 93, 0.24), 0 4px 10px -4px rgba(0, 0, 0, 0.1);
+    --ss-shadow-satellite:
+      0 0 0 1px rgba(0, 0, 0, 0.04), 0 14px 32px -8px rgba(50, 50, 93, 0.24),
+      0 4px 10px -4px rgba(0, 0, 0, 0.1);
     /* A small window resting on the stage's ground, not over another window:
        a hairline and a long, faint fall. The satellite's tight, dark contact
        shadow reads harsh under a small window on open ground */
@@ -138,18 +145,42 @@
     /* A tile: set --ss-ground-radius to 0 for one that runs to the page's edges */
     border-radius: var(--ss-ground-radius, 20px);
     background:
-      radial-gradient(60% 75% at 8% 4%, color-mix(in srgb, var(--ss-orb-1) 85%, transparent), transparent 70%),
-      radial-gradient(55% 70% at 96% 92%, color-mix(in srgb, var(--ss-orb-2) 80%, transparent), transparent 70%),
-      radial-gradient(45% 55% at 78% 8%, color-mix(in srgb, var(--ss-orb-3) 55%, transparent), transparent 70%),
+      radial-gradient(
+        60% 75% at 8% 4%,
+        color-mix(in srgb, var(--ss-orb-1) 85%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        55% 70% at 96% 92%,
+        color-mix(in srgb, var(--ss-orb-2) 80%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        45% 55% at 78% 8%,
+        color-mix(in srgb, var(--ss-orb-3) 55%, transparent),
+        transparent 70%
+      ),
       var(--ss-canvas);
     pointer-events: none;
   }
 
   .ss-stage[data-theme="dark"] .ss-ground {
     background:
-      radial-gradient(60% 75% at 8% 4%, color-mix(in srgb, var(--ss-orb-1) 30%, transparent), transparent 70%),
-      radial-gradient(55% 70% at 96% 92%, color-mix(in srgb, var(--ss-orb-2) 24%, transparent), transparent 70%),
-      radial-gradient(45% 55% at 78% 8%, color-mix(in srgb, var(--ss-orb-3) 18%, transparent), transparent 70%),
+      radial-gradient(
+        60% 75% at 8% 4%,
+        color-mix(in srgb, var(--ss-orb-1) 30%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        55% 70% at 96% 92%,
+        color-mix(in srgb, var(--ss-orb-2) 24%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        45% 55% at 78% 8%,
+        color-mix(in srgb, var(--ss-orb-3) 18%, transparent),
+        transparent 70%
+      ),
       var(--ss-canvas);
   }
 
@@ -183,12 +214,16 @@
     --ss-warning-text: #fbbf24;
     --ss-shadow-lift: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 12px 28px -6px rgba(0, 0, 0, 0.6);
     --ss-shadow-window: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 4px 16px rgba(0, 0, 0, 0.4);
-    --ss-shadow-float: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 4px 16px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.3);
+    --ss-shadow-float:
+      0 0 0 1px rgba(255, 255, 255, 0.1), 0 4px 16px rgba(0, 0, 0, 0.4),
+      0 12px 32px rgba(0, 0, 0, 0.3);
     --ss-shadow-card: 0 0 0 1px rgba(255, 255, 255, 0.05);
     --ss-shadow-hero: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 30px 60px -12px rgba(0, 0, 0, 0.6);
     /* On dark, depth comes mostly from a lighter surface: put satellites on
        --ss-raised. A wide blur on a dark window barely registers. */
-    --ss-shadow-satellite: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 14px 32px -8px rgba(0, 0, 0, 0.7), 0 4px 10px -4px rgba(0, 0, 0, 0.5);
+    --ss-shadow-satellite:
+      0 0 0 1px rgba(255, 255, 255, 0.1), 0 14px 32px -8px rgba(0, 0, 0, 0.7),
+      0 4px 10px -4px rgba(0, 0, 0, 0.5);
     --ss-shadow-ground: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 24px 48px -24px rgba(0, 0, 0, 0.6);
     --ss-raised: #26262a;
   }
@@ -255,15 +290,28 @@
     --ss-line: rgba(255, 255, 255, 0.65);
     --ss-line-faint: rgba(255, 255, 255, 0.45);
     --ss-well: #ebe9f5;
-    --ss-shadow-window: inset 0 0 0 1px rgba(255, 255, 255, 0.75), 0 20px 50px -14px rgba(40, 40, 90, 0.28);
-    --ss-shadow-hero: inset 0 0 0 1px rgba(255, 255, 255, 0.75), 0 30px 60px -16px rgba(40, 40, 90, 0.3);
-    --ss-shadow-satellite: inset 0 0 0 1px rgba(255, 255, 255, 0.85), 0 16px 36px -10px rgba(40, 40, 90, 0.32);
-    --ss-shadow-float: inset 0 0 0 1px rgba(255, 255, 255, 0.85), 0 12px 32px -8px rgba(40, 40, 90, 0.28);
-    --ss-shadow-ground: inset 0 0 0 1px rgba(255, 255, 255, 0.85), 0 24px 48px -24px rgba(40, 40, 90, 0.24);
+    --ss-shadow-window:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.75), 0 20px 50px -14px rgba(40, 40, 90, 0.28);
+    --ss-shadow-hero:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.75), 0 30px 60px -16px rgba(40, 40, 90, 0.3);
+    --ss-shadow-satellite:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.85), 0 16px 36px -10px rgba(40, 40, 90, 0.32);
+    --ss-shadow-float:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.85), 0 12px 32px -8px rgba(40, 40, 90, 0.28);
+    --ss-shadow-ground:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.85), 0 24px 48px -24px rgba(40, 40, 90, 0.24);
     --ss-shadow-card: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
     background:
-      radial-gradient(55% 65% at 12% 18%, color-mix(in srgb, var(--ss-accent) 42%, transparent), transparent 70%),
-      radial-gradient(50% 60% at 88% 28%, color-mix(in srgb, var(--ss-accent-2) 38%, transparent), transparent 70%),
+      radial-gradient(
+        55% 65% at 12% 18%,
+        color-mix(in srgb, var(--ss-accent) 42%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        50% 60% at 88% 28%,
+        color-mix(in srgb, var(--ss-accent-2) 38%, transparent),
+        transparent 70%
+      ),
       radial-gradient(60% 55% at 58% 100%, rgba(255, 168, 120, 0.42), transparent 70%),
       var(--ss-well);
   }
@@ -278,7 +326,11 @@
   /* Cool grays (Stage greys="cool"): the canvas and well lose their warmth,
      for a scene that wants one cool family (macOS, a blue ground). Light
      theme only; dark, blueprint and glass have their own grounds */
-  .ss-stage[data-greys="cool"]:not([data-theme="dark"], [data-theme="blueprint"], [data-theme="glass"]) {
+  .ss-stage[data-greys="cool"]:not(
+      [data-theme="dark"],
+      [data-theme="blueprint"],
+      [data-theme="glass"]
+    ) {
     --ss-canvas: #f4f5f8;
     --ss-well: #eceef2;
   }
@@ -318,9 +370,13 @@
 
   /* Edge fades. A crop must explain itself: content fades into the page
      instead of being sliced. Length via --ss-fade. */
-  .ss-fade-b { mask-image: linear-gradient(to bottom, #000 calc(100% - var(--ss-fade, 64px)), transparent); }
+  .ss-fade-b {
+    mask-image: linear-gradient(to bottom, #000 calc(100% - var(--ss-fade, 64px)), transparent);
+  }
 
-  .ss-fade-r { mask-image: linear-gradient(to right, #000 calc(100% - var(--ss-fade, 64px)), transparent); }
+  .ss-fade-r {
+    mask-image: linear-gradient(to right, #000 calc(100% - var(--ss-fade, 64px)), transparent);
+  }
 
   .ss-fade-br {
     mask-image:
@@ -348,11 +404,17 @@
   }
 
   @keyframes ss-spin {
-    to { transform: rotate(1turn); }
+    to {
+      transform: rotate(1turn);
+    }
   }
 
   @keyframes ss-fade-in {
-    from { opacity: 0; filter: blur(2px); transform: translateY(3px); }
+    from {
+      opacity: 0;
+      filter: blur(2px);
+      transform: translateY(3px);
+    }
   }
 
   /* A still (reduced motion, or no script) is the poster, settled: nothing in
@@ -414,7 +476,35 @@
    every demo is designed against. A host that styles prose through a class
    (.article p) out-ranks this: exclude stages there with
    :not(:where(.ss-stage *)). */
-:where(.ss-stage) :is(p, h1, h2, h3, h4, h5, h6, ul, ol, li, dl, dt, dd, a, figure, figcaption, blockquote, pre, code, hr, table, th, td, button, input, label):not(html):not(body) {
+:where(.ss-stage)
+  :is(
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    ul,
+    ol,
+    li,
+    dl,
+    dt,
+    dd,
+    a,
+    figure,
+    figcaption,
+    blockquote,
+    pre,
+    code,
+    hr,
+    table,
+    th,
+    td,
+    button,
+    input,
+    label
+  ):not(html):not(body) {
   all: revert;
 }
 
@@ -443,6 +533,7 @@
 
 /* What a Fly or an Expand carries stays inside it, so its own max-width has
    to beat the guard above, which a layered rule can't: one type more */
-:where(.ss-stage :is(.ss-fly__lift, .ss-expand__face)) > :is(svg, img):not(html):not(body):not(head) {
+:where(.ss-stage :is(.ss-fly__lift, .ss-expand__face))
+  > :is(svg, img):not(html):not(body):not(head) {
   max-width: 100%;
 }

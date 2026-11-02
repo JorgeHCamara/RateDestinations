@@ -1,6 +1,6 @@
-import { RotateCw } from 'lucide-react'
-import { Avatar, Badge, Bar, Stage, Window, type Act } from '../../kit'
-import './loading.css'
+import { RotateCw } from "lucide-react";
+import { Avatar, Badge, Bar, Stage, Window, type Act } from "../../kit";
+import "./loading.css";
 
 // Loading to content: a list of orders arrives into its own skeleton. Beats:
 // the skeleton holds a moment, the rows resolve top to bottom, the list
@@ -24,43 +24,62 @@ import './loading.css'
 //
 // Real strings: the title, the column heads, every resolved row.
 
-type S = { ready: boolean; spin: number }
+type S = { ready: boolean; spin: number };
 
 const ROWS = [
-  { who: 'Maya Chen', what: 'Pro, annual', amount: '$588.00', status: 'Paid' },
-  { who: 'Jon Park', what: 'Team, monthly', amount: '$99.00', status: 'Paid' },
-  { who: 'Ana Ruiz', what: 'Pro, monthly', amount: '$49.00', status: 'Refunded' },
-  { who: 'Leo Sato', what: 'Team, annual', amount: '$1,188.00', status: 'Paid' },
-]
+  { who: "Maya Chen", what: "Pro, annual", amount: "$588.00", status: "Paid" },
+  { who: "Jon Park", what: "Team, monthly", amount: "$99.00", status: "Paid" },
+  { who: "Ana Ruiz", what: "Pro, monthly", amount: "$49.00", status: "Refunded" },
+  { who: "Leo Sato", what: "Team, annual", amount: "$1,188.00", status: "Paid" },
+];
 // Each bar about its words' width
-const W = [[74, 70], [60, 82], [64, 74], [58, 76]]
-const AW = [52, 44, 40, 60]
-const BW = [42, 42, 62, 42]
+const W = [
+  [74, 70],
+  [60, 82],
+  [64, 74],
+  [58, 76],
+];
+const AW = [52, 44, 40, 60];
+const BW = [42, 42, 62, 42];
 
 async function script(a: Act<S>) {
-  await a.wait(1100)
-  a.mark('resolve')
-  a.put({ ready: true })
-  await a.wait(2600)
-  a.mark('refresh')
-  await a.move('refresh')
-  await a.wait(150)
-  await a.click('refresh')
-  a.put({ ready: false, spin: 1 })
-  await a.wait(1000)
-  a.put({ spin: 0 })
-  await a.move({ at: 'refresh', x: 3, y: 6 }, { duration: 700 })
+  await a.wait(1100);
+  a.mark("resolve");
+  a.put({ ready: true });
+  await a.wait(2600);
+  a.mark("refresh");
+  await a.move("refresh");
+  await a.wait(150);
+  await a.click("refresh");
+  a.put({ ready: false, spin: 1 });
+  await a.wait(1000);
+  a.put({ spin: 0 });
+  await a.move({ at: "refresh", x: 3, y: 6 }, { duration: 700 });
 }
 
 export default function Loading() {
   return (
-    <Stage<S> width={600} height={400} compact={{ below: 600, width: 358, height: 400 }} initial={{ ready: false, spin: 0 }} poster={{ ready: true, spin: 0 }} script={script} cursor={{ at: { x: 520, y: 370 } }} className="ld">
+    <Stage<S>
+      width={600}
+      height={400}
+      compact={{ below: 600, width: 358, height: 400 }}
+      initial={{ ready: false, spin: 0 }}
+      poster={{ ready: true, spin: 0 }}
+      script={script}
+      cursor={{ at: { x: 520, y: 370 } }}
+      className="ld"
+    >
       {(s) => (
         <Window url="dashboard.tally.com/orders" className="ld-win">
           <div className="ld-body">
             <header className="ld-head">
               <div className="ld-title">Recent orders</div>
-              <span className="ld-refresh" data-target="refresh" data-cursor="hand" data-spin={s.spin || undefined}>
+              <span
+                className="ld-refresh"
+                data-target="refresh"
+                data-cursor="hand"
+                data-spin={s.spin || undefined}
+              >
                 <RotateCw size={14} strokeWidth={2} />
               </span>
             </header>
@@ -70,7 +89,12 @@ export default function Loading() {
               <span>Status</span>
             </div>
             {ROWS.map((r, i) => (
-              <div key={r.who} className="ld-row" data-ready={s.ready || undefined} style={{ ['--i' as string]: i }}>
+              <div
+                key={r.who}
+                className="ld-row"
+                data-ready={s.ready || undefined}
+                style={{ ["--i" as string]: i }}
+              >
                 <span className="ld-who">
                   <span className="ld-slot ld-slot--av">
                     <Bar w={28} h={28} r={14} tone={2} className="ld-sk" />
@@ -94,7 +118,7 @@ export default function Loading() {
                 <span className="ld-slot">
                   <Bar w={BW[i]!} h={20} r={10} tone={2} className="ld-sk" />
                   <span className="ld-real">
-                    <Badge tone={r.status === 'Paid' ? 'success' : 'neutral'}>{r.status}</Badge>
+                    <Badge tone={r.status === "Paid" ? "success" : "neutral"}>{r.status}</Badge>
                   </span>
                 </span>
               </div>
@@ -103,5 +127,5 @@ export default function Loading() {
         </Window>
       )}
     </Stage>
-  )
+  );
 }
