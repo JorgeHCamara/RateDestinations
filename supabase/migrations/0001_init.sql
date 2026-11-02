@@ -415,7 +415,8 @@ create or replace function claim_city_import(p_city_id bigint, stale_after inter
 returns boolean language plpgsql security definer set search_path = public as $$
 declare claimed integer;
 begin
-  update cities set import_status = 'pending', import_error = null
+  -- imported_at doubles as the claim time while pending, so a stuck claim expires after 15 minutes
+  update cities set import_status = 'pending', import_error = null, imported_at = now()
   where id = p_city_id
     and (
       import_status in ('none', 'failed')
