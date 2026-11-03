@@ -148,8 +148,10 @@ async function CityGuide({ params }: { params: Props["params"] }) {
               <aside className="bg-surface text-muted-foreground rounded-xl border p-4 text-sm leading-relaxed">
                 <p className="text-foreground font-medium">About this guide</p>
                 <p className="mt-1">
-                  Before anyone rates a place, its score is an estimate based on how well documented
-                  and established it is. Community ratings take over as they come in.
+                  Places nobody has rated yet show no score, and lists put the best-known first.
+                  Once people rate a place, its score is the average of what they gave. Lists also
+                  weigh how many ratings a place has, so a place with many good ratings ranks above
+                  one with a single perfect score.
                 </p>
               </aside>
             </>
@@ -263,7 +265,7 @@ function pinsFromGuide(guide: Awaited<ReturnType<typeof getCityGuide>>): MapPinI
       category: p.category,
       lat: p.lat,
       lng: p.lng,
-      score: p.blended_score,
+      score: p.user_avg,
       count: p.user_count,
       warning: true,
     });
@@ -278,7 +280,7 @@ function pinsFromGuide(guide: Awaited<ReturnType<typeof getCityGuide>>): MapPinI
         category: p.category,
         lat: p.lat,
         lng: p.lng,
-        score: p.blended_score,
+        score: p.user_avg,
         count: p.user_count,
         warning: false,
       });

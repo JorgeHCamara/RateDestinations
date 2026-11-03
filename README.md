@@ -37,14 +37,21 @@ Tailwind v4 + shadcn/ui, MapLibre with OpenFreeMap tiles. Deploys on Vercel.
   logo). Website fetches refuse private addresses. A website that describes itself as an adult
   venue gets the place flagged. Looked up on first hover and by the scheduled workflow for the
   places guides show first; kept 30 days. Places without a photo show their category icon.
-- **Scores** blend community ratings with a prior (an external rating when there is one,
-  otherwise prominence): `w = n / (n + 10)`, `score = w·user_avg + (1 − w)·prior`. One rating
-  barely moves a place; thirty dominate it. The same formula lives in `src/lib/scoring.ts` and in
-  the SQL functions (`blend_score`, `place_prior`), with tests asserting they agree.
+- **Scores** show what people actually gave. A place nobody has rated shows "Not rated", never an
+  estimate; once rated, its score is the average of its ratings, with the count. A city's score is
+  the average of its ratings too (each dimension's average, safety and cleanliness weighted 1.5×).
+- **Ranking** (order only, never shown) blends community ratings with a prior from prominence:
+  `w = n / (n + 10)`, `rank score = w·user_avg + (1 − w)·prior`, so lists start with the
+  best-known places and a place with many good ratings ranks above one with a single perfect score. The same formula lives
+  in `src/lib/scoring.ts` and the SQL functions (`blend_score`, `place_prior`), with tests
+  asserting they agree.
 - **The bad is a feature.** Travellers rate nine city dimensions (safety and cleanliness weigh
   1.5×) and tag places as dirty, unsafe, a scam, overpriced… Warnings get their own section.
-- **Google Places** is optional (`GOOGLE_PLACES_ENABLED=true`). It only supplies the prior and
-  is refreshed within Google's 30-day caching terms (`src/lib/providers/ratings`).
+- **Google Places: do not enable** (`GOOGLE_PLACES_ENABLED`, `src/lib/providers/ratings`). It
+  feeds Google ratings into our ranking, and Google's terms forbid mixing its content with other
+  sources, building content from it, and showing its place content on or near a non-Google map
+  (our maps are OpenFreeMap). Google ratings could only be shown separately, attributed to Google,
+  with Google Maps on those pages.
 
 ## Project layout
 

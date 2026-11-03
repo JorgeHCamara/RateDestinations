@@ -56,11 +56,11 @@ export default function HomePage() {
         <div className="grid gap-4 sm:grid-cols-3">
           <Card
             title="Every city, day one"
-            body="Each guide starts from open map data. Notable, well-documented places rank higher until people weigh in."
+            body="Each guide starts from open map data, best-known places first. No made-up numbers: a place gets a score only once people rate it."
           />
           <Card
             title="Locals and visitors take over"
-            body="Scores blend community ratings with that starting point. With a handful of ratings the community dominates; one grumpy review can't sink a place. Each city shows whether its locals or its visitors like it more."
+            body="A score is the average of what people actually gave, shown with how many ratings it's based on. Lists weigh that number too: many good ratings beat a single perfect one. Each city shows whether its locals or its visitors like it more."
           />
           <Card
             title="The bad is a feature"

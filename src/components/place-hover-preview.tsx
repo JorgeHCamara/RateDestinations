@@ -28,7 +28,7 @@ export type PreviewPlace = {
   name: string;
   category: PlaceCategory;
   subcategory: string | null;
-  blended_score: number;
+  user_avg: number | null;
   user_count: number;
   warning_count: number;
   address?: string | null;
@@ -65,7 +65,7 @@ export function PlaceHoverPreview({
         <div className="space-y-1.5 p-3">
           <div className="flex items-start justify-between gap-3">
             <p className="leading-snug font-medium">{place.name}</p>
-            <ScorePill score={place.blended_score} count={place.user_count} />
+            <ScorePill score={place.user_avg} count={place.user_count} />
           </div>
           <p className="text-muted-foreground text-xs">
             {place.subcategory ?? CATEGORY_META[place.category].label}

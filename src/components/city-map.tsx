@@ -16,7 +16,8 @@ export type MapPin = {
   category: PlaceCategory;
   lat: number;
   lng: number;
-  score: number;
+  /** The average of what people gave (1–5); null until rated. */
+  score: number | null;
   count: number;
   warning: boolean;
 };
@@ -100,8 +101,11 @@ export function CityMap({
                 {selected.name}
               </Link>
               <p className="text-muted-foreground text-xs">
-                {CATEGORY_META[selected.category].label} · {toTenScale(selected.score).toFixed(1)}
-                {selected.count === 0 ? " est." : ` (${selected.count})`}
+                {CATEGORY_META[selected.category].label} ·{" "}
+                {selected.count && selected.score !== null
+                  ? toTenScale(selected.score).toFixed(1)
+                  : "Not rated"}
+                {selected.count ? ` (${selected.count})` : ""}
               </p>
             </div>
           </Popup>

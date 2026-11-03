@@ -34,9 +34,9 @@ export default function TermsPage() {
       <h2>The information on the site</h2>
       <p>
         Scores and warnings come from the people who rate on the site, locals and travellers, and
-        from open map data (OpenStreetMap and Overture Maps). They are opinions and estimates, not
-        guarantees. Places change, close or move, so check before you rely on anything here,
-        especially for safety.
+        from open map data (OpenStreetMap and Overture Maps). They are opinions, not guarantees.
+        Places change, close or move, so check before you rely on anything here, especially for
+        safety.
       </p>
 
       <h2>No warranty</h2>

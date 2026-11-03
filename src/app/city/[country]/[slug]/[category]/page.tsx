@@ -62,7 +62,8 @@ async function CategoryList({ params }: { params: Props["params"] }) {
         {meta.plural} in {city.name}
       </h1>
       <p className="text-muted-foreground mt-1 text-sm">
-        {places.length} places, best first. Estimates (est.) become community scores as people rate.
+        {places.length} places. Rated places are ranked by what people gave them; places nobody has
+        rated yet follow, best-known first.
       </p>
       <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {places.map((p) => (

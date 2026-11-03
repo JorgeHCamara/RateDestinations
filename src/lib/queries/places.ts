@@ -92,6 +92,7 @@ export type NearbyPlace = {
   name: string;
   category: PlaceCategory;
   blended_score: number;
+  user_avg: number | null;
   user_count: number;
   distance_m: number;
 };
@@ -101,7 +102,7 @@ export async function getNearbyPlaces(placeId: number, limit = 6): Promise<Nearb
   cacheLife("days");
   cacheTag(`place:${placeId}`);
   return query<NearbyPlace>(
-    `select q.id, q.name, q.category, s.blended_score, s.user_count,
+    `select q.id, q.name, q.category, s.blended_score, s.user_avg, s.user_count,
             st_distance(q.location, p.location)::int as distance_m
      from places p
      join places q on q.city_id = p.city_id and q.id <> p.id

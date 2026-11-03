@@ -2,8 +2,10 @@
  * Rating blend — the single source of truth for how RateDestinations turns ratings into a score.
  * The SQL functions blend_score() / place_prior() in supabase/migrations mirror this; keep in sync.
  *
- * Bayesian shrinkage: a place with few platform ratings leans on a prior (an external rating
- * when we have one, otherwise a prominence-based default). As the community rates it, the
+ * What is shown is never this blend: a place or city shows the plain average of its ratings, or
+ * "Not rated" (components/score.tsx). The blend only orders lists: a place with few platform
+ * ratings leans on a prior (a prominence-based default), so lists start with the best-known
+ * places and many good ratings outrank a single perfect one. As the community rates it, the
  * community takes over automatically:  w = n / (n + K).
  */
 export const K = 10;

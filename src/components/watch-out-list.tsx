@@ -41,7 +41,7 @@ export function WatchOutList({ places, tags }: { places: WatchOutPlace[]; tags: 
                     : `${p.warning_count} low rating${p.warning_count > 1 ? "s" : ""}`}
                 </span>
               </span>
-              <ScorePill score={p.blended_score} count={p.user_count} />
+              <ScorePill score={p.user_avg} count={p.user_count} />
             </Link>
           </li>
         );

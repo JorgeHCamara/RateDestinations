@@ -42,7 +42,7 @@ export function PlaceCard({
             )}
           </span>
         </span>
-        <ScorePill score={place.blended_score} count={place.user_count} />
+        <ScorePill score={place.user_avg} count={place.user_count} />
       </Link>
     </PlaceHoverPreview>
   );
