@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { rateCity, type RatingActionState } from "@/app/actions/ratings";
+import { DimensionInfo } from "@/components/dimension-info";
 import { Stars } from "@/components/stars";
 import { Button } from "@/components/ui/button";
 import { CITY_DIMENSIONS, DIMENSION_META, type CityDimension } from "@/lib/dimensions";
@@ -89,15 +90,11 @@ export function CityRatingForm({
       </div>
       <ul className="divide-y px-5">
         {CITY_DIMENSIONS.map((d) => (
-          <li key={d} className="flex items-center justify-between gap-3 py-1.5 lg:py-2">
-            {/* Wide screens show the question as a tooltip, so the whole form fits a laptop
-                screen beside the guide; phones show it under the label. */}
-            <div className="min-w-0" title={DIMENSION_META[d].question}>
-              <p className="text-sm font-medium">{DIMENSION_META[d].label}</p>
-              <p className="text-muted-foreground truncate text-xs lg:sr-only">
-                {DIMENSION_META[d].question}
-              </p>
-            </div>
+          <li key={d} className="flex items-center justify-between gap-3 py-2">
+            <p className="flex min-w-0 items-center gap-1.5 text-sm font-medium">
+              {DIMENSION_META[d].label}
+              <DimensionInfo dimension={d} />
+            </p>
             <Stars
               name={`dim:${d}`}
               value={values[d] ?? 0}

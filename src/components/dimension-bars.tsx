@@ -1,3 +1,4 @@
+import { DimensionInfo } from "@/components/dimension-info";
 import { CITY_DIMENSIONS, DIMENSION_META } from "@/lib/dimensions";
 import type { CityStats } from "@/lib/queries/cities";
 import { toTenScale, toneFor } from "@/lib/scoring";
@@ -18,8 +19,11 @@ export function DimensionBars({ stats, compact = false }: { stats: CityStats; co
         const tone = toneFor(s?.score ?? null, s?.count ?? 0);
         const pct = s ? (toTenScale(s.score) / 10) * 100 : 0;
         return (
-          <li key={d} className="grid grid-cols-[7.5rem_1fr_2.5rem] items-center gap-3 text-sm">
-            <span className="text-muted-foreground truncate">{DIMENSION_META[d].label}</span>
+          <li key={d} className="grid grid-cols-[8.75rem_1fr_2.5rem] items-center gap-3 text-sm">
+            <span className="text-muted-foreground flex min-w-0 items-center gap-1.5">
+              <span className="truncate">{DIMENSION_META[d].label}</span>
+              <DimensionInfo dimension={d} />
+            </span>
             <span className="bg-muted h-2 overflow-hidden rounded-full" aria-hidden>
               <span
                 className={cn(
