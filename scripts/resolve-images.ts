@@ -40,7 +40,8 @@ async function main() {
   const one = arg("city");
 
   const places = await query<Row>(
-    `select p.id, p.name, p.lat, p.lng, p.website, p.wikidata_id, p.category::text as category,
+    `select p.id, p.name, p.lat, p.lng,
+            case when p.website_hijacked then null else p.website end as website, p.wikidata_id, p.category::text as category,
             c.country_code || '/' || c.slug as city
      from (select * from cities
            where import_status = 'done'
@@ -68,6 +69,8 @@ async function main() {
         const image = await savePlaceImage(p, result);
         if (image) found++;
         if (result.adult) console.log(`${p.city} #${p.id} ${p.name}: flagged adult by its website`);
+        if (result.hijacked)
+          console.log(`${p.city} #${p.id} ${p.name}: website is now gambling spam, link hidden`);
         done++;
         if (done % 50 === 0) console.log(`${done} looked up, ${found} photos`);
       } catch (err) {

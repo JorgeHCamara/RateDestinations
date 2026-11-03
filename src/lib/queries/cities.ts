@@ -270,7 +270,8 @@ export async function getCityCategory(cityId: number, category: PlaceCategory, v
   cacheTag(`city:${cityId}`);
   void version;
   return query<CategoryPlace>(
-    `select p.id, p.name, p.category, p.subcategory, p.lat, p.lng, p.website, p.prominence, p.address, p.opening_hours,
+    `select p.id, p.name, p.category, p.subcategory, p.lat, p.lng,
+            case when p.website_hijacked then null else p.website end as website, p.prominence, p.address, p.opening_hours,
             p.image_url, p.image_source, p.image_credit, p.image_page, p.image_checked_at is not null as image_checked,
             s.blended_score, s.user_avg, s.user_count, s.warning_count,
             row_number() over (order by s.blended_score desc, p.prominence desc, p.location <-> c.location, p.name)::int as rank
