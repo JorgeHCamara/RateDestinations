@@ -58,7 +58,8 @@ export async function getPlace(placeId: number): Promise<Place | null> {
   cacheTag(`place:${placeId}`);
   return queryOne<Place>(
     `select p.id, p.city_id, c.name as city_name, c.slug as city_slug, c.country_code, co.name as country_name,
-            p.source, p.source_id, p.name, p.category, p.subcategory, p.lat, p.lng, p.address, p.website, p.phone,
+            p.source, p.source_id, p.name, p.category, p.subcategory, p.lat, p.lng, p.address,
+            case when p.website_hijacked then null else p.website end as website, p.phone,
             p.opening_hours, p.wikidata_id, p.wikipedia, p.prominence, p.external_rating, p.external_rating_count, p.tags,
             s.user_avg, s.user_count, s.warning_count, s.tag_counts, s.blended_score,
             p.image_url, p.image_source, p.image_credit, p.image_page,

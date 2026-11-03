@@ -53,6 +53,7 @@ export async function findPlaceImage(
   { fetchImpl = fetch }: ResolveOptions = {},
 ): Promise<LookupResult> {
   let adult = false;
+  let hijacked = false;
   // Wikimedia throttling or timing out is temporary: remember it, so the place is tried again soon.
   let retry = false;
   const failed = () => {
@@ -78,6 +79,7 @@ export async function findPlaceImage(
       nightlife: place.category === "nightlife" || place.category === "bar",
     }).catch(() => null);
     if (found?.adult) adult = true;
+    if (found?.hijacked) hijacked = true;
     return found?.image ? { ...found.image, source: "website" } : null;
   };
 
@@ -90,12 +92,18 @@ export async function findPlaceImage(
   for (const step of steps) {
     const image = await step();
     if (adult) return { image: null, adult, retry: false };
-    if (image) return { image, adult, retry: false };
+    if (image) return { image, adult, retry: false, hijacked };
   }
-  return { image: null, adult, retry };
+  return { image: null, adult, retry, hijacked };
 }
 
-export type LookupResult = { image: PlaceImage | null; adult: boolean; retry?: boolean };
+export type LookupResult = {
+  image: PlaceImage | null;
+  adult: boolean;
+  retry?: boolean;
+  /** The place's website is now gambling spam: its link is hidden (places.website_hijacked). */
+  hijacked?: boolean;
+};
 
 type StoredImage = {
   image_url: string | null;
@@ -122,12 +130,13 @@ export function toPlaceImage(row: StoredImage): PlaceImage | null {
 export async function ensurePlaceImage(
   placeId: number,
   opts: ResolveOptions = {},
-): Promise<{ image: PlaceImage | null; lookedUp: boolean; adult: boolean }> {
+): Promise<{ image: PlaceImage | null; lookedUp: boolean; adult: boolean; hijacked: boolean }> {
   const claimed = await queryOne<Candidate>(
     `update places set image_checked_at = now()
      where id = $1 and not adult and not hidden
        and (image_checked_at is null or image_checked_at < now() - make_interval(days => $2))
-     returning id, name, lat, lng, website, wikidata_id, category::text as category`,
+     returning id, name, lat, lng, case when website_hijacked then null else website end as website,
+               wikidata_id, category::text as category`,
     [placeId, IMAGE_TTL_DAYS],
   );
   if (!claimed) {
@@ -135,10 +144,20 @@ export async function ensurePlaceImage(
       "select image_url, image_source, image_credit, image_page from places where id = $1",
       [placeId],
     );
-    return { image: row ? toPlaceImage(row) : null, lookedUp: false, adult: false };
+    return {
+      image: row ? toPlaceImage(row) : null,
+      lookedUp: false,
+      adult: false,
+      hijacked: false,
+    };
   }
   const found = await findPlaceImage(claimed, opts);
-  return { image: await savePlaceImage(claimed, found), lookedUp: true, adult: found.adult };
+  return {
+    image: await savePlaceImage(claimed, found),
+    lookedUp: true,
+    adult: found.adult,
+    hijacked: Boolean(found.hijacked),
+  };
 }
 
 /**
@@ -147,8 +166,9 @@ export async function ensurePlaceImage(
  */
 export async function savePlaceImage(
   place: { id: number; name: string },
-  { image, adult, retry }: LookupResult,
+  { image, adult, retry, hijacked }: LookupResult,
 ): Promise<PlaceImage | null> {
+  if (hijacked) await query("update places set website_hijacked = true where id = $1", [place.id]);
   if (adult) {
     // Its own website says it is an adult venue: flag it, which takes it off the site.
     await query(

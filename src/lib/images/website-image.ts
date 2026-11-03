@@ -4,7 +4,7 @@
  * filters here try to leave out: by name, by file type, and by size and shape.
  */
 import { SITE_URL } from "@/lib/site-url";
-import { hasAdultName } from "@/lib/import/filters";
+import { hasAdultName, isGamblingSpam } from "@/lib/import/filters";
 import { safeFetch, type SafeFetchOptions } from "./safe-fetch";
 
 /**
@@ -255,14 +255,32 @@ export function pageText(html: string): string {
 
 export type WebsiteImage = { url: string; page: string; credit: string };
 
-/**
- * The website's share image, if it is a photo, and whether the website describes an adult venue
- * (a strip club listed as a bar: its own title says so).
- */
+export type WebsiteImageResult = {
+  image: WebsiteImage | null;
+  /** The website describes an adult venue (a strip club listed as a bar: its own title says so). */
+  adult: boolean;
+  /** The website is now gambling spam (a lapsed domain bought by spammers): not the place's. */
+  hijacked?: boolean;
+};
+
+function safeDecode(s: string): string {
+  try {
+    return decodeURIComponent(s);
+  } catch {
+    return s;
+  }
+}
+
+/** The host without "www.": "chunyangtea.com". */
+function bareHost(url: string): string {
+  return new URL(url).hostname.toLowerCase().replace(/^www\./, "");
+}
+
+/** The website's share image, if it is a photo, and what the website says about the place. */
 export async function websiteImage(
   website: string,
   opts: SafeFetchOptions & { userAgent?: string; nightlife?: boolean } = {},
-): Promise<{ image: WebsiteImage | null; adult: boolean }> {
+): Promise<WebsiteImageResult> {
   if (isSkippedWebsite(website)) return { image: null, adult: false };
   const userAgent =
     opts.userAgent ?? `Mozilla/5.0 (compatible; RateDestinationsBot/1.0; +${SITE_URL})`;
@@ -274,19 +292,27 @@ export async function websiteImage(
   if (page.status >= 400 || !/html/i.test(page.contentType || "text/html"))
     return { image: null, adult: false };
   const html = new TextDecoder().decode(page.body);
-  const adult = hasAdultName(pageText(html), opts.nightlife ?? false);
+  const text = pageText(html);
+  if (isGamblingSpam(text)) return { image: null, adult: false, hijacked: true };
+  const adult = hasAdultName(text, opts.nightlife ?? false);
   if (adult) return { image: null, adult };
   // Candidates, best first: the share image, the photos the page names for search engines, then
   // big photos on the page. The first that passes the photo checks wins; at most 4 are fetched.
   const meta = findShareImage(html, page.url);
   const candidates: { url: string; width?: number | null; height?: number | null }[] = [];
+  let spamPhoto = false;
   const push = (c: { url: string; width?: number | null; height?: number | null }) => {
-    if (!candidates.some((x) => x.url === c.url) && !NOT_A_PHOTO.test(new URL(c.url).pathname))
-      candidates.push(c);
+    const path = new URL(c.url).pathname;
+    if (!candidates.some((x) => x.url === c.url) && !NOT_A_PHOTO.test(path)) {
+      // A page that names its photos "rtp-slot-…" is spam even when its title hides it.
+      if (isGamblingSpam(safeDecode(path))) spamPhoto = true;
+      else candidates.push(c);
+    }
   };
   if (meta) push(meta);
   for (const url of jsonLdImages(html, page.url)) push({ url });
   for (const url of largePageImages(html, page.url)) push({ url });
+  if (spamPhoto) return { image: null, adult: false, hijacked: true };
   let chosen: string | null = null;
   let tried = 0;
   for (const c of candidates) {
@@ -299,6 +325,5 @@ export async function websiteImage(
     }
   }
   if (!chosen) return { image: null, adult };
-  const host = new URL(page.url).hostname.replace(/^www\./, "");
-  return { image: { url: chosen, page: website, credit: host }, adult };
+  return { image: { url: chosen, page: website, credit: bareHost(page.url) }, adult };
 }

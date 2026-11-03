@@ -13,12 +13,13 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/places/[id]
   if (!Number.isSafeInteger(placeId) || placeId <= 0)
     return NextResponse.json({ error: "invalid id" }, { status: 400 });
   const place = await queryOne<{ city_id: number; address: string | null; website: string | null }>(
-    "select city_id, address, website from places where id = $1 and not adult and not hidden",
+    `select city_id, address, case when website_hijacked then null else website end as website
+     from places where id = $1 and not adult and not hidden`,
     [placeId],
   );
   if (!place) return NextResponse.json({ error: "not found" }, { status: 404 });
 
-  const { image, lookedUp, adult } = await ensurePlaceImage(placeId);
+  const { image, lookedUp, adult, hijacked } = await ensurePlaceImage(placeId);
   if (adult) {
     // Its website showed it is an adult venue: it was just flagged, so take it off the guide.
     revalidateTag(`city:${place.city_id}`, { expire: 0 });
@@ -26,14 +27,15 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/places/[id]
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
   // The place page and the city's lists (thumbnails) show the photo too: let them pick it up.
-  if (lookedUp && image) {
+  if (lookedUp && (image || hijacked)) {
     revalidateTag(`place:${placeId}`, "max");
     revalidateTag(`city:${place.city_id}`, "max");
   }
 
   let websiteHost: string | null = null;
   try {
-    websiteHost = place.website ? new URL(place.website).hostname.replace(/^www\./, "") : null;
+    websiteHost =
+      place.website && !hijacked ? new URL(place.website).hostname.replace(/^www\./, "") : null;
   } catch {}
 
   return NextResponse.json(

@@ -194,3 +194,21 @@ export function hasAdultName(name: string | null | undefined, nightlife = false)
   if (ADULT_NAME_TERMS.some((t) => n.includes(t))) return true;
   return nightlife && ADULT_NIGHTLIFE_TERMS.some((t) => n.includes(t));
 }
+
+/**
+ * Hijacked websites. When a small business lets its domain lapse, spammers often buy it and fill
+ * it with online-gambling pages (Indonesian "slot gacor", "togel", casino affiliate posts) that
+ * live off the links the old business still has. A place's website that now says this is not the
+ * place's: its link is hidden and no photo is taken from it.
+ *
+ * Words only spam pages use; a real casino venue's own site doesn't say "slot gacor" or
+ * "online casino". Checked on the page's title and description, and on photo file names.
+ */
+const GAMBLING_SPAM =
+  /(gacor|togel|judi ?(online|bola|slot|togel)|maxwin|sbobet|nenekslot|slot ?(88|777|online|resmi|demo|thailand|terpercaya)|\brtp ?(slot|live)\b|situs ?(slot|judi|togel)|bandar ?(slot|judi|togel|bola)|bocoran ?rtp|scatter ?hitam|mahjong ?ways|link ?alternatif|pg ?soft|pragmatic ?play|casino ?(online|official|login|bonus|apk|app)\b|online ?casino)/;
+
+/** True when text (a page's title and description, or a file name) is gambling spam. */
+export function isGamblingSpam(text: string | null | undefined): boolean {
+  if (!text) return false;
+  return GAMBLING_SPAM.test(norm(text).replace(/ +/g, " "));
+}
