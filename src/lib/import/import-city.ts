@@ -72,20 +72,7 @@ export async function importCity(cityId: number, opts: ImportOptions = {}): Prom
   const tasks: Task[] = geoapify
     ? PLACE_CATEGORIES.map((category) => ({
         key: category,
-        run: async () => {
-          for (let attempt = 0; ; attempt++) {
-            const remaining = deadline - now();
-            if (remaining < 3_000) throw new Error("out of time");
-            try {
-              return await fetchGeoapifyCategory(city, category, {
-                timeoutMs: Math.min(20_000, remaining),
-              });
-            } catch (err) {
-              if (attempt >= 1) throw err;
-              await new Promise((r) => setTimeout(r, 1_500));
-            }
-          }
-        },
+        run: () => fetchGeoapifyCategory(city, category, { deadline, now }),
       }))
     : QUERY_GROUPS.map((group) => ({
         key: group.key,

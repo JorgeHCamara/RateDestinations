@@ -98,8 +98,8 @@ export function ImportStatus({
               : "We couldn't build this guide right now."}
           </p>
           <p className="text-muted-foreground">
-            OpenStreetMap&apos;s public servers are busy. You can try again now, or come back later;
-            it is also retried automatically.
+            The map data service didn&apos;t answer in time. You can try again now, or come back
+            later; it is also retried automatically.
           </p>
         </div>
         <Button size="sm" variant="outline" onClick={retry}>
@@ -118,8 +118,8 @@ export function ImportStatus({
       <div className="text-sm">
         <p className="font-medium">Building this guide for the first time…</p>
         <p className="text-muted-foreground">
-          Collecting restaurants, parks, sights and more from OpenStreetMap. This usually takes one
-          to three minutes; big cities take longer
+          Collecting restaurants, parks, sights and more from OpenStreetMap. This usually takes
+          under a minute; big cities can take a few
           {elapsed > 5
             ? ` · ${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")}`
             : ""}
