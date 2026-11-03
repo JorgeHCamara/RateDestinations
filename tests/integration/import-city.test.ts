@@ -63,7 +63,7 @@ run("importCity (database)", () => {
         .filter((g) => g.ok)
         .map((g) => g.key)
         .sort(),
-    ).toEqual(["cafe_bar", "food"]);
+    ).toEqual(["overpass:cafe_bar", "overpass:food"]);
     const city = await queryOne<{ import_status: string; import_error: string }>(
       "select import_status, import_error from cities where id = $1",
       [cityId],
@@ -77,7 +77,24 @@ run("importCity (database)", () => {
     expect(names.map((n) => n.name)).toEqual(["Test Bistro", "Test Café"]);
   });
 
+  it("keeps a guide another source already built when every live search fails", async () => {
+    await query("update cities set import_status = 'pending' where id = $1", [cityId]);
+    const busy: typeof fetch = async () => new Response("busy", { status: 429 });
+    const result = await importCity(cityId, {
+      budgetMs: 15_000,
+      fetchOptions: { endpoints: ["https://fake/api"], fetchImpl: busy, sleep: async () => {} },
+    });
+    expect(result.places).toBe(0);
+    const city = await queryOne<{ import_status: string; import_error: string }>(
+      "select import_status, import_error from cities where id = $1",
+      [cityId],
+    );
+    expect(city?.import_status).toBe("done");
+    expect(city?.import_error).toMatch(/kept 2 existing places/);
+  });
+
   it("marks the city failed when every search fails", async () => {
+    await query("delete from places where city_id = $1", [cityId]);
     await query("update cities set import_status = 'pending' where id = $1", [cityId]);
     const busy: typeof fetch = async () => new Response("busy", { status: 429 });
     await expect(

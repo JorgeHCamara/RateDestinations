@@ -33,7 +33,15 @@ export function SiteFooter() {
           >
             OpenFreeMap
           </a>
-          . Places powered by{" "}
+          . Places from{" "}
+          <a
+            className="underline-offset-2 hover:underline"
+            href="https://overturemaps.org/"
+            rel="noreferrer"
+          >
+            Overture Maps
+          </a>{" "}
+          (CDLA Permissive 2.0) and powered by{" "}
           <a
             className="underline-offset-2 hover:underline"
             href="https://www.geoapify.com/"

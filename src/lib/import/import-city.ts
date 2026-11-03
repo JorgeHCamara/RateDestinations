@@ -8,7 +8,7 @@ import {
   radiusForPopulation,
   type PlaceInput,
 } from "./overpass";
-import { PLACE_CATEGORIES } from "./categories";
+import { PLACE_CATEGORIES, type PlaceCategory } from "./categories";
 import { fetchGeoapifyCategory, isGeoapifyEnabled } from "./geoapify";
 import { fetchSitelinkCounts, sitelinkBonus } from "./wikidata";
 
@@ -26,6 +26,16 @@ type CityRow = { id: number; name: string; lat: number; lng: number; population:
  * must have written its final status well before that, or the city looks stuck.
  */
 export const IMPORT_BUDGET_MS = 240_000;
+/** Geoapify gets at most this much of the budget, leaving the rest for the Overpass fallback. */
+const GEOAPIFY_SHARE_MS = 110_000;
+
+/** Which of our categories each Overpass query group covers. */
+const GROUP_CATEGORIES: Record<string, PlaceCategory[]> = {
+  food: ["restaurant"],
+  cafe_bar: ["cafe", "bar", "nightlife"],
+  sights: ["attraction", "museum", "viewpoint"],
+  outdoors_shopping: ["park", "beach", "market", "shopping"],
+};
 
 export type ImportOptions = {
   budgetMs?: number;
@@ -34,12 +44,11 @@ export type ImportOptions = {
 };
 
 /**
- * Import (or refresh) a city's places from OpenStreetMap data: through Geoapify when
- * GEOAPIFY_API_KEY is set, otherwise straight from the public Overpass servers.
+ * Import (or refresh) a city's places live, from OpenStreetMap data: through Geoapify when
+ * GEOAPIFY_API_KEY is set, then the public Overpass servers for whatever Geoapify missed.
  * Caller must have claimed the city with claim_city_import() first (see claimAndImport).
  *
- * Runs the query groups two at a time and saves each group's places as soon as it arrives, so a
- * partial guide survives a slow server. Always writes a final status (done, or failed with the
+ * Saves each search's places as soon as they arrive, so a partial guide survives a slow server. Always writes a final status (done, or failed with the
  * reasons) before the budget runs out.
  */
 export async function importCity(cityId: number, opts: ImportOptions = {}): Promise<ImportResult> {
@@ -65,17 +74,52 @@ export async function importCity(cityId: number, opts: ImportOptions = {}): Prom
     return saving;
   };
 
-  // One task per search. With a Geoapify key: one request per category, three at a time.
-  // Otherwise the public Overpass servers, which allow few concurrent requests per IP: two at a time.
+  // Sources are tried as a chain, so one being down only thins a guide out:
+  //  1. Geoapify (when GEOAPIFY_API_KEY is set): one request per category, three at a time,
+  //     limited to the first part of the budget so there is time left for the next source.
+  //  2. The public Overpass servers, only for the categories Geoapify didn't deliver.
+  // Overture Maps fills in the rest offline (scripts/import-overture.ts), triggered by the visit.
   type Task = { key: string; run: () => Promise<PlaceInput[]> };
-  const geoapify = isGeoapifyEnabled() && !opts.fetchOptions;
-  const tasks: Task[] = geoapify
-    ? PLACE_CATEGORIES.map((category) => ({
-        key: category,
-        run: () => fetchGeoapifyCategory(city, category, { deadline, now }),
-      }))
-    : QUERY_GROUPS.map((group) => ({
-        key: group.key,
+  const runTasks = async (tasks: Task[], concurrency: number) => {
+    const queue = [...tasks];
+    const worker = async () => {
+      for (let task = queue.shift(); task; task = queue.shift()) {
+        try {
+          const places = await task.run();
+          await save(places);
+          groups.push({ key: task.key, ok: true, elements: places.length });
+        } catch (err) {
+          groups.push({ key: task.key, ok: false, elements: 0, error: (err as Error).message });
+        }
+      }
+    };
+    await Promise.all(Array.from({ length: concurrency }, worker));
+    await saving;
+  };
+
+  const useGeoapify = isGeoapifyEnabled() && !opts.fetchOptions;
+  let missing = new Set<string>(PLACE_CATEGORIES);
+  if (useGeoapify) {
+    const geoDeadline = Math.min(deadline, started + GEOAPIFY_SHARE_MS);
+    await runTasks(
+      PLACE_CATEGORIES.map((category) => ({
+        key: `geoapify:${category}`,
+        run: () => fetchGeoapifyCategory(city, category, { deadline: geoDeadline, now }),
+      })),
+      3,
+    );
+    missing = new Set(
+      PLACE_CATEGORIES.filter((c) => !groups.some((g) => g.key === `geoapify:${c}` && g.ok)),
+    );
+  }
+  const overpassGroups = QUERY_GROUPS.filter((g) =>
+    GROUP_CATEGORIES[g.key]?.some((c) => missing.has(c)),
+  );
+  // After Geoapify, only start Overpass with time worth using; without Geoapify it is the first source.
+  if (overpassGroups.length && (!useGeoapify || deadline - now() > 30_000)) {
+    await runTasks(
+      overpassGroups.map((group) => ({
+        key: `overpass:${group.key}`,
         run: async () =>
           parseElements(
             await fetchOverpass(buildGroupQuery(group, city.lat, city.lng, radius), {
@@ -84,22 +128,10 @@ export async function importCity(cityId: number, opts: ImportOptions = {}): Prom
               now,
             }),
           ),
-      }));
-  const concurrency = geoapify ? 3 : Math.max(1, Number(process.env.OVERPASS_CONCURRENCY ?? 2));
-  const queue = [...tasks];
-  const worker = async () => {
-    for (let task = queue.shift(); task; task = queue.shift()) {
-      try {
-        const places = await task.run();
-        await save(places);
-        groups.push({ key: task.key, ok: true, elements: places.length });
-      } catch (err) {
-        groups.push({ key: task.key, ok: false, elements: 0, error: (err as Error).message });
-      }
-    }
-  };
-  await Promise.all(Array.from({ length: concurrency }, worker));
-  await saving;
+      })),
+      Math.max(1, Number(process.env.OVERPASS_CONCURRENCY ?? 2)),
+    );
+  }
 
   const failures = groups
     .filter((g) => !g.ok)
@@ -111,6 +143,21 @@ export async function importCity(cityId: number, opts: ImportOptions = {}): Prom
   // rather than "done" with an empty guide (searches that answered with zero places count too).
   if (saved.size === 0) {
     const reason = failures || "every search answered with no places";
+    // Another source (the Overture job) may already have built this guide: keep it visible.
+    const existing = await queryOne<{ n: number }>(
+      "select count(*)::int as n from places where city_id = $1",
+      [cityId],
+    );
+    if (existing && existing.n > 0) {
+      await query(
+        "update cities set import_status = 'done', import_error = $2, imported_at = now() where id = $1",
+        [
+          cityId,
+          `live sources failed, kept ${existing.n} existing places: ${reason}`.slice(0, 1000),
+        ],
+      );
+      return { cityId, places: 0, groups, durationMs: now() - started };
+    }
     await query(
       "update cities set import_status = 'failed', import_error = $2, imported_at = now() where id = $1",
       [cityId, reason],

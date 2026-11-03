@@ -195,8 +195,8 @@ export async function getCityCategory(cityId: number, category: PlaceCategory, v
   return query<CategoryPlace>(
     `select p.id, p.name, p.category, p.subcategory, p.lat, p.lng, p.website, p.prominence, p.address, p.opening_hours,
             s.blended_score, s.user_avg, s.user_count, s.warning_count,
-            row_number() over (order by s.blended_score desc, p.prominence desc, p.name)::int as rank
-     from places p join place_stats s on s.place_id = p.id
+            row_number() over (order by s.blended_score desc, p.prominence desc, p.location <-> c.location, p.name)::int as rank
+     from places p join place_stats s on s.place_id = p.id join cities c on c.id = p.city_id
      where p.city_id = $1 and p.category = $2
      order by rank limit 200`,
     [cityId, category],
