@@ -5,6 +5,8 @@ import {
   colourStats,
   findShareImage,
   isSkippedWebsite,
+  jsonLdImages,
+  largePageImages,
   looksLikeGraphic,
   looksLikePhoto,
   pageText,
@@ -155,5 +157,43 @@ describe("Wikidata matches", () => {
       credit: "Ana, CC BY-SA 4.0",
     });
     expect(calls).toHaveLength(2);
+  });
+});
+
+describe("more website photo candidates", () => {
+  it("skips government and city-hall portals", () => {
+    for (const site of [
+      "https://www.cm-lisboa.pt/equipamentos/mercado",
+      "https://www.jf-benfica.pt/",
+      "https://prefeitura.sp.gov.br/parque",
+      "https://www.toronto.ca/parks/june-rowlands",
+      "https://www.vaughan.ca/",
+      "https://www.city.shinjuku.lg.jp/",
+      "https://www.nps.gov/",
+    ])
+      expect(isSkippedWebsite(site), site).toBe(true);
+    for (const site of [
+      "https://www.barbrahmacentro.com/",
+      "https://dote.pt/",
+      "https://www.govinda.pt/",
+    ])
+      expect(isSkippedWebsite(site), site).toBe(false);
+  });
+  it("reads the photos a page names for search engines", () => {
+    const html = `<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Restaurant","name":"X","logo":"https://x.pt/logo.png","image":["/img/sala.jpg",{"@type":"ImageObject","url":"https://cdn.x.pt/terraco.webp"}]}]}</script><script type="application/ld+json">{ broken</script>`;
+    expect(jsonLdImages(html, "https://x.pt/")).toEqual([
+      "https://x.pt/img/sala.jpg",
+      "https://cdn.x.pt/terraco.webp",
+    ]);
+  });
+  it("finds big photos on the page and ignores logos and small images", () => {
+    const html = `<img src="/logo.png" class="site-logo" width="900">
+      <img src="/thumb.jpg" width="120">
+      <img srcset="/hero-480.jpg 480w, /hero-1600.jpg 1600w" src="/hero-480.jpg">
+      <img data-src="/gallery/1.jpg" width="1200" height="800">`;
+    expect(largePageImages(html, "http://x.pt/")).toEqual([
+      "https://x.pt/hero-1600.jpg",
+      "https://x.pt/gallery/1.jpg",
+    ]);
   });
 });

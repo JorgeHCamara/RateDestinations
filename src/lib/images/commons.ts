@@ -111,6 +111,34 @@ export async function nearbyWikidataImageFile(
   return decodeURIComponent(hit.image.value.split("/Special:FilePath/").pop() ?? "") || null;
 }
 
+/**
+ * A photo on Wikimedia Commons taken within `radiusM` of the place whose file name carries the
+ * place's whole name ("Casa-Museu Medeiros e Almeida - fachada.jpg" for "Casa-Museu Medeiros e
+ * Almeida"). Finds sights that have photos but no Wikidata photo. Returns the file name.
+ */
+export async function nearbyCommonsFile(
+  place: { name: string; lat: number; lng: number },
+  { fetchImpl = fetch, timeoutMs = 5_000, radiusM = 150 } = {},
+): Promise<string | null> {
+  const json = await getJson<{ query?: { geosearch?: { title: string; dist: number }[] } }>(
+    `${COMMONS_API}?action=query&format=json&list=geosearch&gsnamespace=6&gslimit=50&gsradius=${radiusM}&gscoord=${place.lat.toFixed(6)}|${place.lng.toFixed(6)}`,
+    fetchImpl,
+    timeoutMs,
+  );
+  for (const { title } of (json?.query?.geosearch ?? []).sort((a, b) => a.dist - b.dist)) {
+    const file = title.replace(/^File:/, "");
+    if (!/\.(jpe?g|png|webp)$/i.test(file)) continue;
+    // "Mercado_de_Arroios_02.jpg" → "Mercado de Arroios"
+    const label = file
+      .replace(/\.[a-z0-9]+$/i, "")
+      .replace(/[_()[\]-]+/g, " ")
+      .replace(/\b\d+\b/g, " ")
+      .trim();
+    if (labelNamesPlace(place.name, label)) return file;
+  }
+  return null;
+}
+
 function stripHtml(s: string): string {
   return s
     .replace(/<[^>]*>/g, "")

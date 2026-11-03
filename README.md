@@ -30,13 +30,17 @@ Tailwind v4 + shadcn/ui, MapLibre with OpenFreeMap tiles. Deploys on Vercel.
 'why');` or `select hide_place(123, 'why');`. The flag lives in `place_overrides`, survives
     re-imports, and covers the same name in that city from any source. To un-flag one, insert a
     row with `adult = false` for its `source`/`source_id`.
-- **Photos** (`src/lib/images`): one per place, for the hover card and the place page. Free
-  sources only: the Wikimedia Commons photo of the place's Wikidata item (found by name within
-  300 m when the place has no Wikidata link), else the share image (`og:image`) of the place's
-  website, kept only if it looks like a photo (size, shape, and not a few flat colours like a
-  logo). Website fetches refuse private addresses. A website that describes itself as an adult
-  venue gets the place flagged. Looked up on first hover and by the scheduled workflow for the
-  places guides show first; kept 30 days. Places without a photo show their category icon.
+- **Photos** (`src/lib/images`): one per place, shown as a thumbnail in lists, in the hover card
+  (mouse), in a tap preview panel (touch screens) and on the place page. Free sources only: the
+  Wikimedia Commons photo of the place's Wikidata item (or of an item within 300 m named like
+  it), a Commons photo taken within 150 m whose file name carries the place's name, else the
+  place's website: its share image (`og:image`), the photos it names for search engines
+  (JSON-LD), or a big photo on the page, kept only if it looks like a photo (size, shape, and not
+  a few flat colours like a logo). Social profiles, review sites, Wikipedia and government portals
+  are skipped. Website fetches refuse private addresses. A website that describes itself as an
+  adult venue gets the place flagged. Looked up by the scheduled workflow for the places guides
+  show first, and when someone views a place; kept 30 days. Places without a photo show their
+  category icon.
 - **Scores** show what people actually gave. A place nobody has rated shows "Not rated", never an
   estimate; once rated, its score is the average of its ratings, with the count. A city's score is
   the average of its ratings too (each dimension's average, safety and cleanliness weighted 1.5×).

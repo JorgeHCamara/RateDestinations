@@ -3,14 +3,10 @@
 import { useState } from "react";
 import { CategoryIcon } from "@/components/category-icon";
 import type { PlaceCategory } from "@/lib/import/categories";
+import type { PlacePhotoData } from "@/lib/place-preview";
 import { cn } from "@/lib/utils";
 
-export type PlacePhotoData = {
-  url: string;
-  source: "commons" | "website";
-  credit: string;
-  page: string;
-};
+export type { PlacePhotoData } from "@/lib/place-preview";
 
 /**
  * A place's photo with its credit, or a category tile when there is none (or it fails to load:

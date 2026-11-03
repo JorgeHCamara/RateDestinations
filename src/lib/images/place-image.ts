@@ -2,12 +2,20 @@
  * One photo per place, looked up once and kept in places.image_* (see migration 0005).
  *
  * Order: the place's own Wikidata photo; then, for sights, a Wikidata item with a photo named like
- * the place within 300 m; then the share image of the place's website. Restaurants, cafés, bars
- * and shops try their website before Wikidata, which rarely has them.
+ * the place within 300 m, a Wikimedia Commons photo taken within 150 m whose file name carries the
+ * place's name, and finally the place's website (its share image, the photos it names for search
+ * engines, or a big photo on the page). Restaurants, cafés, bars and shops try their website first,
+ * since Wikimedia rarely has them.
  */
 import { query, queryOne } from "@/lib/db";
 import type { PlaceCategory } from "@/lib/import/categories";
-import { commonsImage, namesMatch, nearbyWikidataImageFile, wikidataImageFile } from "./commons";
+import {
+  commonsImage,
+  namesMatch,
+  nearbyCommonsFile,
+  nearbyWikidataImageFile,
+  wikidataImageFile,
+} from "./commons";
 import { websiteImage } from "./website-image";
 
 export type PlaceImage = {
@@ -73,9 +81,12 @@ export async function findPlaceImage(
     return found?.image ? { ...found.image, source: "website" } : null;
   };
 
+  const nearbyCommons = async () =>
+    fromCommons(await nearbyCommonsFile(place, { fetchImpl }).catch(failed));
+
   const steps = WEBSITE_FIRST.has(place.category)
-    ? [ownWikidata, website, nearbyWikidata]
-    : [ownWikidata, nearbyWikidata, website];
+    ? [ownWikidata, website, nearbyWikidata, nearbyCommons]
+    : [ownWikidata, nearbyWikidata, nearbyCommons, website];
   for (const step of steps) {
     const image = await step();
     if (adult) return { image: null, adult, retry: false };

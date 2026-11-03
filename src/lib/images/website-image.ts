@@ -17,9 +17,20 @@ const SKIP_HOSTS =
 const NOT_A_PHOTO =
   /logo|favicon|icon|avatar|placeholder|default[-_]?(image|img|og|share)|no[-_]?image|blank|spacer|sprite|brand[-_]?mark|watermark|share[-_]?(image|img|default)?[-_]?\d*\.(png|svg)|\.svg(\?|$)|\.ico(\?|$)|\.gif(\?|$)/i;
 
+/**
+ * Government and city-hall portals: many parks, markets and squares list their municipality's or
+ * parish's site, whose share image is a campaign banner, not the place. (Their photos come from
+ * Wikimedia instead.) Portuguese câmaras and juntas (cm-*.pt, jf-*.pt), .gov / .gob / .gouv
+ * domains, Brazilian prefeituras, Japanese local governments (.lg.jp), and city domains such as
+ * toronto.ca or vaughan.ca.
+ */
+const GOVERNMENT_HOSTS =
+  /(^|\.)((cm|jf|uf)-[a-z0-9-]+\.pt|[a-z0-9-]+\.(gov|gob|gouv)(\.[a-z]{2})?|gov\.[a-z]{2}|prefeitura\.[a-z.]+|[a-z0-9-]+\.lg\.jp|city\.[a-z0-9-]+\.[a-z.]+|(toronto|vaughan|mississauga|ottawa|montreal|vancouver|calgary)\.ca|lisboa\.pt|porto\.pt)$/i;
+
 export function isSkippedWebsite(website: string): boolean {
   try {
-    return SKIP_HOSTS.test(new URL(website).hostname);
+    const host = new URL(website).hostname;
+    return SKIP_HOSTS.test(host) || GOVERNMENT_HOSTS.test(host);
   } catch {
     return true;
   }
@@ -76,6 +87,93 @@ export function findShareImage(html: string, pageUrl: string): MetaImage | null 
     width: num("og:image:width"),
     height: num("og:image:height"),
   };
+}
+
+function absoluteHttps(raw: string | null | undefined, pageUrl: string): string | null {
+  if (!raw) return null;
+  const value = decodeEntities(raw.trim());
+  if (!value || value.startsWith("data:") || /[{}<>\s]/.test(value)) return null;
+  try {
+    const url = new URL(value, pageUrl);
+    if (url.protocol === "http:") url.protocol = "https:";
+    return url.protocol === "https:" ? url.toString().slice(0, 1000) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Images the page names in its structured data for search engines (schema.org JSON-LD: the
+ * "image" or "photo" of the business), as a URL, a list, or an ImageObject ({ url | contentUrl }).
+ * Logos are not taken.
+ */
+export function jsonLdImages(html: string, pageUrl: string): string[] {
+  const out: string[] = [];
+  const add = (value: unknown): void => {
+    if (out.length >= 6 || !value) return;
+    if (typeof value === "string") {
+      const url = absoluteHttps(value, pageUrl);
+      if (url && !out.includes(url)) out.push(url);
+    } else if (Array.isArray(value)) value.forEach(add);
+    else if (typeof value === "object") {
+      const o = value as Record<string, unknown>;
+      add(o.url ?? o.contentUrl);
+    }
+  };
+  const walk = (node: unknown): void => {
+    if (!node || typeof node !== "object") return;
+    if (Array.isArray(node)) return node.forEach(walk);
+    for (const [key, value] of Object.entries(node as Record<string, unknown>)) {
+      if (key === "image" || key === "photo") add(value);
+      else if (key !== "logo" && typeof value === "object") walk(value); // e.g. @graph
+    }
+  };
+  const scripts = html.matchAll(
+    /<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi,
+  );
+  for (const m of scripts) {
+    try {
+      walk(JSON.parse(m[1]));
+    } catch {
+      // malformed JSON-LD is common; skip it
+    }
+  }
+  return out;
+}
+
+/**
+ * Large pictures in the page itself (hero and gallery photos): an <img> whose srcset offers
+ * 800 px or more, or whose width attribute is at least 600. Lazy-loading attributes count.
+ */
+export function largePageImages(html: string, pageUrl: string, max = 4): string[] {
+  const out: string[] = [];
+  const attr = (tag: string, name: string) =>
+    tag
+      .match(new RegExp(`\\s${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)')`, "i"))
+      ?.slice(1)
+      .find(Boolean) ?? null;
+  for (const m of html.slice(0, 400_000).matchAll(/<img\b[^>]*>/gi)) {
+    if (out.length >= max) break;
+    const tag = m[0];
+    if (/\b(logo|icon|avatar|sprite|badge|flag|payment|award)\b/i.test(tag)) continue;
+    const srcset = attr(tag, "srcset") ?? attr(tag, "data-srcset");
+    let best: string | null = null;
+    let bestW = 0;
+    for (const part of (srcset ?? "").split(",")) {
+      const [u, w] = part.trim().split(/\s+/);
+      const width = Number((w ?? "").replace(/w$/, ""));
+      if (u && Number.isFinite(width) && width > bestW) {
+        best = u;
+        bestW = width;
+      }
+    }
+    const declared = Number(attr(tag, "width"));
+    const src = best ?? attr(tag, "data-src") ?? attr(tag, "data-lazy-src") ?? attr(tag, "src");
+    if (bestW < 800 && !(declared >= 600)) continue;
+    const url = absoluteHttps(src, pageUrl);
+    if (url && !out.includes(url)) out.push(url);
+  }
+  return out;
 }
 
 /** Big enough and photo-shaped: logos are small or square-ish, banners very wide. */
@@ -178,11 +276,29 @@ export async function websiteImage(
   const html = new TextDecoder().decode(page.body);
   const adult = hasAdultName(pageText(html), opts.nightlife ?? false);
   if (adult) return { image: null, adult };
+  // Candidates, best first: the share image, the photos the page names for search engines, then
+  // big photos on the page. The first that passes the photo checks wins; at most 4 are fetched.
   const meta = findShareImage(html, page.url);
-  if (!meta || NOT_A_PHOTO.test(new URL(meta.url).pathname)) return { image: null, adult };
-  if (meta.width && meta.height && !looksLikePhoto({ width: meta.width, height: meta.height }))
-    return { image: null, adult };
-  if (!(await isPhoto(meta.url, opts, userAgent))) return { image: null, adult };
+  const candidates: { url: string; width?: number | null; height?: number | null }[] = [];
+  const push = (c: { url: string; width?: number | null; height?: number | null }) => {
+    if (!candidates.some((x) => x.url === c.url) && !NOT_A_PHOTO.test(new URL(c.url).pathname))
+      candidates.push(c);
+  };
+  if (meta) push(meta);
+  for (const url of jsonLdImages(html, page.url)) push({ url });
+  for (const url of largePageImages(html, page.url)) push({ url });
+  let chosen: string | null = null;
+  let tried = 0;
+  for (const c of candidates) {
+    if (tried >= 4) break;
+    if (c.width && c.height && !looksLikePhoto({ width: c.width, height: c.height })) continue;
+    tried++;
+    if (await isPhoto(c.url, opts, userAgent)) {
+      chosen = c.url;
+      break;
+    }
+  }
+  if (!chosen) return { image: null, adult };
   const host = new URL(page.url).hostname.replace(/^www\./, "");
-  return { image: { url: meta.url, page: website, credit: host }, adult };
+  return { image: { url: chosen, page: website, credit: host }, adult };
 }
