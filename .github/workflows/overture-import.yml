@@ -41,5 +41,8 @@ jobs:
           if [ -n "${{ inputs.city }}" ]; then
             pnpm tsx scripts/import-overture.ts --city "${{ inputs.city }}"
           else
-            pnpm tsx scripts/import-overture.ts --top "${{ inputs.top || '300' }}" --max-minutes 20
+            # A manual run pre-builds all of --top now; scheduled runs add 25 more each time.
+            pnpm tsx scripts/import-overture.ts --top "${{ inputs.top || '300' }}" \
+              --backfill "${{ github.event_name == 'workflow_dispatch' && (inputs.top || '300') || '25' }}" \
+              --max-minutes 20
           fi
