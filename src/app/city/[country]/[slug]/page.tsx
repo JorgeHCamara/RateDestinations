@@ -6,6 +6,7 @@ import { CategorySection } from "@/components/category-section";
 import { CityMapLazy, type MapPinInput } from "@/components/city-map-lazy";
 import { DimensionBars } from "@/components/dimension-bars";
 import { ImportStatus } from "@/components/import-status";
+import { LocalsVisitors } from "@/components/locals-visitors";
 import { CityRatingForm } from "@/components/rating/city-rating-form";
 import { ScoreRing } from "@/components/score";
 import { WatchOutList } from "@/components/watch-out-list";
@@ -18,7 +19,7 @@ import {
   type City,
 } from "@/lib/queries/cities";
 import { getRatingTags } from "@/lib/queries/places";
-import { getMyCityRatings } from "@/lib/queries/ratings";
+import { getMyCityRatings, getMyCityRole } from "@/lib/queries/ratings";
 import { getSessionUser } from "@/lib/supabase/server";
 
 type Props = PageProps<"/city/[country]/[slug]">;
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = `${city.name}, ${city.country_name}`;
   return {
     title,
-    description: `${city.name} travel guide: the best restaurants, parks, sights and nightlife, and what to avoid — safety, cleanliness and scams rated by travellers.`,
+    description: `${city.name} travel guide: the best restaurants, parks, sights and nightlife, and what to avoid — safety, cleanliness and scams rated by locals and travellers.`,
     alternates: { canonical: `/city/${country.toLowerCase()}/${slug}` },
     openGraph: { title: `${title} — the whole city, rated`, type: "article" },
   };
@@ -81,15 +82,16 @@ async function CityGuide({ params }: { params: Props["params"] }) {
           {guide && (
             <>
               <section>
-                <SectionTitle kicker="At a glance" title={`How travellers rate ${city.name}`} />
+                <SectionTitle kicker="At a glance" title={`How people rate ${city.name}`} />
                 <div className="bg-card rounded-xl border p-5">
                   <DimensionBars stats={guide.stats} />
                   {guide.stats.rating_count === 0 && (
                     <p className="text-muted-foreground mt-4 text-sm">
-                      No one has rated {city.name} yet. The bars fill in as travellers rate safety,
-                      food, value and more.
+                      No one has rated {city.name} yet. The bars fill in as locals and visitors rate
+                      safety, food, value and more.
                     </p>
                   )}
+                  <LocalsVisitors stats={guide.stats} cityName={city.name} />
                 </div>
               </section>
 
@@ -125,7 +127,7 @@ async function CityGuide({ params }: { params: Props["params"] }) {
                   ))}
                   {guide.placeCount === 0 && (
                     <p className="text-muted-foreground rounded-xl border border-dashed p-6 text-sm">
-                      OpenStreetMap has very little mapped here yet. Ratings from travellers will
+                      Open map data has very little here yet. Ratings from locals and visitors will
                       still build this guide over time.
                     </p>
                   )}
@@ -169,12 +171,15 @@ async function WatchOutSection({ cityId, version }: { cityId: number; version: s
 
 async function CityRatingPanel({ city, returnTo }: { city: City; returnTo: string }) {
   const user = await getSessionUser();
-  const existing = user ? await getMyCityRatings(user.id, city.id) : {};
+  const [existing, existingRole] = user
+    ? await Promise.all([getMyCityRatings(user.id, city.id), getMyCityRole(user.id, city.id)])
+    : [{}, null];
   return (
     <CityRatingForm
       cityId={city.id}
       cityName={city.name}
       existing={existing}
+      existingRole={existingRole}
       signedIn={Boolean(user)}
       returnTo={returnTo}
     />

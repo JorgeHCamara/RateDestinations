@@ -11,9 +11,9 @@ export default function PrivacyPage() {
   return (
     <LegalPage title="Privacy policy" updated="November 3, 2026">
       <p>
-        RateDestinations is a city guide where travellers rate cities and places. This page explains
-        what we collect, why, and what you can ask us to do with it. We keep it short because we
-        collect very little.
+        RateDestinations is a city guide where locals and travellers rate cities and places. This
+        page explains what we collect, why, and what you can ask us to do with it. We keep it short
+        because we collect very little.
       </p>
 
       <h2>What we collect</h2>
@@ -29,6 +29,11 @@ export default function PrivacyPage() {
           &ldquo;Dirty&rdquo; or &ldquo;Great value&rdquo;) and any comment you write, with the
           date. These are public: anyone can see them on the place or city page, next to your
           display name.
+        </li>
+        <li>
+          <strong>Whether you live in a city you rate.</strong> When you rate a city you say whether
+          you live there or are visiting. It is shown as a share of locals and visitors on the city
+          page, and as a &ldquo;Local&rdquo; label next to your reviews of places in that city.
         </li>
         <li>
           <strong>A sign-in cookie.</strong> One cookie keeps you signed in. We do not use
@@ -79,8 +84,8 @@ export default function PrivacyPage() {
 
       <h2>How long we keep it</h2>
       <p>
-        We keep your account and ratings until you ask us to delete them. Ratings help other
-        travellers, so they stay on the site while your account exists.
+        We keep your account and ratings until you ask us to delete them. Ratings help everyone
+        deciding about a city, so they stay on the site while your account exists.
       </p>
 
       <h2>Your choices</h2>

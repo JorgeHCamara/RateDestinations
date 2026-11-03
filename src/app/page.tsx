@@ -23,18 +23,18 @@ export default function HomePage() {
             </h1>
             <p className="text-muted-foreground mt-4 max-w-2xl text-base sm:text-lg">
               One honest guide per city: the restaurants, parks and sights worth your time, plus the
-              places, scams and streets travellers say to avoid.
+              places, scams and streets locals and travellers say to avoid.
             </p>
             <div className="mt-8 max-w-2xl">
               <CitySearch autoFocus />
             </div>
             <p className="text-muted-foreground mt-3 text-xs">
-              31,000+ cities worldwide · built from OpenStreetMap, scored by travellers like you
+              31,000+ cities worldwide · rated by the people who live there and the people who visit
             </p>
           </div>
           <div
             className="min-w-0"
-            aria-label="Demo: a traveller flags a tourist trap and the city guide updates"
+            aria-label="Demo: someone flags a tourist trap and the city guide updates"
           >
             <HeroDemo />
           </div>
@@ -56,11 +56,11 @@ export default function HomePage() {
         <div className="grid gap-4 sm:grid-cols-3">
           <Card
             title="Every city, day one"
-            body="Each guide starts from OpenStreetMap, the world's open map. Notable, well-documented places rank higher until people weigh in."
+            body="Each guide starts from open map data. Notable, well-documented places rank higher until people weigh in."
           />
           <Card
-            title="Travellers take over"
-            body="Scores blend community ratings with that starting point. With a handful of ratings the community dominates; one grumpy review can't sink a place."
+            title="Locals and visitors take over"
+            body="Scores blend community ratings with that starting point. With a handful of ratings the community dominates; one grumpy review can't sink a place. Each city shows whether its locals or its visitors like it more."
           />
           <Card
             title="The bad is a feature"

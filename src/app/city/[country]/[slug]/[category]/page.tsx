@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!city || !cat) return { title: "Not found" };
   return {
     title: `${CATEGORY_META[cat].plural} in ${city.name}`,
-    description: `The best ${CATEGORY_META[cat].plural.toLowerCase()} in ${city.name}, ${city.country_name}, ranked by travellers.`,
+    description: `The best ${CATEGORY_META[cat].plural.toLowerCase()} in ${city.name}, ${city.country_name}, ranked by locals and travellers.`,
   };
 }
 

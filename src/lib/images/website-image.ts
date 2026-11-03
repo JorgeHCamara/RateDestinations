@@ -167,7 +167,7 @@ export async function websiteImage(
   if (isSkippedWebsite(website)) return { image: null, adult: false };
   const userAgent =
     opts.userAgent ??
-    `Mozilla/5.0 (compatible; RateDestinationsBot/1.0; +${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ratedestinations.vercel.app"})`;
+    `Mozilla/5.0 (compatible; RateDestinationsBot/1.0; +${process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.ratedestinations.com"})`;
   const page = await safeFetch(website, {
     ...opts,
     headers: { "user-agent": userAgent, accept: "text/html,application/xhtml+xml" },

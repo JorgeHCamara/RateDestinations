@@ -37,6 +37,12 @@ export type CityStats = {
   overall: number | null;
   rating_count: number;
   rater_count: number;
+  /** People who said they live in the city / are visiting it (see migration 0006). */
+  local_count: number;
+  visitor_count: number;
+  /** The city's overall score from locals only / visitors only. */
+  local_overall: number | null;
+  visitor_overall: number | null;
 };
 
 export { CITY_DIMENSIONS, DIMENSION_META } from "@/lib/dimensions";
@@ -215,10 +221,23 @@ export async function getCityGuide(cityId: number, version: string) {
 
 export async function getCityStats(cityId: number): Promise<CityStats> {
   const row = await queryOne<CityStats>(
-    "select dimensions, overall, rating_count, rater_count from city_stats where city_id = $1",
+    `select dimensions, overall, rating_count, rater_count,
+            local_count, visitor_count, local_overall, visitor_overall
+     from city_stats where city_id = $1`,
     [cityId],
   );
-  return row ?? { dimensions: {}, overall: null, rating_count: 0, rater_count: 0 };
+  return (
+    row ?? {
+      dimensions: {},
+      overall: null,
+      rating_count: 0,
+      rater_count: 0,
+      local_count: 0,
+      visitor_count: 0,
+      local_overall: null,
+      visitor_overall: null,
+    }
+  );
 }
 
 export type CategoryPlace = TopPlace & { address: string | null; opening_hours: string | null };

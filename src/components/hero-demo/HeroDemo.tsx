@@ -4,7 +4,7 @@ import { Star } from "lucide-react";
 import { Bar, Collapse, Popover, Roll, Stage, Text, Window, type Act } from "@/stageshow/kit";
 import "./hero-demo.css";
 
-// The home-page hero: a Lisbon guide. A traveller hovers a restaurant, opens Rate,
+// The home-page hero: a Lisbon guide. Someone hovers a restaurant, opens Rate,
 // gives it two stars and the "Tourist trap" tag, saves, and the guide answers: the
 // place's score rolls down, its map pin turns red, and a new warning lands in the
 // "Watch out" card. Plays once; the payoff is the still.
@@ -251,7 +251,7 @@ export function HeroDemo() {
             <div className="rdh-watch">
               <div className="rdh-watch__head">
                 <span className="rdh-watch__kicker">Watch out</span>
-                <span className="rdh-watch__title">What travellers warn about</span>
+                <span className="rdh-watch__title">What people warn about</span>
               </div>
               <Collapse open={s.saved} reveal="drop">
                 <div className="rdh-warn rdh-warn--new">

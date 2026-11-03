@@ -6,7 +6,7 @@ export function SiteFooter() {
       <div className="container-page text-muted-foreground flex flex-col gap-4 py-8 text-sm sm:flex-row sm:items-center sm:justify-between">
         <p>
           <span className="font-display text-foreground text-base">RateDestinations</span> — the
-          whole city, rated by travellers.
+          whole city, rated by locals and travellers.
         </p>
         <p className="text-xs leading-relaxed">
           Place data ©{" "}
