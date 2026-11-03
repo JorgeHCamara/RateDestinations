@@ -62,6 +62,12 @@ export type TopPlace = {
   user_count: number;
   warning_count: number;
   rank: number;
+  /** The place's photo (migration 0005), when looked up; image_checked: looked up at all. */
+  image_url?: string | null;
+  image_source?: "commons" | "website" | null;
+  image_credit?: string | null;
+  image_page?: string | null;
+  image_checked?: boolean;
 };
 
 export type WatchOutPlace = {
@@ -202,6 +208,22 @@ export async function getCityGuide(cityId: number, version: string) {
       [cityId],
     ),
   ]);
+  // Photos for the list thumbnails (city_top_places itself doesn't return them).
+  const photos = await query<{
+    id: number;
+    image_url: string | null;
+    image_source: "commons" | "website" | null;
+    image_credit: string | null;
+    image_page: string | null;
+    image_checked: boolean;
+  }>(
+    `select id, image_url, image_source, image_credit, image_page,
+            image_checked_at is not null as image_checked
+     from places where id = any($1::bigint[])`,
+    [top.map((p) => p.id)],
+  );
+  const photoById = new Map(photos.map((p) => [Number(p.id), p]));
+  for (const p of top) Object.assign(p, photoById.get(Number(p.id)) ?? {}, { id: p.id });
   const byCategory = new Map<PlaceCategory, TopPlace[]>();
   for (const p of top) {
     const list = byCategory.get(p.category) ?? [];
@@ -249,6 +271,7 @@ export async function getCityCategory(cityId: number, category: PlaceCategory, v
   void version;
   return query<CategoryPlace>(
     `select p.id, p.name, p.category, p.subcategory, p.lat, p.lng, p.website, p.prominence, p.address, p.opening_hours,
+            p.image_url, p.image_source, p.image_credit, p.image_page, p.image_checked_at is not null as image_checked,
             s.blended_score, s.user_avg, s.user_count, s.warning_count,
             row_number() over (order by s.blended_score desc, p.prominence desc, p.location <-> c.location, p.name)::int as rank
      from places p join place_stats s on s.place_id = p.id join cities c on c.id = p.city_id

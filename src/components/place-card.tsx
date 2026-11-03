@@ -1,6 +1,6 @@
-import { CategoryIcon } from "@/components/category-icon";
 import Link from "next/link";
 import { PlaceHoverPreview } from "@/components/place-hover-preview";
+import { PlaceThumb } from "@/components/place-thumb";
 import { ScorePill } from "@/components/score";
 import { CATEGORY_META } from "@/lib/import/categories";
 import type { TopPlace } from "@/lib/queries/cities";
@@ -16,18 +16,24 @@ export function PlaceCard({
     <PlaceHoverPreview place={place}>
       <Link
         href={`/place/${place.id}`}
-        className="group bg-card focus-visible:ring-ring/60 flex items-start gap-3 rounded-xl border p-3 transition hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2"
+        className="group bg-card focus-visible:ring-ring/60 flex min-w-0 items-center gap-3 rounded-xl border p-2.5 transition hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2"
       >
-        <span
-          className="bg-surface font-display grid size-9 shrink-0 place-items-center rounded-lg text-lg"
-          aria-hidden
-        >
-          {rank ? (
-            <span className="text-muted-foreground font-mono text-xs">#{rank}</span>
-          ) : (
-            <CategoryIcon category={place.category} className="text-muted-foreground" />
-          )}
-        </span>
+        <PlaceThumb
+          placeId={place.id}
+          category={place.category}
+          photo={
+            place.image_url && place.image_source
+              ? {
+                  url: place.image_url,
+                  source: place.image_source,
+                  credit: place.image_credit ?? "",
+                  page: place.image_page ?? "",
+                }
+              : null
+          }
+          checked={place.image_checked ?? false}
+          rank={rank}
+        />
         <span className="min-w-0 flex-1">
           <span className="block truncate font-medium group-hover:underline group-hover:underline-offset-2">
             {place.name}
