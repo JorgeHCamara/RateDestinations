@@ -27,7 +27,7 @@ Tailwind v4 + shadcn/ui, MapLibre with OpenFreeMap tiles. Deploys on Vercel.
     are ranked below local places, and bar-and-grills (Moxies, Jack Astor's) are listed as bars.
   - Sources get categories wrong (a strip club filed as a dance club), so places can be flagged
     by hand in the SQL Editor with the id from the place's URL: `select flag_adult_place(123,
-    'why');` or `select hide_place(123, 'why');`. The flag lives in `place_overrides`, survives
+'why');` or `select hide_place(123, 'why');`. The flag lives in `place_overrides`, survives
     re-imports, and covers the same name in that city from any source. To un-flag one, insert a
     row with `adult = false` for its `source`/`source_id`.
 - **Photos** (`src/lib/images`): one per place, for the hover card and the place page. Free
@@ -151,6 +151,30 @@ before the budget ends. A city still `pending` after 6 minutes can be claimed ag
 "Try again" button, or the daily cron). After pulling this change, run
 `supabase/migrations/0002_import_claims.sql` through `0005_place_images.sql` in the SQL
 Editor.
+
+### 4. Sign-in emails
+
+Supabase's built-in email service only delivers to members of the Supabase project team (2 an
+hour) and is not for production: with it, other people can't sign in by email. Use your own
+sender, which also makes the email come from RateDestinations instead of "Supabase Auth".
+
+1. **Resend** (free: 3,000 emails/month, 100/day): sign up at resend.com, add the domain
+   `ratedestinations.com`, and add the DNS records it shows (SPF, DKIM, optionally DMARC) where
+   the domain's DNS is managed. Wait until Resend shows the domain as verified, then create an
+   API key (sending access).
+2. **Supabase → Authentication → Emails → SMTP Settings**: enable custom SMTP with host
+   `smtp.resend.com`, port `465`, username `resend`, password = the Resend API key, sender email
+   `noreply@ratedestinations.com`, sender name `RateDestinations`.
+3. **Supabase → Authentication → Rate Limits**: custom SMTP starts at 30 emails an hour; raise
+   it if needed.
+4. **Supabase → Authentication → Emails → Templates**, paste the HTML from `supabase/templates/`:
+   - _Magic link_ — subject `Your RateDestinations sign-in link`, body `magic-link.html`
+   - _Confirm signup_ (a person's first sign-in) — subject `Confirm your email for
+RateDestinations`, body `confirm-signup.html`
+
+   The logo they show is `public/email/logo.png`, served from the live site. The text says the
+   link expires in an hour: Supabase's default email OTP expiry (Authentication → Providers →
+   Email); change both together.
 
 ## Data and attribution
 
