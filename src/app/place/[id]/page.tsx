@@ -99,7 +99,7 @@ async function PlaceDetail({ params }: { params: Props["params"] }) {
           )}
           <Facts place={place} />
         </div>
-        <ScoreRing score={place.blended_score} count={place.user_count} label="Score" />
+        <ScoreRing score={place.user_avg} count={place.user_count} label="Score" />
       </header>
 
       <PlacePagePhoto
@@ -137,12 +137,7 @@ async function PlaceDetail({ params }: { params: Props["params"] }) {
             <h2 className="font-display mb-3 text-2xl font-semibold">What people say</h2>
             {reviews.length === 0 ? (
               <p className="text-muted-foreground rounded-xl border border-dashed p-6 text-sm">
-                No ratings yet. The score above is an estimate from how well documented this place
-                is on OpenStreetMap
-                {place.external_rating
-                  ? ` and its Google rating (${place.external_rating.toFixed(1)} from ${place.external_rating_count ?? 0} reviews)`
-                  : ""}
-                . Be the first to say what it&apos;s really like.
+                No ratings yet. Be the first to say what it&apos;s really like.
               </p>
             ) : (
               <ul className="space-y-3">
@@ -200,7 +195,7 @@ async function PlaceDetail({ params }: { params: Props["params"] }) {
                   category: place.category,
                   lat: place.lat,
                   lng: place.lng,
-                  score: place.blended_score,
+                  score: place.user_avg,
                   count: place.user_count,
                   warning: place.warning_count > 0,
                 },
@@ -234,7 +229,7 @@ async function PlaceDetail({ params }: { params: Props["params"] }) {
                         {n.name}{" "}
                         <span className="text-muted-foreground text-xs">· {n.distance_m} m</span>
                       </span>
-                      <ScorePill score={n.blended_score} count={n.user_count} />
+                      <ScorePill score={n.user_avg} count={n.user_count} />
                     </Link>
                   </li>
                 ))}

@@ -112,9 +112,11 @@ run("ratings → stats (database)", () => {
     >;
     expect(dims.safety.count).toBe(1);
     expect(dims.food.avg).toBe(5);
-    // overall = (1.5 * safety + 1.0 * food) / 2.5, each shrunk toward 3.5 with K = 10
-    const expected = (1.5 * blendScore(2, 1, 3.5) + blendScore(5, 1, 3.5)) / 2.5;
-    expect(Number(r.rows[0].overall)).toBeCloseTo(expected, 1);
+    // overall = what people gave, weighted: (1.5 * safety + 1.0 * food) / 2.5, not pulled
+    // toward a neutral default (migration 0007)
+    expect(Number(r.rows[0].overall)).toBeCloseTo((1.5 * 2 + 5) / 2.5, 2);
+    // the blended per-dimension score is still kept (for ordering), the average is what's shown
+    expect(dims.safety.score).toBeCloseTo(blendScore(2, 1, 3.5), 2);
     expect(Number(r.rows[0].rater_count)).toBe(1);
   });
 

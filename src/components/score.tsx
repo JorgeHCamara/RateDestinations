@@ -20,7 +20,10 @@ const toneBg: Record<Tone, string> = {
   neutral: "bg-muted text-muted-foreground",
 };
 
-/** Big ring for a city or place: 0–10 scale plus confidence label. */
+/**
+ * Big ring for a city or place: the average of what people gave (1–5 stars, shown on a 0–10
+ * scale), with how many ratings it is based on. No ratings: no number, never an estimate.
+ */
 export function ScoreRing({
   score,
   count,
@@ -32,8 +35,9 @@ export function ScoreRing({
   size?: number;
   label?: string;
 }) {
-  const tone = toneFor(score, count);
-  const value = score === null ? null : toTenScale(score);
+  const rated = count > 0 && score !== null;
+  const tone = toneFor(rated ? score : null, count);
+  const value = rated ? toTenScale(score) : null;
   const r = (size - 10) / 2;
   const c = 2 * Math.PI * r;
   const pct = value === null ? 0 : value / 10;
@@ -85,16 +89,32 @@ export function ScoreRing({
   );
 }
 
-/** Compact pill, used in cards and lists. */
+/**
+ * Compact pill, used in cards and lists: the average of what people gave, or "Not rated" until
+ * someone rates it (never an estimate).
+ */
 export function ScorePill({
   score,
   count,
   className,
 }: {
-  score: number;
+  score: number | null;
   count: number;
   className?: string;
 }) {
+  if (!count || score === null) {
+    return (
+      <span
+        className={cn(
+          "bg-muted text-muted-foreground inline-flex shrink-0 items-center rounded-md px-1.5 py-0.5 text-[11px] whitespace-nowrap",
+          className,
+        )}
+        title="No one has rated this yet"
+      >
+        Not rated
+      </span>
+    );
+  }
   const tone = toneFor(score, count);
   return (
     <span
@@ -103,10 +123,9 @@ export function ScorePill({
         toneBg[tone],
         className,
       )}
-      title={count ? `${count} community ratings` : "Estimated — not rated yet"}
+      title={`Average of ${count} ${count === 1 ? "rating" : "ratings"}`}
     >
       {toTenScale(score).toFixed(1)}
-      {count === 0 && <span className="font-sans font-normal opacity-70">est.</span>}
     </span>
   );
 }

@@ -16,8 +16,9 @@ export function DimensionBars({ stats, compact = false }: { stats: CityStats; co
     <ul className={cn("grid gap-x-8 gap-y-2.5", compact ? "grid-cols-1" : "sm:grid-cols-2")}>
       {CITY_DIMENSIONS.map((d) => {
         const s = stats.dimensions[d];
-        const tone = toneFor(s?.score ?? null, s?.count ?? 0);
-        const pct = s ? (toTenScale(s.score) / 10) * 100 : 0;
+        // The average people gave for this dimension, not pulled toward a default.
+        const tone = toneFor(s?.avg ?? null, s?.count ?? 0);
+        const pct = s ? (toTenScale(s.avg) / 10) * 100 : 0;
         return (
           <li key={d} className="grid grid-cols-[8.75rem_1fr_2.5rem] items-center gap-3 text-sm">
             <span className="text-muted-foreground flex min-w-0 items-center gap-1.5">
@@ -34,7 +35,7 @@ export function DimensionBars({ stats, compact = false }: { stats: CityStats; co
               />
             </span>
             <span className="text-muted-foreground text-right font-mono text-xs tabular-nums">
-              {s ? toTenScale(s.score).toFixed(1) : "—"}
+              {s ? toTenScale(s.avg).toFixed(1) : "—"}
             </span>
           </li>
         );
