@@ -1,4 +1,5 @@
 import { Pool, types, type QueryResultRow } from "pg";
+import { normalizeDatabaseUrl } from "./db-url";
 
 // node-postgres returns NUMERIC and BIGINT as strings to avoid precision loss; our values are
 // small scores and counts, so plain numbers are what the app wants.
@@ -17,17 +18,17 @@ let pool: Pool | undefined;
 
 export function getPool(): Pool {
   if (!pool) {
-    const connectionString = process.env.DATABASE_URL;
-    if (!connectionString) throw new Error("DATABASE_URL is not set");
+    const raw = process.env.DATABASE_URL;
+    if (!raw) throw new Error("DATABASE_URL is not set");
+    const { url, ssl } = normalizeDatabaseUrl(raw);
     pool = new Pool({
-      connectionString,
+      connectionString: url,
       max: Number(process.env.PG_POOL_MAX ?? 3),
       idleTimeoutMillis: 10_000,
       connectionTimeoutMillis: 8_000,
-      ssl:
-        connectionString.includes("supabase.co") || connectionString.includes("sslmode=require")
-          ? { rejectUnauthorized: false }
-          : undefined,
+      // Supabase's pooler presents a certificate from Supabase's own CA; encrypt without
+      // verifying the chain (the standard setting for Supabase with node-postgres).
+      ssl: ssl ? { rejectUnauthorized: false } : undefined,
     });
   }
   return pool;

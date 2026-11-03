@@ -94,15 +94,15 @@ film it with `node .claude/skills/stageshow/scripts/film.mjs http://localhost:30
 
 Import the repo, then set these environment variables (Production and Preview):
 
-| Variable                                                     | Value                                                                             |
-| ------------------------------------------------------------ | --------------------------------------------------------------------------------- |
-| `DATABASE_URL`                                               | Supabase **transaction pooler** URL (port 6543, `?sslmode=require`)               |
-| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Project Settings → API                                                            |
-| `NEXT_PUBLIC_SITE_URL`                                       | `https://<your-domain>`                                                           |
-| `CRON_SECRET`                                                | a long random string (Vercel sends it to `/api/cron/refresh`)                     |
-| `OVERPASS_ENDPOINTS`                                         | optional; default is the main instance, comma-separate mirrors                    |
-| `IMPORT_USER_AGENT`                                          | `RateDestinations/1.0 (contact: you@example.com)` — OSM and Wikidata ask for this |
-| `GOOGLE_PLACES_ENABLED` / `GOOGLE_PLACES_API_KEY`            | optional, see above                                                               |
+| Variable                                                     | Value                                                                                           |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                                               | Supabase **transaction pooler** URL (port 6543), pasted as is: no quotes, no `?sslmode=require` |
+| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Project Settings → API                                                                          |
+| `NEXT_PUBLIC_SITE_URL`                                       | `https://<your-domain>`                                                                         |
+| `CRON_SECRET`                                                | a long random string (Vercel sends it to `/api/cron/refresh`)                                   |
+| `OVERPASS_ENDPOINTS`                                         | optional; default is the main instance, comma-separate mirrors                                  |
+| `IMPORT_USER_AGENT`                                          | `RateDestinations/1.0 (contact: you@example.com)` — OSM and Wikidata ask for this               |
+| `GOOGLE_PLACES_ENABLED` / `GOOGLE_PLACES_API_KEY`            | optional, see above                                                                             |
 
 `vercel.json` schedules the daily refresh cron. City imports run inside `after()` on the
 `/api/cities/[id]/build` route (`maxDuration = 300`), so enable Fluid Compute / a plan that
