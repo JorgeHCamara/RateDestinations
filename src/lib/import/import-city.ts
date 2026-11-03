@@ -72,20 +72,7 @@ export async function importCity(cityId: number, opts: ImportOptions = {}): Prom
   const tasks: Task[] = geoapify
     ? PLACE_CATEGORIES.map((category) => ({
         key: category,
-        run: async () => {
-          for (let attempt = 0; ; attempt++) {
-            const remaining = deadline - now();
-            if (remaining < 3_000) throw new Error("out of time");
-            try {
-              return await fetchGeoapifyCategory(city, category, {
-                timeoutMs: Math.min(20_000, remaining),
-              });
-            } catch (err) {
-              if (attempt >= 1) throw err;
-              await new Promise((r) => setTimeout(r, 1_500));
-            }
-          }
-        },
+        run: () => fetchGeoapifyCategory(city, category, { deadline, now }),
       }))
     : QUERY_GROUPS.map((group) => ({
         key: group.key,
@@ -120,12 +107,15 @@ export async function importCity(cityId: number, opts: ImportOptions = {}): Prom
     .join(" | ")
     .slice(0, 1000);
 
-  if (groups.every((g) => !g.ok)) {
+  // Nothing saved means nothing to show: record it as a failure so the city can be retried,
+  // rather than "done" with an empty guide (searches that answered with zero places count too).
+  if (saved.size === 0) {
+    const reason = failures || "every search answered with no places";
     await query(
       "update cities set import_status = 'failed', import_error = $2, imported_at = now() where id = $1",
-      [cityId, failures],
+      [cityId, reason],
     );
-    throw new Error(`import failed for city ${cityId}: ${failures}`);
+    throw new Error(`import failed for city ${cityId}: ${reason}`);
   }
 
   // Wikidata notability is a bonus: only with time to spare, and bounded by the same deadline.

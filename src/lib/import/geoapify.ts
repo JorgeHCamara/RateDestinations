@@ -130,30 +130,97 @@ export function parseGeoapify(features: Feature[], category: PlaceCategory): Pla
   return out;
 }
 
+/** Longest a single Geoapify request may take before the search area is narrowed. */
+export const GEOAPIFY_REQUEST_TIMEOUT_MS = 15_000;
+/** Never search a smaller circle than this. */
+const MIN_RADIUS_M = 2_000;
+
+/**
+ * The circles a category search tries, widest first: the city's full radius, then half, then a
+ * quarter. Geoapify sorts results by distance from the centre, which gets slow over a wide,
+ * dense area (New York at 14 km timed out on every category); a narrower circle answers fast and
+ * still returns the places nearest the centre.
+ */
+export function searchRadii(population: number): number[] {
+  const full = radiusForPopulation(population);
+  const radii = [full, Math.round(full / 2), Math.round(full / 4)].filter((r) => r >= MIN_RADIUS_M);
+  return radii.length ? radii : [full];
+}
+
+export class GeoapifyError extends Error {}
+
 export async function fetchGeoapifyCategory(
   city: { lat: number; lng: number; population: number },
   category: PlaceCategory,
-  opts: { timeoutMs: number; fetchImpl?: typeof fetch },
+  opts: {
+    /** Epoch ms by which the call must have returned or thrown. */
+    deadline: number;
+    now?: () => number;
+    fetchImpl?: typeof fetch;
+    sleep?: (ms: number) => Promise<void>;
+  },
 ): Promise<PlaceInput[]> {
   const key = process.env.GEOAPIFY_API_KEY;
-  if (!key) throw new Error("GEOAPIFY_API_KEY is not set");
-  const radius = radiusForPopulation(city.population);
+  if (!key) throw new GeoapifyError("GEOAPIFY_API_KEY is not set");
+  const now = opts.now ?? Date.now;
+  const fetchImpl = opts.fetchImpl ?? fetch;
+  const sleep = opts.sleep ?? ((ms: number) => new Promise((r) => setTimeout(r, ms)));
   const limit = Math.min(500, Math.max(20, Number(process.env.GEOAPIFY_PER_CATEGORY ?? 60)));
-  const params = new URLSearchParams({
-    categories: GEOAPIFY_CATEGORIES[category].join(","),
-    filter: `circle:${city.lng},${city.lat},${radius}`,
-    bias: `proximity:${city.lng},${city.lat}`,
-    limit: String(limit),
-    lang: "en",
-    apiKey: key,
-  });
-  const res = await (opts.fetchImpl ?? fetch)(`${ENDPOINT}?${params}`, {
-    signal: AbortSignal.timeout(opts.timeoutMs),
-  });
-  if (!res.ok) {
-    const body = (await res.text()).slice(0, 200).replace(key, "***");
-    throw new Error(`Geoapify HTTP ${res.status}: ${body}`);
+  const errors: string[] = [];
+  let rateLimitedOnce = false;
+
+  const radii = searchRadii(city.population);
+  for (let i = 0; i < radii.length; i++) {
+    const radius = radii[i];
+    const remaining = opts.deadline - now();
+    if (remaining < 3_000) break;
+    const params = new URLSearchParams({
+      categories: GEOAPIFY_CATEGORIES[category].join(","),
+      filter: `circle:${city.lng},${city.lat},${radius}`,
+      bias: `proximity:${city.lng},${city.lat}`,
+      limit: String(limit),
+      lang: "en",
+      apiKey: key,
+    });
+    const timeoutMs = Math.min(GEOAPIFY_REQUEST_TIMEOUT_MS, remaining);
+    let res: Response;
+    const started = now();
+    // One line per request in the server logs (Vercel → Logs), for diagnosing slow or empty imports.
+    const log = (outcome: string) =>
+      console.info(`[geoapify] ${category} r=${radius}m ${outcome} in ${now() - started}ms`);
+    try {
+      res = await fetchImpl(`${ENDPOINT}?${params}`, { signal: AbortSignal.timeout(timeoutMs) });
+    } catch (err) {
+      const e = err as Error;
+      log(`error ${e.name}`);
+      errors.push(
+        `${Math.round(radius / 1000)} km: ${e.name === "TimeoutError" || e.name === "AbortError" ? `no answer in ${Math.round(timeoutMs / 1000)}s` : e.message}`,
+      );
+      continue; // too slow or a network error: try a narrower circle
+    }
+    if (res.ok) {
+      const json = (await res.json()) as { features?: Feature[] };
+      const places = parseGeoapify(json.features ?? [], category);
+      log(`ok ${json.features?.length ?? 0} features, ${places.length} places`);
+      return places;
+    }
+    log(`HTTP ${res.status}`);
+    const body = (await res.text()).slice(0, 200).replaceAll(key, "***");
+    if (res.status === 429 && !rateLimitedOnce) {
+      // Briefly over the per-second limit: wait and try the same circle once more.
+      rateLimitedOnce = true;
+      await sleep(1_500);
+      i--;
+      continue;
+    }
+    if (res.status >= 500 || res.status === 429) {
+      errors.push(`${Math.round(radius / 1000)} km: HTTP ${res.status}`);
+      continue;
+    }
+    // A 4xx (bad key, quota used up, bad request) won't get better with a smaller circle.
+    throw new GeoapifyError(`Geoapify HTTP ${res.status}: ${body}`);
   }
-  const json = (await res.json()) as { features?: Feature[] };
-  return parseGeoapify(json.features ?? [], category);
+  throw new GeoapifyError(
+    `Geoapify gave no results in time (${errors.join("; ") || "out of time"})`,
+  );
 }

@@ -143,4 +143,24 @@ run("importCity (database)", () => {
       vi.unstubAllEnvs();
     }
   });
+
+  it("marks the city failed when every search answers with no places, so it can be retried", async () => {
+    await query("update cities set import_status = 'pending' where id = $1", [cityId]);
+    await query("delete from places where city_id = $1", [cityId]);
+    const empty: typeof fetch = async () => Response.json({ elements: [] });
+    await expect(
+      importCity(cityId, {
+        budgetMs: 15_000,
+        fetchOptions: { endpoints: ["https://fake/api"], fetchImpl: empty, sleep: async () => {} },
+      }),
+    ).rejects.toThrow(/no places/);
+    const city = await queryOne<{ import_status: string; import_error: string }>(
+      "select import_status, import_error from cities where id = $1",
+      [cityId],
+    );
+    expect(city).toEqual({
+      import_status: "failed",
+      import_error: "every search answered with no places",
+    });
+  });
 });

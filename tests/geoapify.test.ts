@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fetchGeoapifyCategory, GEOAPIFY_CATEGORIES, parseGeoapify } from "@/lib/import/geoapify";
+import {
+  fetchGeoapifyCategory,
+  GEOAPIFY_CATEGORIES,
+  parseGeoapify,
+  searchRadii,
+} from "@/lib/import/geoapify";
 import { PLACE_CATEGORIES } from "@/lib/import/categories";
 
 const withRaw = {
@@ -80,7 +85,7 @@ describe("Geoapify requests", () => {
     const places = await fetchGeoapifyCategory(
       { lat: 38.72, lng: -9.14, population: 517_802 },
       "restaurant",
-      { timeoutMs: 1000, fetchImpl: ok },
+      { deadline: Date.now() + 60_000, fetchImpl: ok },
     );
     expect(places).toHaveLength(1);
     const q = new URL(urls[0]).searchParams;
@@ -92,9 +97,84 @@ describe("Geoapify requests", () => {
       new Response("Invalid apiKey secret-key", { status: 401 });
     await expect(
       fetchGeoapifyCategory({ lat: 1, lng: 1, population: 1 }, "cafe", {
-        timeoutMs: 1000,
+        deadline: Date.now() + 60_000,
         fetchImpl: denied,
       }),
     ).rejects.toThrow(/401: Invalid apiKey \*\*\*/);
+  });
+
+  it("narrows the circle when a wide search times out, as New York's did", async () => {
+    vi.stubEnv("GEOAPIFY_API_KEY", "k");
+    expect(searchRadii(8_804_190)).toEqual([14_000, 7_000, 3_500]);
+    expect(searchRadii(17_000)).toEqual([4_000, 2_000]);
+    const radii: number[] = [];
+    // A server that is too slow over 10 km or more, and fast below that.
+    const slowWhenWide: typeof fetch = async (url) => {
+      const r = Number(new URL(String(url)).searchParams.get("filter")!.split(",")[2]);
+      radii.push(r);
+      if (r >= 10_000) throw Object.assign(new Error("timed out"), { name: "TimeoutError" });
+      return Response.json({ features: [withRaw] });
+    };
+    const places = await fetchGeoapifyCategory(
+      { lat: 40.71, lng: -74.0, population: 8_804_190 },
+      "restaurant",
+      {
+        deadline: Date.now() + 60_000,
+        fetchImpl: slowWhenWide,
+      },
+    );
+    expect(places).toHaveLength(1);
+    expect(radii).toEqual([14_000, 7_000]);
+  });
+
+  it("gives up with every attempt listed when all circles time out, without passing the deadline", async () => {
+    vi.stubEnv("GEOAPIFY_API_KEY", "k");
+    let calls = 0;
+    const neverAnswers: typeof fetch = async () => {
+      calls++;
+      throw Object.assign(new Error("timed out"), { name: "TimeoutError" });
+    };
+    await expect(
+      fetchGeoapifyCategory({ lat: 40.71, lng: -74.0, population: 8_804_190 }, "cafe", {
+        deadline: Date.now() + 60_000,
+        fetchImpl: neverAnswers,
+      }),
+    ).rejects.toThrow(/14 km: no answer.*7 km: no answer.*4 km: no answer/);
+    expect(calls).toBe(3);
+  });
+
+  it("retries the same circle once after a rate limit, and stops on a quota or key error", async () => {
+    vi.stubEnv("GEOAPIFY_API_KEY", "k");
+    const statuses = [429, 200];
+    const urls: string[] = [];
+    const limited: typeof fetch = async (url) => {
+      urls.push(String(url));
+      const status = statuses.shift()!;
+      return status === 200
+        ? Response.json({ features: [withRaw] })
+        : new Response("slow down", { status });
+    };
+    await fetchGeoapifyCategory({ lat: 1, lng: 1, population: 500_000 }, "bar", {
+      deadline: Date.now() + 60_000,
+      fetchImpl: limited,
+      sleep: async () => {},
+    });
+    expect(urls).toHaveLength(2);
+    expect(new URL(urls[0]).searchParams.get("filter")).toBe(
+      new URL(urls[1]).searchParams.get("filter"),
+    );
+
+    let quotaCalls = 0;
+    const quota: typeof fetch = async () => {
+      quotaCalls++;
+      return new Response("Daily limit exceeded", { status: 402 });
+    };
+    await expect(
+      fetchGeoapifyCategory({ lat: 1, lng: 1, population: 500_000 }, "bar", {
+        deadline: Date.now() + 60_000,
+        fetchImpl: quota,
+      }),
+    ).rejects.toThrow(/HTTP 402/);
+    expect(quotaCalls).toBe(1);
   });
 });
