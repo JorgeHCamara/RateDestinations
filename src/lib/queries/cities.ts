@@ -123,6 +123,43 @@ export async function getTrendingCities(limit = 12): Promise<TrendingCity[]> {
   }
 }
 
+// Lisbon, Tokyo, Mexico City, Cape Town, New York, Barcelona, Bangkok, Buenos Aires
+const FEATURED_GEONAMES_IDS = [
+  2267057, 1850147, 3530597, 3369157, 5128581, 3128760, 1609350, 3435910,
+];
+const FEATURED_FALLBACK = [
+  ["pt", "lisbon"],
+  ["jp", "tokyo"],
+  ["mx", "mexico-city"],
+  ["za", "cape-town"],
+  ["us", "new-york-city"],
+  ["es", "barcelona"],
+  ["th", "bangkok"],
+  ["ar", "buenos-aires"],
+] as const;
+
+/**
+ * The featured cities' URL params, for generateStaticParams. Reads only the cities table, and falls
+ * back to a fixed list when the database can't answer: with Cache Components an empty list fails
+ * the build, and a build must not depend on the database being reachable or fully migrated.
+ */
+export async function getFeaturedCityParams(): Promise<{ country: string; slug: string }[]> {
+  if (isDatabaseConfigured()) {
+    try {
+      const rows = await query<{ country_code: string; slug: string }>(
+        `select country_code, slug from cities where geonames_id = any($1::int[])
+         order by array_position($1::int[], geonames_id)`,
+        [FEATURED_GEONAMES_IDS],
+      );
+      if (rows.length)
+        return rows.map((r) => ({ country: r.country_code.toLowerCase(), slug: r.slug }));
+    } catch {
+      // fall through
+    }
+  }
+  return FEATURED_FALLBACK.map(([country, slug]) => ({ country, slug }));
+}
+
 /** A handful of big cities to show on the home page before anyone has visited anything. */
 export async function getFeaturedCities(): Promise<TrendingCity[]> {
   "use cache";
@@ -137,8 +174,7 @@ export async function getFeaturedCities(): Promise<TrendingCity[]> {
        left join city_stats cs on cs.city_id = c.id
        where c.geonames_id = any($1::int[])
        order by array_position($1::int[], c.geonames_id)`,
-      // Lisbon, Tokyo, Mexico City, Cape Town, New York, Barcelona, Bangkok, Buenos Aires
-      [[2267057, 1850147, 3530597, 3369157, 5128581, 3128760, 1609350, 3435910]],
+      [FEATURED_GEONAMES_IDS],
     );
   } catch {
     return [];

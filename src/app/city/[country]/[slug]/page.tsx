@@ -14,7 +14,7 @@ import {
   getCityBasic,
   getCityBySlug,
   getCityGuide,
-  getFeaturedCities,
+  getFeaturedCityParams,
   type City,
 } from "@/lib/queries/cities";
 import { getRatingTags } from "@/lib/queries/places";
@@ -26,8 +26,7 @@ type Props = PageProps<"/city/[country]/[slug]">;
 // Only the featured cities are prerendered at build time; every other city gets the App
 // Shell on first visit and is cached from then on (ISR with Cache Components).
 export async function generateStaticParams() {
-  const rows = await getFeaturedCities();
-  return rows.map((r) => ({ country: r.country_code.toLowerCase(), slug: r.slug }));
+  return getFeaturedCityParams();
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
