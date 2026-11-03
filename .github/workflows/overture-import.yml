@@ -52,7 +52,7 @@ jobs:
         continue-on-error: true
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          IMPORT_USER_AGENT: "RateDestinations/1.0 (+https://ratedestinations.vercel.app)"
+          IMPORT_USER_AGENT: "RateDestinations/1.0 (+https://www.ratedestinations.com)"
         run: |
           if [ -n "${{ inputs.city }}" ]; then
             pnpm tsx scripts/resolve-images.ts --city "${{ inputs.city }}" --max-minutes 6
