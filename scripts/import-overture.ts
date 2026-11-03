@@ -5,8 +5,8 @@
  *   DATABASE_URL=... pnpm tsx scripts/import-overture.ts                 # requested + backfill
  *   DATABASE_URL=... pnpm tsx scripts/import-overture.ts --city ca/vaughan
  *
- * Each run: (1) cities visitors opened whose guide isn't built from the current release yet,
- * newest request first; (2) then the most populous cities not built yet, up to --top. Stops after
+ * Each run: (1) cities visitors opened (queued by the build route, or imported live at any point)
+ * whose guide isn't built from the current release yet, newest first; (2) then the most populous cities not built yet, up to --top. Stops after
  * --max-minutes so scheduled runs never overlap.
  */
 import "dotenv/config";
@@ -61,8 +61,9 @@ async function main() {
   } else {
     const requested = await query<CityRow>(
       `select id, name, country_code, slug, lat, lng, population from cities
-       where requested_at is not null and overture_release is distinct from $1
-       order by requested_at desc limit $2`,
+       where (requested_at is not null or imported_at is not null)
+         and overture_release is distinct from $1
+       order by coalesce(requested_at, imported_at) desc limit $2`,
       [release, requestedLimit],
     );
     const backfill = await query<CityRow>(
