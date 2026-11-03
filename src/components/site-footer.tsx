@@ -45,6 +45,14 @@ export function SiteFooter() {
           <Link className="underline-offset-2 hover:underline" href="/#how-it-works">
             How scores work
           </Link>
+          {" · "}
+          <Link className="underline-offset-2 hover:underline" href="/privacy">
+            Privacy
+          </Link>
+          {" · "}
+          <Link className="underline-offset-2 hover:underline" href="/terms">
+            Terms
+          </Link>
           .
         </p>
       </div>
