@@ -3,6 +3,7 @@
  * in link previews. Often a real photo of the place; sometimes a logo or a banner, which the
  * filters here try to leave out: by name, by file type, and by size and shape.
  */
+import { SITE_URL } from "@/lib/site-url";
 import { hasAdultName } from "@/lib/import/filters";
 import { safeFetch, type SafeFetchOptions } from "./safe-fetch";
 
@@ -264,8 +265,7 @@ export async function websiteImage(
 ): Promise<{ image: WebsiteImage | null; adult: boolean }> {
   if (isSkippedWebsite(website)) return { image: null, adult: false };
   const userAgent =
-    opts.userAgent ??
-    `Mozilla/5.0 (compatible; RateDestinationsBot/1.0; +${process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.ratedestinations.com"})`;
+    opts.userAgent ?? `Mozilla/5.0 (compatible; RateDestinationsBot/1.0; +${SITE_URL})`;
   const page = await safeFetch(website, {
     ...opts,
     headers: { "user-agent": userAgent, accept: "text/html,application/xhtml+xml" },

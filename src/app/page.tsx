@@ -3,10 +3,16 @@ import { CitySearch } from "@/components/city-search";
 import { HeroDemo } from "@/components/hero-demo/HeroDemo";
 import { ScorePill } from "@/components/score";
 import { getFeaturedCities, getTrendingCities, type TrendingCity } from "@/lib/queries/cities";
+import type { Metadata } from "next";
+import { JsonLd } from "@/components/json-ld";
+import { websiteJsonLd } from "@/lib/structured-data";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default function HomePage() {
   return (
     <>
+      <JsonLd data={websiteJsonLd()} />
       <section className="bg-surface relative overflow-hidden border-b">
         <div
           aria-hidden

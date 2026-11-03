@@ -7,7 +7,7 @@ import { DIMENSION_META, type CityDimension } from "@/lib/dimensions";
 import { getMyRatings } from "@/lib/queries/ratings";
 import { getSessionUser } from "@/lib/supabase/server";
 
-export const metadata = { title: "My ratings" };
+export const metadata = { title: "My ratings", robots: { index: false } };
 
 export default function MePage() {
   return (

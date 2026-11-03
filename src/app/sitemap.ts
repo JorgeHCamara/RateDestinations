@@ -1,36 +1,35 @@
 import type { MetadataRoute } from "next";
-import { query } from "@/lib/db";
+import { getSitemapRows } from "@/lib/queries/seo";
+import { SITE_URL } from "@/lib/site-url";
 
-const PER_SITEMAP = 5000;
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-
-export async function generateSitemaps() {
-  const [{ n }] = await query<{ n: number }>("select count(*)::int as n from cities");
-  return Array.from({ length: Math.max(1, Math.ceil(n / PER_SITEMAP)) }, (_, id) => ({ id }));
-}
-
-export default async function sitemap({
-  id,
-}: {
-  id: Promise<string> | string;
-}): Promise<MetadataRoute.Sitemap> {
-  const page = Number(await id);
-  const rows = await query<{
-    country_code: string;
-    slug: string;
-    imported_at: string | null;
-    population: number;
-  }>(
-    `select country_code, slug, imported_at::text, population from cities
-     order by population desc, id limit $1 offset $2`,
-    [PER_SITEMAP, page * PER_SITEMAP],
-  );
-  const entries: MetadataRoute.Sitemap = rows.map((r) => ({
-    url: `${siteUrl}/city/${r.country_code.toLowerCase()}/${r.slug}`,
-    lastModified: r.imported_at ? new Date(r.imported_at) : undefined,
-    changeFrequency: "weekly",
-    priority: r.population > 1_000_000 ? 0.8 : 0.5,
-  }));
-  if (page === 0) entries.unshift({ url: siteUrl, changeFrequency: "daily", priority: 1 });
-  return entries;
+/**
+ * /sitemap.xml: the home page, every city with a guide, its category lists and the places people
+ * have rated (see lib/queries/seo.ts for what is left out and why). Refreshed hourly, so a guide
+ * built today is listed today.
+ */
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const { cities, categories, places } = await getSitemapRows();
+  const date = (d: string | null) => (d ? new Date(d) : undefined);
+  const city = (cc: string, slug: string) => `${SITE_URL}/city/${cc.toLowerCase()}/${slug}`;
+  return [
+    { url: `${SITE_URL}/`, changeFrequency: "daily", priority: 1 },
+    ...cities.map((c) => ({
+      url: city(c.country_code, c.slug),
+      lastModified: date(c.updated),
+      changeFrequency: "weekly" as const,
+      priority: c.population > 1_000_000 ? 0.8 : 0.6,
+    })),
+    ...categories.map((c) => ({
+      url: `${city(c.country_code, c.slug)}/${c.category}`,
+      lastModified: date(c.updated),
+      changeFrequency: "weekly" as const,
+      priority: 0.5,
+    })),
+    ...places.map((p) => ({
+      url: `${SITE_URL}/place/${p.id}`,
+      lastModified: date(p.updated),
+      changeFrequency: "weekly" as const,
+      priority: 0.4,
+    })),
+  ];
 }

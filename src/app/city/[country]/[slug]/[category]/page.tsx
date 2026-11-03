@@ -3,9 +3,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { JsonLd } from "@/components/json-ld";
 import { PlaceCard } from "@/components/place-card";
 import { CATEGORY_META, PLACE_CATEGORIES, type PlaceCategory } from "@/lib/import/categories";
-import { getCityBasic, getCityBySlug, getCityCategory } from "@/lib/queries/cities";
+import { getCityBySlug, getCityCategory, getCityGuide } from "@/lib/queries/cities";
+import { MIN_CATEGORY_PLACES } from "@/lib/queries/seo";
+import {
+  breadcrumbJsonLd,
+  categoryDescription,
+  categoryTitle,
+  cityPath,
+} from "@/lib/structured-data";
 
 type Props = PageProps<"/city/[country]/[slug]/[category]">;
 
@@ -16,11 +24,28 @@ function asCategory(c: string): PlaceCategory | null {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { country, slug, category } = await params;
   const cat = asCategory(category);
-  const city = await getCityBasic(country, slug);
+  const city = cat ? await getCityBySlug(country, slug) : null;
   if (!city || !cat) return { title: "Not found" };
+  const version = city.imported_at ?? "0";
+  const [places, guide] = await Promise.all([
+    getCityCategory(city.id, cat, version),
+    getCityGuide(city.id, version),
+  ]);
+  // The list shows at most 200; the guide counts them all.
+  const count = Math.max(places.length, guide.counts[cat] ?? 0);
+  const description = categoryDescription(
+    cat,
+    city,
+    count,
+    places.map((p) => p.name),
+  );
   return {
-    title: `${CATEGORY_META[cat].plural} in ${city.name}`,
-    description: `The best ${CATEGORY_META[cat].plural.toLowerCase()} in ${city.name}, ${city.country_name}, ranked by locals and travellers.`,
+    title: categoryTitle(cat, city),
+    description,
+    alternates: { canonical: `${cityPath(country, slug)}/${cat}` },
+    // A list of one or two places isn't worth a search result (nor a sitemap entry).
+    robots: places.length >= MIN_CATEGORY_PLACES ? undefined : { index: false, follow: true },
+    openGraph: { title: categoryTitle(cat, city), description },
   };
 }
 
@@ -49,6 +74,13 @@ async function CategoryList({ params }: { params: Props["params"] }) {
   const back = `/city/${country.toLowerCase()}/${slug}`;
   return (
     <div className="container-page py-10">
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "RateDestinations", path: "/" },
+          { name: city.name, path: back },
+          { name: meta.plural, path: `${back}/${cat}` },
+        ])}
+      />
       <nav className="text-muted-foreground mb-4 text-sm">
         <Link href={back} prefetch={true} className="hover:underline">
           {city.name}

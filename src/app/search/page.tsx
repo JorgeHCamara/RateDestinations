@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { CitySearch } from "@/components/city-search";
 import { searchCities } from "@/lib/queries/cities";
 
-export const metadata = { title: "Search cities" };
+export const metadata = { title: "Search cities", robots: { index: false, follow: true } };
 
 export default function SearchPage(props: PageProps<"/search">) {
   return (
