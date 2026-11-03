@@ -1,6 +1,6 @@
+import { CategoryIcon } from "@/components/category-icon";
 import Link from "next/link";
 import { ScorePill } from "@/components/score";
-import { CATEGORY_META } from "@/lib/import/categories";
 import type { WatchOutPlace } from "@/lib/queries/cities";
 import type { RatingTag } from "@/lib/queries/places";
 
@@ -31,7 +31,7 @@ export function WatchOutList({ places, tags }: { places: WatchOutPlace[]; tags: 
                 className="bg-card grid size-9 shrink-0 place-items-center rounded-lg"
                 aria-hidden
               >
-                {CATEGORY_META[p.category].emoji}
+                <CategoryIcon category={p.category} className="text-bad" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-medium">{p.name}</span>

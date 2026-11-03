@@ -1,3 +1,4 @@
+import { CategoryIcon } from "@/components/category-icon";
 import Link from "next/link";
 import { PlaceCard } from "@/components/place-card";
 import { CATEGORY_META, type PlaceCategory } from "@/lib/import/categories";
@@ -19,9 +20,9 @@ export function CategorySection({
     <section id={category} className="scroll-mt-28">
       <div className="mb-3 flex items-end justify-between gap-3">
         <div>
-          <h3 className="font-display text-xl font-semibold">
-            <span aria-hidden className="mr-1.5">
-              {meta.emoji}
+          <h3 className="font-display flex items-center gap-2 text-xl font-semibold">
+            <span className="bg-brand-soft text-brand grid size-7 place-items-center rounded-md">
+              <CategoryIcon category={category} />
             </span>
             {meta.plural}
           </h3>

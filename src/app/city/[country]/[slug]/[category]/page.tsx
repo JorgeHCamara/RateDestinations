@@ -1,3 +1,4 @@
+import { CategoryIcon } from "@/components/category-icon";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -54,9 +55,9 @@ async function CategoryList({ params }: { params: Props["params"] }) {
         </Link>{" "}
         <span aria-hidden>/</span> {meta.plural}
       </nav>
-      <h1 className="font-display text-3xl font-semibold sm:text-4xl">
-        <span aria-hidden className="mr-2">
-          {meta.emoji}
+      <h1 className="font-display flex items-center gap-3 text-3xl font-semibold sm:text-4xl">
+        <span className="bg-brand-soft text-brand grid size-10 shrink-0 place-items-center rounded-lg">
+          <CategoryIcon category={cat} className="size-5" />
         </span>
         {meta.plural} in {city.name}
       </h1>

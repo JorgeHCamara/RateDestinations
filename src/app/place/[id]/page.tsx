@@ -1,3 +1,4 @@
+import { CategoryIcon } from "@/components/category-icon";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -84,8 +85,9 @@ async function PlaceDetail({ params }: { params: Props["params"] }) {
 
       <header className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase">
-            {meta.emoji} {place.subcategory ?? meta.label}
+          <p className="text-brand flex items-center gap-1.5 text-xs font-semibold tracking-[0.2em] uppercase">
+            <CategoryIcon category={place.category} className="size-3.5" strokeWidth={2} />
+            {place.subcategory ?? meta.label}
           </p>
           <h1 className="font-display mt-1 text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">
             {place.name}
@@ -207,9 +209,10 @@ async function PlaceDetail({ params }: { params: Props["params"] }) {
                       className="bg-card hover:bg-accent flex items-center justify-between gap-3 rounded-xl border px-3 py-2 text-sm"
                     >
                       <span className="min-w-0 truncate">
-                        <span aria-hidden className="mr-1">
-                          {CATEGORY_META[n.category].emoji}
-                        </span>
+                        <CategoryIcon
+                          category={n.category}
+                          className="text-muted-foreground mr-1.5 inline size-3.5 align-[-2px]"
+                        />
                         {n.name}{" "}
                         <span className="text-muted-foreground text-xs">· {n.distance_m} m</span>
                       </span>
