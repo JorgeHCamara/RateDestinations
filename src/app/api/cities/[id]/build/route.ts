@@ -21,6 +21,8 @@ export async function POST(_request: Request, ctx: RouteContext<"/api/cities/[id
   );
   if (!city) return NextResponse.json({ error: "not found" }, { status: 404 });
   if (city.import_status === "done") return NextResponse.json({ status: "done", started: false });
+  // Queue the city for the offline Overture build (scripts/import-overture.ts), whatever happens live.
+  await query("update cities set requested_at = now() where id = $1", [cityId]);
   // Pending or failed: the claim only succeeds when the earlier attempt is stale (cut off after
   // 6 minutes, or failed more than 2 minutes ago), so "Try again" can't start parallel imports.
   const claimed = await queryOne<{ claim_city_import: boolean }>(

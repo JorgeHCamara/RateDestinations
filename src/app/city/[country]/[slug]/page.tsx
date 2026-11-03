@@ -152,8 +152,9 @@ async function CityGuide({ params }: { params: Props["params"] }) {
           <div className="bg-surface text-muted-foreground rounded-xl border p-4 text-xs leading-relaxed">
             <p className="text-foreground font-medium">About this guide</p>
             <p className="mt-1">
-              Places come from OpenStreetMap. Before anyone rates a place, its score is an estimate
-              based on how well documented it is. Community ratings take over as they come in.
+              Places come from open map data: OpenStreetMap and Overture Maps, merged so each place
+              appears once. Before anyone rates a place, its score is an estimate based on how well
+              documented and established it is. Community ratings take over as they come in.
             </p>
           </div>
         </aside>

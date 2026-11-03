@@ -98,8 +98,8 @@ export function ImportStatus({
               : "We couldn't build this guide right now."}
           </p>
           <p className="text-muted-foreground">
-            The map data service didn&apos;t answer in time. You can try again now, or come back
-            later; it is also retried automatically.
+            Our live map sources didn&apos;t answer in time. This guide is queued and will be built
+            from our offline map data within about an hour; you can also try again now.
           </p>
         </div>
         <Button size="sm" variant="outline" onClick={retry}>

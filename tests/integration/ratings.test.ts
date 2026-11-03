@@ -119,6 +119,10 @@ run("ratings → stats (database)", () => {
   });
 
   it("claims a city import once", async () => {
+    await client.query(
+      "update cities set import_status = 'none', imported_at = null where id = $1",
+      [cityId],
+    );
     const first = await client.query("select claim_city_import($1, interval '90 days') as ok", [
       cityId,
     ]);

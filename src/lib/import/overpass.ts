@@ -17,7 +17,7 @@ export type OverpassElement = {
 };
 
 export type PlaceInput = {
-  source: "osm";
+  source: "osm" | "overture";
   source_id: string;
   name: string;
   category: PlaceCategory;

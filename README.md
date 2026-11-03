@@ -11,10 +11,15 @@ Tailwind v4 + shadcn/ui, MapLibre with OpenFreeMap tiles. Deploys on Vercel.
 
 - **Cities** come from GeoNames (every populated place over 15,000 people), seeded into Postgres,
   searched with trigram matching (`search_cities`).
-- **Places** come from OpenStreetMap, through the Geoapify Places API when `GEOAPIFY_API_KEY` is
-  set (recommended in production: the public Overpass servers throttle shared cloud IPs such as
-  Vercel's), otherwise straight from Overpass. A city is imported the first time anyone visits its guide (`POST /api/cities/:id/build`), refreshed every 90 days by a cron.
-  Wikidata sitelink counts add a _prominence_ signal for sights.
+- **Places** come from several sources, so no single service can take the site down:
+  - **Overture Maps** (free monthly bulk data, ~88M places from Meta, Microsoft, Foursquare and
+    others) is read offline by a scheduled GitHub Action (`.github/workflows/overture-import.yml`,
+    every 30 min). It builds every city a visitor opened, then pre-builds the most populous cities
+    (`OVERTURE_TOP_CITIES`, default 300), and refreshes them when Overture publishes a new release.
+  - On a first visit to a city that isn't built yet, the site fetches places live: Geoapify
+    (`GEOAPIFY_API_KEY`), then the public Overpass servers for whatever Geoapify missed.
+  - The same place from two sources is merged by name and distance (`src/lib/import/merge.ts`);
+    ratings always stay on the original row.
 - **Scores** blend community ratings with a prior (an external rating when there is one,
   otherwise prominence): `w = n / (n + 10)`, `score = w·user_avg + (1 − w)·prior`. One rating
   barely moves a place; thirty dominate it. The same formula lives in `src/lib/scoring.ts` and in
@@ -91,7 +96,15 @@ film it with `node .claude/skills/stageshow/scripts/film.mjs http://localhost:30
    `grant usage on schema public to service_role; grant all on all tables in schema public to service_role; grant all on all sequences in schema public to service_role;`
    then `SUPABASE_URL=https://<ref>.supabase.co SUPABASE_SERVICE_ROLE_KEY=… pnpm tsx scripts/seed-cities-rest.ts`.
 
-### 2. Vercel
+### 2. GitHub (offline guide builds)
+
+Add a repository secret **DATABASE_URL** (Settings → Secrets and variables → Actions) with the
+same Supabase connection string Vercel uses. The **Overture import** workflow then runs every 30
+minutes; trigger it once by hand (Actions → Overture import → Run workflow) to pre-build the top
+cities straight away. Each city takes about 2 seconds; the free plan's 2,000 Actions minutes a
+month is plenty.
+
+### 3. Vercel
 
 Import the repo, then set these environment variables (Production and Preview):
 
@@ -112,11 +125,12 @@ Import the repo, then set these environment variables (Production and Preview):
 once, places are saved as each search returns, and the city is always marked `done` or `failed`
 before the budget ends. A city still `pending` after 6 minutes can be claimed again (the page's
 "Try again" button, or the daily cron). After pulling this change, run
-`supabase/migrations/0002_import_claims.sql` in the SQL Editor.
+`supabase/migrations/0002_import_claims.sql` and `0003_overture.sql` in the SQL Editor.
 
 ## Data and attribution
 
-Place data © OpenStreetMap contributors (ODbL). City data by GeoNames (CC BY 4.0). Map tiles
+Place data © OpenStreetMap contributors (ODbL) and Overture Maps Foundation (CDLA Permissive
+2.0 / Apache 2.0). City data by GeoNames (CC BY 4.0). Map tiles
 by OpenFreeMap. Notability signal from Wikidata (CC0). Keep the attribution in the footer.
 
 ## Roadmap (not in the MVP)

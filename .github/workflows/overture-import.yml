@@ -1,0 +1,45 @@
+# Builds city guides from Overture Maps (free monthly bulk data) so the site never depends on a
+# live places API. Every 30 minutes: cities visitors opened, then the most populous cities not
+# built yet. A new Overture release (monthly) is picked up automatically.
+#
+# Needs the repository secret DATABASE_URL (Supabase connection string).
+name: Overture import
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+    inputs:
+      city:
+        description: "Build one city, as country/slug (e.g. ca/vaughan). Leave empty for the queue."
+        required: false
+      top:
+        description: "Pre-build up to this many of the most populous cities"
+        required: false
+        default: "300"
+
+concurrency:
+  group: overture-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build guides from Overture
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          if [ -n "${{ inputs.city }}" ]; then
+            pnpm tsx scripts/import-overture.ts --city "${{ inputs.city }}"
+          else
+            pnpm tsx scripts/import-overture.ts --top "${{ inputs.top || '300' }}" --max-minutes 20
+          fi
