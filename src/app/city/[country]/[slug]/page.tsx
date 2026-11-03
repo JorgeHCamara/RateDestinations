@@ -1,3 +1,4 @@
+import { Star } from "lucide-react";
 import { CategoryIcon } from "@/components/category-icon";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -146,16 +147,22 @@ async function CityGuide({ params }: { params: Props["params"] }) {
           )}
         </div>
 
-        <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start">
-          <Suspense fallback={<div className="bg-muted h-72 animate-pulse rounded-xl border" />}>
-            <CityRatingPanel city={city} returnTo={returnTo} />
-          </Suspense>
-          <div className="bg-surface text-muted-foreground rounded-xl border p-4 text-xs leading-relaxed">
+        {/* Pinned beside the guide on wide screens, never taller than the screen: the rating form
+            shrinks and scrolls its list, so its Save button stays in view. */}
+        <aside
+          id="rate"
+          className="scroll-mt-20 space-y-4 lg:sticky lg:top-20 lg:flex lg:max-h-[calc(100dvh-6rem)] lg:flex-col lg:gap-4 lg:space-y-0 lg:self-start"
+        >
+          <div className="lg:flex lg:min-h-0 lg:flex-col">
+            <Suspense fallback={<div className="bg-muted h-72 animate-pulse rounded-xl border" />}>
+              <CityRatingPanel city={city} returnTo={returnTo} />
+            </Suspense>
+          </div>
+          <div className="bg-surface text-muted-foreground shrink-0 rounded-xl border p-4 text-xs leading-relaxed">
             <p className="text-foreground font-medium">About this guide</p>
             <p className="mt-1">
-              Places come from open map data: OpenStreetMap and Overture Maps, merged so each place
-              appears once. Before anyone rates a place, its score is an estimate based on how well
-              documented and established it is. Community ratings take over as they come in.
+              Before anyone rates a place, its score is an estimate based on how well documented and
+              established it is. Community ratings take over as they come in.
             </p>
           </div>
         </aside>
@@ -212,6 +219,14 @@ function Hero({
             {city.population.toLocaleString()} people
             {placeCount > 0 && ` · ${placeCount.toLocaleString()} places in this guide`}
           </p>
+          {/* On narrow screens the rating form sits below the whole guide. */}
+          <a
+            href="#rate"
+            className="bg-foreground text-background mt-4 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium lg:hidden"
+          >
+            <Star className="size-4" aria-hidden />
+            Rate {city.name}
+          </a>
         </div>
         <ScoreRing score={overall} count={ratingCount} label="City score" />
       </div>
