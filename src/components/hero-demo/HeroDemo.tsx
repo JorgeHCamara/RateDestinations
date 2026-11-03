@@ -4,10 +4,12 @@ import { Star } from "lucide-react";
 import { Bar, Collapse, Popover, Roll, Stage, Text, Window, type Act } from "@/stageshow/kit";
 import "./hero-demo.css";
 
-// The home-page hero: a Lisbon guide. Someone hovers a restaurant, opens Rate,
-// gives it two stars and the "Tourist trap" tag, saves, and the guide answers: the
-// place's score rolls down, its map pin turns red, and a new warning lands in the
-// "Watch out" card. Plays once; the payoff is the still.
+// The home-page hero: a Lisbon guide, rated both ways. Someone opens Rate on a food hall, gives
+// it five stars and "Local gem", saves: its score rolls up, a "Local gem" badge appears by its
+// name, the city score ticks up a beat later. Then the same on a seafood place, two stars and
+// "Tourist trap": its score rolls down, its pin turns red, and a warning lands in "Watch out".
+// The good comes first, so the platform reads as a guide, not a place to roast businesses.
+// Plays once; the payoff (both results on screen) is the still.
 //
 // Gold: hero-demo (corner bleed, one satellite, a popover anchored to its trigger,
 // targets measured with rect()). Motion borrowed from table-edit (the total rolls
@@ -16,46 +18,71 @@ import "./hero-demo.css";
 // Real strings: Lisbon, the three restaurants, the warning rows, the tag that is
 // chosen, the popover's words. The map and the lower rows are filler.
 
+type Who = "good" | "bad";
 type S = {
-  open: boolean; // the rating popover
-  stars: number; // 0..5
-  tag: boolean; // "Tourist trap" picked
-  saved: boolean; // after Save: score rolled, pin red, warning landed
+  open: Who | null; // which row's rating popover is open
+  stars: number; // 0..5, in the open popover
+  tag: string | null; // the tag picked in the open popover
+  goodSaved: boolean; // food hall rated: score up, "Local gem" badge, city +0.1
+  badSaved: boolean; // seafood place rated: score down, pin red, warning landed, city -0.1
 };
 
-const initial: S = { open: false, stars: 0, tag: false, saved: false };
-const poster: S = { open: false, stars: 2, tag: true, saved: true };
+const initial: S = { open: null, stars: 0, tag: null, goodSaved: false, badSaved: false };
+const poster: S = { open: null, stars: 0, tag: null, goodSaved: true, badSaved: true };
 
 // Every place in this demo is fictional (checked against Overture Maps: no place in Portugal has
 // these names), so the demo never rates a real business.
-const PLACE = "Polvo Dourado";
+const PLACE = "Polvo Dourado"; // rated down
+const GOOD = "Mercado Lagarto Azul"; // rated up
 const REST = { wide: { x: 300, y: 330 }, compact: { x: 310, y: 250 } };
 
 async function script(a: Act<S>) {
   await a.wait(900);
-  a.mark("open");
-  await a.move({ at: "row", x: 0.35, y: 0.5 });
-  await a.wait(500);
-  await a.click({ at: "rate", x: 0.86, y: 0.65 });
-  a.put({ open: true });
-  await a.wait(700);
 
-  a.mark("stars");
+  // 1. The good rating
+  a.mark("open-good");
+  await a.move({ at: "row-good", x: 0.35, y: 0.5 });
+  await a.wait(450);
+  await a.click({ at: "rate-good", x: 0.86, y: 0.65 });
+  a.put({ open: "good", stars: 0, tag: null });
+  await a.wait(650);
+  a.mark("stars-good");
+  await a.click({ at: "star-5", x: 0.5, y: 0.5 });
+  a.put({ stars: 5 });
+  await a.wait(450);
+  await a.click({ at: "tag-gem", x: 0.85, y: 0.72 });
+  a.put({ tag: "gem" });
+  await a.wait(550);
+  a.mark("save-good");
+  await a.click({ at: "save", x: 0.9, y: 0.7 });
+  a.put({ open: null });
+  await a.wait(250);
+  a.put({ goodSaved: true });
+  // Step off the row so its new score is read, then hold on it
+  await a.move("rest", { duration: 650 });
+  a.mark("payoff-good");
+  await a.wait(1600);
+
+  // 2. The warning
+  a.mark("open-bad");
+  await a.move({ at: "row-bad", x: 0.35, y: 0.5 });
+  await a.wait(450);
+  await a.click({ at: "rate-bad", x: 0.86, y: 0.65 });
+  a.put({ open: "bad", stars: 0, tag: null });
+  await a.wait(650);
+  a.mark("stars-bad");
   await a.click({ at: "star-2", x: 0.5, y: 0.5 });
   a.put({ stars: 2 });
-  await a.wait(500);
-
-  a.mark("tag");
+  await a.wait(450);
   await a.click({ at: "tag-trap", x: 0.9, y: 0.72 });
-  a.put({ tag: true });
-  await a.wait(600);
-
-  a.mark("save");
+  a.put({ tag: "trap" });
+  await a.wait(550);
+  a.mark("save-bad");
   await a.click({ at: "save", x: 0.9, y: 0.7 });
-  a.put({ open: false });
+  a.put({ open: null });
   await a.wait(250);
-  a.put({ saved: true });
-  // Off the row, so the rolled score and the new warning are read uncovered
+  a.put({ badSaved: true });
+  // Off the rows, so both results and the new warning are read uncovered
   await a.move("rest", { duration: 700 });
   a.mark("payoff");
   await a.wait(2400);
@@ -76,9 +103,11 @@ export function HeroDemo() {
       className="rdh"
     >
       {(s, rect, layout) => {
-        const rateRect = rect("rate");
-        const cityScore = s.saved ? 7.7 : 7.8;
-        const placeScore = s.saved ? 7.6 : 8.1;
+        const rateRect = rect(s.open === "good" ? "rate-good" : "rate-bad");
+        const ratedName = s.open === "good" ? GOOD : PLACE;
+        const cityScore = 7.8 + (s.goodSaved ? 0.1 : 0) - (s.badSaved ? 0.1 : 0);
+        const placeScore = s.badSaved ? 7.6 : 8.1;
+        const goodScore = s.goodSaved ? 9.1 : 8.6;
         const circumference = 2 * Math.PI * 19;
         return (
           <>
@@ -127,28 +156,47 @@ export function HeroDemo() {
                   </div>
 
                   <div className="rdh-list">
-                    <div className="rdh-row" data-target="row" data-open={s.open || undefined}>
+                    <div
+                      className="rdh-row"
+                      data-target="row-bad"
+                      data-open={s.open === "bad" || undefined}
+                    >
                       <div>
                         <Text className="rdh-row__name">{PLACE}</Text>
                         <Text className="rdh-row__sub">Seafood · Intendente</Text>
                       </div>
                       <div className="rdh-row__end">
-                        <span className="rdh-rate" data-target="rate" data-cursor="hand">
+                        <span className="rdh-rate" data-target="rate-bad" data-cursor="hand">
                           Rate
                         </span>
-                        <span className="rdh-pill" data-tone={s.saved ? "warn" : undefined}>
+                        <span className="rdh-pill" data-tone={s.badSaved ? "warn" : undefined}>
                           <Roll>{placeScore.toFixed(1)}</Roll>
                         </span>
                       </div>
                     </div>
 
-                    <div className="rdh-row">
+                    <div
+                      className="rdh-row"
+                      data-target="row-good"
+                      data-open={s.open === "good" || undefined}
+                    >
                       <div>
-                        <Text className="rdh-row__name">Mercado Lagarto Azul</Text>
+                        <div className="rdh-row__head">
+                          <Text className="rdh-row__name">{GOOD}</Text>
+                          {/* The good rating's mark, as "Tourist trap ×2" is the bad one's */}
+                          <span className="rdh-badge" data-show={s.goodSaved}>
+                            Local gem
+                          </span>
+                        </div>
                         <Text className="rdh-row__sub">Food hall · Cais do Sodré</Text>
                       </div>
                       <div className="rdh-row__end">
-                        <span className="rdh-pill">8.6</span>
+                        <span className="rdh-rate" data-target="rate-good" data-cursor="hand">
+                          Rate
+                        </span>
+                        <span className="rdh-pill" data-tone={s.goodSaved ? "good" : undefined}>
+                          <Roll>{goodScore.toFixed(1)}</Roll>
+                        </span>
                       </div>
                     </div>
 
@@ -198,7 +246,7 @@ export function HeroDemo() {
                   <div
                     className="rdh-map__pin"
                     style={{ left: 148, top: 128 }}
-                    data-warn={s.saved}
+                    data-warn={s.badSaved}
                   />
                   <div className="rdh-map__pin" style={{ left: 40, top: 186 }} />
                   <div className="rdh-map__pin" style={{ left: 210, top: 236 }} />
@@ -207,46 +255,57 @@ export function HeroDemo() {
             </Window>
 
             <Popover
-              show={s.open}
+              show={s.open !== null}
               origin="top right"
               className="rdh-pop"
               style={{
-                left: rateRect.x + rateRect.width - (layout === "compact" ? 220 : 236),
+                left: rateRect.x + rateRect.width - (layout === "compact" ? 232 : 236),
                 top: rateRect.y + rateRect.height + 4,
               }}
             >
-              <div className="rdh-pop__title">Rate {PLACE}</div>
-              <div className="rdh-stars">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <span
-                    key={n}
-                    className="rdh-star"
-                    data-target={`star-${n}`}
-                    data-cursor="hand"
-                    data-on={s.stars >= n}
-                  >
-                    <Star />
+              <div className="rdh-pop__title">Rate {ratedName}</div>
+              {/* The controls, one block under the title */}
+              <div className="rdh-pop__body">
+                <div className="rdh-pop__row">
+                  <div className="rdh-stars">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <span
+                        key={n}
+                        className="rdh-star"
+                        data-target={`star-${n}`}
+                        data-cursor="hand"
+                        data-on={s.stars >= n}
+                      >
+                        <Star />
+                      </span>
+                    ))}
+                  </div>
+                  <span className="rdh-save" data-target="save" data-cursor="hand">
+                    Save rating
                   </span>
-                ))}
-              </div>
-              <div className="rdh-tags">
-                <span className="rdh-tag" data-cursor="hand">
-                  Great value
-                </span>
-                <span className="rdh-tag" data-target="tag-trap" data-cursor="hand" data-on={s.tag}>
-                  Tourist trap
-                </span>
-                <span className="rdh-tag" data-cursor="hand">
-                  Dirty
-                </span>
-                <span className="rdh-tag" data-cursor="hand">
-                  Overpriced
-                </span>
-              </div>
-              <div className="rdh-pop__actions">
-                <span className="rdh-save" data-target="save" data-cursor="hand">
-                  Save rating
-                </span>
+                </div>
+                <div className="rdh-tags">
+                  <span
+                    className="rdh-tag"
+                    data-target="tag-gem"
+                    data-cursor="hand"
+                    data-tone="good"
+                    data-on={s.tag === "gem"}
+                  >
+                    Local gem
+                  </span>
+                  <span
+                    className="rdh-tag"
+                    data-target="tag-trap"
+                    data-cursor="hand"
+                    data-on={s.tag === "trap"}
+                  >
+                    Tourist trap
+                  </span>
+                  <span className="rdh-tag" data-cursor="hand">
+                    Dirty
+                  </span>
+                </div>
               </div>
             </Popover>
 
@@ -255,7 +314,7 @@ export function HeroDemo() {
                 <span className="rdh-watch__kicker">Watch out</span>
                 <span className="rdh-watch__title">What people warn about</span>
               </div>
-              <Collapse open={s.saved} reveal="drop">
+              <Collapse open={s.badSaved} reveal="drop">
                 <div className="rdh-warn rdh-warn--new">
                   <div>
                     <div className="rdh-warn__name">{PLACE}</div>

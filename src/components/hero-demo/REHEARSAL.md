@@ -6,16 +6,19 @@ Kept its stage size (720 wide, 380 tall here), gutter, the browser window and th
 role. Changed the product to the RateDestinations city guide, the story to a rating, and borrowed
 the "effect a beat after its cause" from `table-edit` (`Roll delay` on the city score).
 
-Story: a traveller opens Rate on a restaurant, gives two stars and the Tourist trap tag, saves.
-Beats: 1 hover the row and open Rate · 2 two stars · 3 Tourist trap tag · 4 Save · payoff: the
-place's score rolls 8.1 → 7.6 and turns amber, the city score rolls 7.8 → 7.7 a beat later, the
-map pin turns red, and a new warning drops into "Watch out". Plays once (`play="once"`); the
-payoff is the still, so the loop never rewinds data. About 13 s.
+Story (rated both ways, the good first, so the guide doesn't read as a place to roast
+businesses): Rate on the food hall, five stars and the Local gem tag, Save: its score rolls
+8.6 → 9.1, a green "Local gem" badge appears by its name a beat later, the city score rolls
+7.8 → 7.9. Then Rate on the seafood place, two stars and Tourist trap, Save: its score rolls
+8.1 → 7.6 and turns amber, the city score rolls back to 7.8, its map pin turns red, and a warning
+drops into "Watch out". Plays once (`play="once"`); the payoff (both results) is the still.
+About 21 s.
 
-Poster (reduced motion): the payoff frame, saved and settled.
+Poster (reduced motion): the payoff frame, both ratings saved and settled: the Local gem badge
+and 9.1 on the food hall, the warning in Watch out.
 
-Real strings: Lisbon, Portugal, City score, the three restaurants, Rate, the popover's words,
-Watch out, the two warning rows. Filler: three list rows, the map, the last warning row.
+Real strings: Lisbon, Portugal, City score, the three places (all fictional), Rate, the
+popover's words, the Local gem badge, Watch out, the two warning rows. Filler: three list rows, the map, the last warning row.
 
 Compact (below 600, 358 × 350): the list only, two real rows, the window off the right and
 bottom, the satellite straddling the bottom edge; the second warning is filler so the only
@@ -47,3 +50,19 @@ Assumptions: Geist and Fraunces are loaded by the page (the stage inherits `--fo
 `--font-display`). The accent is the site's coral.
 
 Not checked: Safari and Firefox rendering; touch devices; a dark theme (the page is light).
+
+## Revision: a good rating before the warning
+
+- One popover serves both ratings, anchored to the measured Rate of the row being rated. Its
+  title names that row; the tags are Local gem, Tourist trap, Dirty (one list, as on the site).
+- Opening under the second row, the old popover ran 9px off the bottom. Instead of a taller
+  stage, it is shorter: Save beside the stars, the three tags on one line (stars 22px wide so
+  Save fits on one line; compact popover 232px).
+- The stars row and tags are one `.rdh-pop__body` block: the title and the first tag had been
+  read as a stacked pair (`loose stack`) once the popover was under 80px.
+- The food hall's pill is already green at 8.6, so tone alone showed no change; the positive
+  result is the roll plus a "Local gem" badge (in the layout while hidden, so nothing shifts),
+  mirroring "Tourist trap ×2" on the warning. A green-pin change was removed: the pins are green.
+- Film: states at 1280 and 390 with `--gate`; reduced-motion stills at both widths. Remaining
+  lines are the six known `kit override` false positives (no `.ss-phone` selector in
+  `hero-demo.css`) and the ring's arc (manual, as before).

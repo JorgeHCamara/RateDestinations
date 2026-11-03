@@ -34,7 +34,7 @@ export default function HomePage() {
           </div>
           <div
             className="min-w-0"
-            aria-label="Demo: someone flags a tourist trap and the city guide updates"
+            aria-label="Demo: someone rates a food hall a local gem, then flags a tourist trap, and the city guide updates"
           >
             <HeroDemo />
           </div>
