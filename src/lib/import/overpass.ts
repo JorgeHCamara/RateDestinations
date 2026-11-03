@@ -292,7 +292,7 @@ export function parseElements(elements: OverpassElement[]): PlaceInput[] {
   return out;
 }
 
-function normalizeUrl(url: string | undefined): string | null {
+export function normalizeUrl(url: string | undefined): string | null {
   if (!url) return null;
   const first = url.split(";")[0].trim();
   if (!first) return null;

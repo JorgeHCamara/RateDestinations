@@ -8,6 +8,8 @@ import {
   radiusForPopulation,
   type PlaceInput,
 } from "./overpass";
+import { PLACE_CATEGORIES } from "./categories";
+import { fetchGeoapifyCategory, isGeoapifyEnabled } from "./geoapify";
 import { fetchSitelinkCounts, sitelinkBonus } from "./wikidata";
 
 export type ImportResult = {
@@ -32,7 +34,8 @@ export type ImportOptions = {
 };
 
 /**
- * Import (or refresh) a city's places from OpenStreetMap.
+ * Import (or refresh) a city's places from OpenStreetMap data: through Geoapify when
+ * GEOAPIFY_API_KEY is set, otherwise straight from the public Overpass servers.
  * Caller must have claimed the city with claim_city_import() first (see claimAndImport).
  *
  * Runs the query groups two at a time and saves each group's places as soon as it arrives, so a
@@ -62,22 +65,49 @@ export async function importCity(cityId: number, opts: ImportOptions = {}): Prom
     return saving;
   };
 
-  // Public Overpass instances allow few concurrent requests per IP; two at a time is polite and
-  // halves the wall time compared with running the four groups one by one.
-  const concurrency = Math.max(1, Number(process.env.OVERPASS_CONCURRENCY ?? 2));
-  const queue = [...QUERY_GROUPS];
+  // One task per search. With a Geoapify key: one request per category, three at a time.
+  // Otherwise the public Overpass servers, which allow few concurrent requests per IP: two at a time.
+  type Task = { key: string; run: () => Promise<PlaceInput[]> };
+  const geoapify = isGeoapifyEnabled() && !opts.fetchOptions;
+  const tasks: Task[] = geoapify
+    ? PLACE_CATEGORIES.map((category) => ({
+        key: category,
+        run: async () => {
+          for (let attempt = 0; ; attempt++) {
+            const remaining = deadline - now();
+            if (remaining < 3_000) throw new Error("out of time");
+            try {
+              return await fetchGeoapifyCategory(city, category, {
+                timeoutMs: Math.min(20_000, remaining),
+              });
+            } catch (err) {
+              if (attempt >= 1) throw err;
+              await new Promise((r) => setTimeout(r, 1_500));
+            }
+          }
+        },
+      }))
+    : QUERY_GROUPS.map((group) => ({
+        key: group.key,
+        run: async () =>
+          parseElements(
+            await fetchOverpass(buildGroupQuery(group, city.lat, city.lng, radius), {
+              ...opts.fetchOptions,
+              deadline,
+              now,
+            }),
+          ),
+      }));
+  const concurrency = geoapify ? 3 : Math.max(1, Number(process.env.OVERPASS_CONCURRENCY ?? 2));
+  const queue = [...tasks];
   const worker = async () => {
-    for (let group = queue.shift(); group; group = queue.shift()) {
+    for (let task = queue.shift(); task; task = queue.shift()) {
       try {
-        const elements = await fetchOverpass(buildGroupQuery(group, city.lat, city.lng, radius), {
-          ...opts.fetchOptions,
-          deadline,
-          now,
-        });
-        await save(parseElements(elements));
-        groups.push({ key: group.key, ok: true, elements: elements.length });
+        const places = await task.run();
+        await save(places);
+        groups.push({ key: task.key, ok: true, elements: places.length });
       } catch (err) {
-        groups.push({ key: group.key, ok: false, elements: 0, error: (err as Error).message });
+        groups.push({ key: task.key, ok: false, elements: 0, error: (err as Error).message });
       }
     }
   };

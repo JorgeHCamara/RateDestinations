@@ -4,7 +4,7 @@
  * database (DATABASE_URL) and a fake Overpass; skipped without a database. Cleans up after itself.
  */
 import "dotenv/config";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { getPool, query, queryOne } from "@/lib/db";
 import { importCity } from "@/lib/import/import-city";
 
@@ -91,5 +91,56 @@ run("importCity (database)", () => {
       [cityId],
     );
     expect(city?.import_status).toBe("failed");
+  });
+
+  it("imports through Geoapify when a key is set, one request per category", async () => {
+    await query("update cities set import_status = 'pending' where id = $1", [cityId]);
+    vi.stubEnv("GEOAPIFY_API_KEY", "test-key");
+    const requested: string[] = [];
+    vi.stubGlobal("fetch", async (url: string) => {
+      const u = new URL(url);
+      if (u.hostname !== "api.geoapify.com") return Response.json({ results: { bindings: [] } });
+      requested.push(u.searchParams.get("categories")!);
+      if (u.searchParams.get("categories")!.startsWith("catering.restaurant")) {
+        return Response.json({
+          features: [
+            {
+              properties: {
+                name: "Geo Bistro",
+                lat: 1,
+                lon: 1,
+                place_id: "g1",
+                datasource: {
+                  raw: {
+                    osm_type: "n",
+                    osm_id: 9_000_003,
+                    amenity: "restaurant",
+                    name: "Geo Bistro",
+                  },
+                },
+              },
+            },
+          ],
+        });
+      }
+      return Response.json({ features: [] });
+    });
+    try {
+      const result = await importCity(cityId, { budgetMs: 15_000 });
+      expect(requested).toHaveLength(11);
+      expect(result.groups.every((g) => g.ok)).toBe(true);
+      const row = await queryOne<{ name: string; source_id: string }>(
+        "select name, source_id from places where source_id = 'node/9000003'",
+      );
+      expect(row?.name).toBe("Geo Bistro");
+      const city = await queryOne<{ import_status: string }>(
+        "select import_status from cities where id = $1",
+        [cityId],
+      );
+      expect(city?.import_status).toBe("done");
+    } finally {
+      vi.unstubAllGlobals();
+      vi.unstubAllEnvs();
+    }
   });
 });
