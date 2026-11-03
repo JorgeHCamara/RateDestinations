@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { hasAdultName, isAdultOsm, isAdultTaxonomy, isJunkName } from "@/lib/import/filters";
+import {
+  hasAdultName,
+  isAdultOsm,
+  isAdultPhotoName,
+  isAdultTaxonomy,
+  isJunkName,
+} from "@/lib/import/filters";
 import { parseElements } from "@/lib/import/overpass";
 
 describe("junk names", () => {
@@ -69,6 +75,39 @@ describe("adult venues", () => {
     expect(hasAdultName("Termas de Caldas", false)).toBe(false);
     expect(hasAdultName("Le Privê", true)).toBe(true);
     expect(hasAdultName("Salon Privé", false)).toBe(false);
+  });
+});
+
+describe("nude and naturist places", () => {
+  it("are +18 by their OSM tags", () => {
+    expect(isAdultOsm({ natural: "beach", nudism: "designated" })).toBe(true);
+    expect(isAdultOsm({ natural: "beach", nudism: "customary" })).toBe(true);
+    expect(isAdultOsm({ leisure: "park", naturism: "yes" })).toBe(true);
+    expect(isAdultOsm({ club: "naturism" })).toBe(true);
+    expect(isAdultOsm({ natural: "beach", nudism: "no" })).toBe(false);
+    expect(isAdultOsm({ natural: "beach" })).toBe(false);
+  });
+
+  it.each([
+    "Hanlan's Point Nude Beach",
+    "Praia de Nudismo do Abricó",
+    "Playa Nudista de Maspalomas",
+    "Plage naturiste de Montalivet",
+    "FKK-Strand Wannsee",
+    "Naturist Club Ontario",
+    "Clothing-Optional Beach",
+  ])("are +18 by name: %s", (name) => expect(hasAdultName(name)).toBe(true));
+
+  it.each(["Tienda Naturista La Salud", "Loja Naturista", "Hanlan's Point Beach", "Nudel Haus"])(
+    "leaves %s listed",
+    (name) => expect(hasAdultName(name)).toBe(false),
+  );
+
+  it("never uses a photo whose file name shows nudity", () => {
+    expect(isAdultPhotoName("File:Hanlans_Point_nudist.jpg")).toBe(true);
+    expect(isAdultPhotoName("Topless_sunbathing_2019.jpg")).toBe(true);
+    expect(isAdultPhotoName("Naked_Grape_Bar_sign.jpg")).toBe(true);
+    expect(isAdultPhotoName("Hanlan's_Point_Beach_sunset.jpg")).toBe(false);
   });
 });
 

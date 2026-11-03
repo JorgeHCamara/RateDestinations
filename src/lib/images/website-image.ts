@@ -4,7 +4,7 @@
  * filters here try to leave out: by name, by file type, and by size and shape.
  */
 import { SITE_URL } from "@/lib/site-url";
-import { hasAdultName, isGamblingSpam } from "@/lib/import/filters";
+import { hasAdultName, isAdultPhotoName, isGamblingSpam } from "@/lib/import/filters";
 import { safeFetch, type SafeFetchOptions } from "./safe-fetch";
 
 /**
@@ -305,8 +305,9 @@ export async function websiteImage(
     const path = new URL(c.url).pathname;
     if (!candidates.some((x) => x.url === c.url) && !NOT_A_PHOTO.test(path)) {
       // A page that names its photos "rtp-slot-…" is spam even when its title hides it.
-      if (isGamblingSpam(safeDecode(path))) spamPhoto = true;
-      else candidates.push(c);
+      const name = safeDecode(path);
+      if (isGamblingSpam(name)) spamPhoto = true;
+      else if (!isAdultPhotoName(name)) candidates.push(c);
     }
   };
   if (meta) push(meta);
