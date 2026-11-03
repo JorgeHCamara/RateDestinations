@@ -70,6 +70,11 @@ export default function PrivacyPage() {
           <strong>OpenFreeMap</strong> serves the map tiles; your browser requests them directly, so
           that service sees your IP address.
         </li>
+        <li>
+          <strong>Place photos</strong> load straight from <strong>Wikimedia Commons</strong> or
+          from the place&apos;s own website when you open a place or hover over one, so that site
+          sees your IP address. We send no referrer with these requests.
+        </li>
       </ul>
 
       <h2>How long we keep it</h2>
