@@ -37,11 +37,18 @@ export async function signInWithEmail(
       error: "Temporary email addresses can't be used here. Please use your usual email or Google.",
     };
   const next = safeNext(formData.get("next"));
+  // Cloudflare Turnstile's token (see components/turnstile.tsx); Supabase checks it.
+  const captchaToken = String(formData.get("captchaToken") ?? "").trim() || undefined;
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.signInWithOtp({
     email,
-    options: { emailRedirectTo: `${siteUrl()}/auth/callback?next=${encodeURIComponent(next)}` },
+    options: {
+      emailRedirectTo: `${siteUrl()}/auth/callback?next=${encodeURIComponent(next)}`,
+      captchaToken,
+    },
   });
+  if (error?.code === "captcha_failed")
+    return { error: "We couldn't confirm you're not a bot. Please try again." };
   if (error) return { error: "Couldn't send the link. Please try again in a minute." };
   return { sent: true };
 }
