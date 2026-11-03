@@ -65,7 +65,8 @@ export default function PrivacyPage() {
         </li>
         <li>
           <strong>Google</strong> provides &ldquo;Sign in with Google&rdquo;, under Google&apos;s
-          own privacy policy.
+          own privacy policy. Its button loads from Google on the sign-in page, so Google sees your
+          IP address there.
         </li>
         <li>
           <strong>Geoapify</strong> and <strong>OpenStreetMap</strong> provide the list of places in

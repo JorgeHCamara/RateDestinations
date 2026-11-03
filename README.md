@@ -112,6 +112,12 @@ film it with `node .claude/skills/stageshow/scripts/film.mjs http://localhost:30
    (or `supabase db push` with the CLI).
 2. **Authentication → Providers**: enable **Google** (create an OAuth client in Google Cloud with
    redirect `https://<project>.supabase.co/auth/v1/callback`) and keep **Email** with magic links.
+   For Google's own sign-in button (its popup names our site instead of `<project>.supabase.co`),
+   set `NEXT_PUBLIC_GOOGLE_CLIENT_ID` in Vercel to that client's ID, add
+   `https://www.ratedestinations.com` and `https://ratedestinations.com` to the client's
+   **Authorized JavaScript origins**, and keep the same ID in the Google provider's Client IDs in
+   Supabase (with "Skip nonce check" off). Without the variable, or if Google's script can't
+   load, the login page falls back to the redirect flow.
 3. **Authentication → URL configuration**: Site URL = your production URL; add
    `https://<your-domain>/auth/callback` and `http://localhost:3000/auth/callback` to the redirect list.
 4. Seed cities. With a database connection (the **Session pooler** string from the
@@ -137,6 +143,7 @@ Import the repo, then set these environment variables (Production and Preview):
 | `DATABASE_URL`                                               | Supabase **transaction pooler** URL (port 6543), pasted as is: no quotes, no `?sslmode=require`           |
 | `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Project Settings → API                                                                                    |
 | `NEXT_PUBLIC_SITE_URL`                                       | `https://<your-domain>`                                                                                   |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID`                               | the Google OAuth client ID (same as in Supabase); shows Google's own sign-in button, see Supabase step 2  |
 | `CRON_SECRET`                                                | a long random string (Vercel sends it to `/api/cron/refresh`)                                             |
 | `GEOAPIFY_API_KEY`                                           | recommended: free key from geoapify.com; places come from Geoapify instead of the public Overpass servers |
 | `OVERPASS_ENDPOINTS`                                         | optional; defaults to overpass-api.de plus two public mirrors, comma-separated to override                |
