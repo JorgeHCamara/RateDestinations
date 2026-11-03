@@ -100,13 +100,17 @@ Import the repo, then set these environment variables (Production and Preview):
 | `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Project Settings → API                                                                          |
 | `NEXT_PUBLIC_SITE_URL`                                       | `https://<your-domain>`                                                                         |
 | `CRON_SECRET`                                                | a long random string (Vercel sends it to `/api/cron/refresh`)                                   |
-| `OVERPASS_ENDPOINTS`                                         | optional; default is the main instance, comma-separate mirrors                                  |
+| `OVERPASS_ENDPOINTS`                                         | optional; defaults to overpass-api.de plus two public mirrors, comma-separated to override      |
 | `IMPORT_USER_AGENT`                                          | `RateDestinations/1.0 (contact: you@example.com)` — OSM and Wikidata ask for this               |
 | `GOOGLE_PLACES_ENABLED` / `GOOGLE_PLACES_API_KEY`            | optional, see above                                                                             |
 
 `vercel.json` schedules the daily refresh cron. City imports run inside `after()` on the
-`/api/cities/[id]/build` route (`maxDuration = 300`), so enable Fluid Compute / a plan that
-allows 5-minute functions, or lower the Overpass caps in `src/lib/import/overpass.ts`.
+`/api/cities/[id]/build` route (`maxDuration = 300`). Each import has a 4-minute budget
+(`IMPORT_BUDGET_MS`): every OpenStreetMap request gives up after 30 s, the endpoint list is retried
+once, places are saved as each search returns, and the city is always marked `done` or `failed`
+before the budget ends. A city still `pending` after 6 minutes can be claimed again (the page's
+"Try again" button, or the daily cron). After pulling this change, run
+`supabase/migrations/0002_import_claims.sql` in the SQL Editor.
 
 ## Data and attribution
 

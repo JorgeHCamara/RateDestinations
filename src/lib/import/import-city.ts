@@ -4,6 +4,7 @@ import {
   buildGroupQuery,
   fetchOverpass,
   parseElements,
+  type FetchOverpassOptions,
   radiusForPopulation,
   type PlaceInput,
 } from "./overpass";
@@ -19,11 +20,29 @@ export type ImportResult = {
 type CityRow = { id: number; name: string; lat: number; lng: number; population: number };
 
 /**
+ * Total time an import may take. Vercel stops the function at maxDuration (300 s); the import
+ * must have written its final status well before that, or the city looks stuck.
+ */
+export const IMPORT_BUDGET_MS = 240_000;
+
+export type ImportOptions = {
+  budgetMs?: number;
+  now?: () => number;
+  fetchOptions?: Omit<FetchOverpassOptions, "deadline" | "now">;
+};
+
+/**
  * Import (or refresh) a city's places from OpenStreetMap.
  * Caller must have claimed the city with claim_city_import() first (see claimAndImport).
+ *
+ * Runs the query groups two at a time and saves each group's places as soon as it arrives, so a
+ * partial guide survives a slow server. Always writes a final status (done, or failed with the
+ * reasons) before the budget runs out.
  */
-export async function importCity(cityId: number): Promise<ImportResult> {
-  const started = Date.now();
+export async function importCity(cityId: number, opts: ImportOptions = {}): Promise<ImportResult> {
+  const now = opts.now ?? Date.now;
+  const started = now();
+  const deadline = started + (opts.budgetMs ?? IMPORT_BUDGET_MS);
   const city = await queryOne<CityRow>(
     "select id, name, lat, lng, population from cities where id = $1",
     [cityId],
@@ -32,82 +51,73 @@ export async function importCity(cityId: number): Promise<ImportResult> {
   const radius = radiusForPopulation(city.population);
 
   const groups: ImportResult["groups"] = [];
-  const collected: PlaceInput[] = [];
-  // Public Overpass instances allow very few concurrent requests per IP; run groups in
-  // small batches (1 by default) so we are a polite client.
-  const concurrency = Math.max(1, Number(process.env.OVERPASS_CONCURRENCY ?? 1));
-  for (let i = 0; i < QUERY_GROUPS.length; i += concurrency) {
-    const batch = QUERY_GROUPS.slice(i, i + concurrency);
-    const results = await Promise.all(
-      batch.map(async (group) => {
-        try {
-          const elements = await fetchOverpass(buildGroupQuery(group, city.lat, city.lng, radius));
-          return {
-            key: group.key,
-            ok: true,
-            elements: elements.length,
-            places: parseElements(elements),
-          };
-        } catch (err) {
-          return {
-            key: group.key,
-            ok: false,
-            elements: 0,
-            error: (err as Error).message,
-            places: [] as PlaceInput[],
-          };
-        }
-      }),
-    );
-    for (const r of results) {
-      groups.push({ key: r.key, ok: r.ok, elements: r.elements, error: r.error });
-      collected.push(...r.places);
+  const saved = new Map<string, PlaceInput>();
+  // Saves run one at a time so two groups never upsert the same place concurrently.
+  let saving: Promise<void> = Promise.resolve();
+  const save = (places: PlaceInput[]) => {
+    const fresh = places.filter((p) => !saved.has(p.source_id));
+    for (const p of fresh) saved.set(p.source_id, p);
+    // A failed save must not poison the saves queued after it.
+    saving = saving.catch(() => {}).then(() => upsertPlaces(cityId, fresh));
+    return saving;
+  };
+
+  // Public Overpass instances allow few concurrent requests per IP; two at a time is polite and
+  // halves the wall time compared with running the four groups one by one.
+  const concurrency = Math.max(1, Number(process.env.OVERPASS_CONCURRENCY ?? 2));
+  const queue = [...QUERY_GROUPS];
+  const worker = async () => {
+    for (let group = queue.shift(); group; group = queue.shift()) {
+      try {
+        const elements = await fetchOverpass(buildGroupQuery(group, city.lat, city.lng, radius), {
+          ...opts.fetchOptions,
+          deadline,
+          now,
+        });
+        await save(parseElements(elements));
+        groups.push({ key: group.key, ok: true, elements: elements.length });
+      } catch (err) {
+        groups.push({ key: group.key, ok: false, elements: 0, error: (err as Error).message });
+      }
     }
-  }
+  };
+  await Promise.all(Array.from({ length: concurrency }, worker));
+  await saving;
+
+  const failures = groups
+    .filter((g) => !g.ok)
+    .map((g) => `${g.key}: ${g.error}`)
+    .join(" | ")
+    .slice(0, 1000);
 
   if (groups.every((g) => !g.ok)) {
     await query(
       "update cities set import_status = 'failed', import_error = $2, imported_at = now() where id = $1",
-      [
-        cityId,
-        groups
-          .map((g) => g.error)
-          .join(" | ")
-          .slice(0, 1000),
-      ],
+      [cityId, failures],
     );
-    throw new Error(`import failed for city ${cityId}: ${groups[0]?.error}`);
+    throw new Error(`import failed for city ${cityId}: ${failures}`);
   }
 
-  // Dedupe across groups (a brewery can match two selectors).
-  const byId = new Map<string, PlaceInput>();
-  for (const p of collected) if (!byId.has(p.source_id)) byId.set(p.source_id, p);
-  const places = Array.from(byId.values());
-
-  const sitelinks = await fetchSitelinkCounts(
-    places.map((p) => p.wikidata_id).filter((x): x is string => Boolean(x)),
-  );
-  for (const p of places) {
-    const n = p.wikidata_id ? sitelinks.get(p.wikidata_id) : undefined;
-    if (n) p.prominence = Math.min(100, p.prominence + sitelinkBonus(n));
+  // Wikidata notability is a bonus: only with time to spare, and bounded by the same deadline.
+  if (deadline - now() > 20_000) {
+    const places = Array.from(saved.values());
+    const sitelinks = await fetchSitelinkCounts(
+      places.map((p) => p.wikidata_id).filter((x): x is string => Boolean(x)),
+      fetch,
+      deadline - 5_000,
+    );
+    const boosted = places.filter((p) => p.wikidata_id && sitelinks.get(p.wikidata_id));
+    for (const p of boosted) {
+      p.prominence = Math.min(100, p.prominence + sitelinkBonus(sitelinks.get(p.wikidata_id!)!));
+    }
+    if (boosted.length) await upsertPlaces(cityId, boosted);
   }
 
-  await upsertPlaces(cityId, places);
-  const partial = groups.some((g) => !g.ok);
   await query(
     `update cities set import_status = 'done', imported_at = now(), import_error = $2 where id = $1`,
-    [
-      cityId,
-      partial
-        ? groups
-            .filter((g) => !g.ok)
-            .map((g) => `${g.key}: ${g.error}`)
-            .join(" | ")
-            .slice(0, 1000)
-        : null,
-    ],
+    [cityId, failures || null],
   );
-  return { cityId, places: places.length, groups, durationMs: Date.now() - started };
+  return { cityId, places: saved.size, groups, durationMs: now() - started };
 }
 
 export async function upsertPlaces(cityId: number, places: PlaceInput[]) {

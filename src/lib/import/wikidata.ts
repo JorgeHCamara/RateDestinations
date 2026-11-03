@@ -7,10 +7,13 @@ const SPARQL = "https://query.wikidata.org/sparql";
 export async function fetchSitelinkCounts(
   ids: string[],
   fetchImpl: typeof fetch = fetch,
+  deadline = Date.now() + 60_000,
 ): Promise<Map<string, number>> {
   const result = new Map<string, number>();
   const unique = Array.from(new Set(ids.filter((id) => /^Q\d+$/.test(id))));
   for (let i = 0; i < unique.length; i += 150) {
+    const remaining = deadline - Date.now();
+    if (remaining < 3_000) break; // enrichment is optional; never let it delay the import
     const chunk = unique.slice(i, i + 150);
     const query = `SELECT ?item ?n WHERE { VALUES ?item { ${chunk.map((q) => `wd:${q}`).join(" ")} } ?item wikibase:sitelinks ?n }`;
     try {
@@ -19,7 +22,7 @@ export async function fetchSitelinkCounts(
           accept: "application/sparql-results+json",
           "user-agent": process.env.IMPORT_USER_AGENT ?? "RateDestinations/0.1",
         },
-        signal: AbortSignal.timeout(20_000),
+        signal: AbortSignal.timeout(Math.min(20_000, remaining)),
       });
       if (!res.ok) continue;
       const json = (await res.json()) as {

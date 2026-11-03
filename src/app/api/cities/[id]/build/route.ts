@@ -7,9 +7,8 @@ export const maxDuration = 300;
 
 /**
  * POST /api/cities/:id/build — called by the city page on first visit when the guide
- * hasn't been built. Claims the city (so concurrent visitors and repeat calls are no-ops:
- * at most one import per city per 90 days) and runs the OpenStreetMap import after the
- * response is sent. Builds and prerenders never trigger imports; only a real visit does.
+ * hasn't been built, and by its "Try again" button. Claims the city (so concurrent visitors and
+ * repeat calls are no-ops) and runs the OpenStreetMap import after the response is sent. Builds and prerenders never trigger imports; only a real visit does.
  */
 export async function POST(_request: Request, ctx: RouteContext<"/api/cities/[id]/build">) {
   const { id } = await ctx.params;
@@ -21,9 +20,9 @@ export async function POST(_request: Request, ctx: RouteContext<"/api/cities/[id
     [cityId],
   );
   if (!city) return NextResponse.json({ error: "not found" }, { status: 404 });
-  if (city.import_status === "done" || city.import_status === "pending") {
-    return NextResponse.json({ status: city.import_status, started: false });
-  }
+  if (city.import_status === "done") return NextResponse.json({ status: "done", started: false });
+  // Pending or failed: the claim only succeeds when the earlier attempt is stale (cut off after
+  // 6 minutes, or failed more than 2 minutes ago), so "Try again" can't start parallel imports.
   const claimed = await queryOne<{ claim_city_import: boolean }>(
     "select claim_city_import($1, make_interval(days => 90))",
     [cityId],
