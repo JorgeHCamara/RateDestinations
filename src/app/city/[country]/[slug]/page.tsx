@@ -98,11 +98,6 @@ async function CityGuide({ params }: { params: Props["params"] }) {
               </section>
 
               <section>
-                <SectionTitle kicker="Watch out" title="What people warn about" tone="bad" />
-                <WatchOutSection cityId={city.id} version={city.imported_at ?? "0"} />
-              </section>
-
-              <section>
                 <SectionTitle kicker="The good" title="Worth your time" tone="good" />
                 <nav aria-label="Categories" className="mb-5 flex flex-wrap gap-1.5">
                   {PLACE_CATEGORIES.filter((c) => guide.byCategory.has(c)).map((c) => (
@@ -134,6 +129,11 @@ async function CityGuide({ params }: { params: Props["params"] }) {
                     </p>
                   )}
                 </div>
+              </section>
+
+              <section>
+                <SectionTitle kicker="Watch out" title="What people warn about" tone="bad" />
+                <WatchOutSection cityId={city.id} version={city.imported_at ?? "0"} />
               </section>
 
               <section>

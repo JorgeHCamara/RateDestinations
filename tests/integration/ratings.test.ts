@@ -81,9 +81,10 @@ run("ratings → stats (database)", () => {
     expect(Number(two.rows[0].blended_score)).toBe(blendScore(3, 2, placePrior(null, 40)));
   });
 
-  it("surfaces the place in the city's watch-out list", async () => {
-    const r = await client.query("select name, warning_count from city_watch_out($1, 5)", [cityId]);
-    expect(r.rows.map((x) => x.name)).toContain("Test Bistro");
+  it("keeps a place with a single warning out of the city's watch-out list", async () => {
+    // one warning from one person isn't enough (migration 0008; see tests/integration/watch-out.test.ts)
+    const r = await client.query("select name from city_watch_out($1, 50)", [cityId]);
+    expect(r.rows.map((x) => x.name)).not.toContain("Test Bistro");
   });
 
   it("rejects unknown tags and enforces the daily limit", async () => {

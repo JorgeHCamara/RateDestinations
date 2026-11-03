@@ -259,7 +259,7 @@ export function HeroDemo() {
                 <div className="rdh-warn rdh-warn--new">
                   <div>
                     <div className="rdh-warn__name">{PLACE}</div>
-                    <div className="rdh-warn__why">Tourist trap · just now</div>
+                    <div className="rdh-warn__why">Tourist trap ×2 · just now</div>
                   </div>
                   <span className="rdh-pill" data-tone="warn">
                     7.6

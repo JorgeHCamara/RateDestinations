@@ -3,14 +3,16 @@ import Link from "next/link";
 import { ScorePill } from "@/components/score";
 import type { WatchOutPlace } from "@/lib/queries/cities";
 import type { RatingTag } from "@/lib/queries/places";
+import { WATCH_OUT_MIN_WARNINGS } from "@/lib/watch-out";
 
 export function WatchOutList({ places, tags }: { places: WatchOutPlace[]; tags: RatingTag[] }) {
   const labels = new Map(tags.map((t) => [t.tag, t]));
   if (places.length === 0) {
     return (
       <div className="text-muted-foreground rounded-xl border border-dashed p-6 text-sm">
-        Nothing flagged yet. When people rate a place 1–2 stars or tag it as dirty, unsafe, a scam
-        or overpriced, it shows up here so everyone knows.
+        Nothing flagged yet. A place shows up here once at least {WATCH_OUT_MIN_WARNINGS} people
+        have warned about it, rating it 1–2 stars or tagging it as dirty, unsafe, a scam or
+        overpriced, and they make up at least a third of its ratings.
       </div>
     );
   }
@@ -36,9 +38,11 @@ export function WatchOutList({ places, tags }: { places: WatchOutPlace[]; tags: 
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-medium">{p.name}</span>
                 <span className="text-muted-foreground block text-xs">
-                  {warn.length
-                    ? warn.map(([t, n]) => `${labels.get(t)?.label} ×${n}`).join(" · ")
-                    : `${p.warning_count} low rating${p.warning_count > 1 ? "s" : ""}`}
+                  <span className="text-bad font-medium">
+                    {p.warning_count} of {p.user_count} warned
+                  </span>
+                  {warn.length > 0 &&
+                    ` · ${warn.map(([t, n]) => `${labels.get(t)?.label} ×${n}`).join(" · ")}`}
                 </span>
               </span>
               <ScorePill score={p.user_avg} count={p.user_count} />
