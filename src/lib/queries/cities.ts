@@ -132,7 +132,7 @@ export async function getFeaturedCities(): Promise<TrendingCity[]> {
     return await query<TrendingCity>(
       `select c.id, c.name, c.country_code, co.name as country_name, c.slug, c.population,
               cs.overall, coalesce(cs.rating_count, 0) as rating_count,
-              (select count(*) from places p where p.city_id = c.id) as place_count
+              (select count(*) from places p where p.city_id = c.id and not p.adult and not p.hidden) as place_count
        from cities c join countries co on co.code = c.country_code
        left join city_stats cs on cs.city_id = c.id
        where c.geonames_id = any($1::int[])
@@ -156,7 +156,7 @@ export async function getCityGuide(cityId: number, version: string) {
     query<WatchOutPlace>("select * from city_watch_out($1, 12)", [cityId]),
     getCityStats(cityId),
     query<{ category: PlaceCategory; n: number }>(
-      "select category, count(*)::int as n from places where city_id = $1 group by category",
+      "select category, count(*)::int as n from places where city_id = $1 and not adult and not hidden group by category",
       [cityId],
     ),
   ]);
@@ -197,7 +197,7 @@ export async function getCityCategory(cityId: number, category: PlaceCategory, v
             s.blended_score, s.user_avg, s.user_count, s.warning_count,
             row_number() over (order by s.blended_score desc, p.prominence desc, p.location <-> c.location, p.name)::int as rank
      from places p join place_stats s on s.place_id = p.id join cities c on c.id = p.city_id
-     where p.city_id = $1 and p.category = $2
+     where p.city_id = $1 and p.category = $2 and not p.adult and not p.hidden
      order by rank limit 200`,
     [cityId, category],
   );

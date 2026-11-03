@@ -33,9 +33,10 @@ export async function ratePlace(
   });
   if (!parsed.success) return { ok: false, error: "Pick a star rating first." };
   const { placeId, stars, tags, comment } = parsed.data;
-  const place = await queryOne<{ city_id: number }>("select city_id from places where id = $1", [
-    placeId,
-  ]);
+  const place = await queryOne<{ city_id: number }>(
+    "select city_id from places where id = $1 and not adult and not hidden",
+    [placeId],
+  );
   if (!place) return { ok: false, error: "This place no longer exists." };
   try {
     await query(

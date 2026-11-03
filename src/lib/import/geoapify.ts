@@ -15,6 +15,7 @@ import {
   type OsmTags,
   type PlaceCategory,
 } from "./categories";
+import { hasAdultName, isAdultOsm, isJunkName } from "./filters";
 import { normalizeUrl, radiusForPopulation, type PlaceInput } from "./overpass";
 
 const ENDPOINT = "https://api.geoapify.com/v2/places";
@@ -83,7 +84,7 @@ export function parseGeoapify(features: Feature[], category: PlaceCategory): Pla
     if (!tags.wikipedia && p.wiki_and_media?.wikipedia) tags.wikipedia = p.wiki_and_media.wikipedia;
 
     const name = displayName(tags);
-    if (!name || name.length > 120) continue;
+    if (!name || name.length > 120 || isJunkName(name)) continue;
     // Same id scheme as the Overpass importer (node/123), so both sources update the same rows.
     const osmType = {
       n: "node",
@@ -120,6 +121,11 @@ export function parseGeoapify(features: Feature[], category: PlaceCategory): Pla
       wikidata_id: tags.wikidata && /^Q\d+$/.test(tags.wikidata) ? tags.wikidata : null,
       wikipedia: tags.wikipedia ?? null,
       prominence: baseProminence(tags),
+      adult:
+        isAdultOsm(tags) ||
+        (p.categories ?? []).some((c) => /^adult\.(stripclub|brothel|swingerclub)/.test(c)) ||
+        hasAdultName(name, category === "nightlife" || category === "bar") ||
+        hasAdultName(tags.name, category === "nightlife" || category === "bar"),
       tags: Object.fromEntries(
         ["name", "name:en", "cuisine", "description", "heritage", "brand"]
           .filter((k) => tags[k])

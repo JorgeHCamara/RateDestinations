@@ -6,6 +6,7 @@ import {
   type OsmTags,
   type PlaceCategory,
 } from "./categories";
+import { hasAdultName, isAdultOsm, isJunkName } from "./filters";
 
 export type OverpassElement = {
   type: "node" | "way" | "relation";
@@ -31,6 +32,8 @@ export type PlaceInput = {
   wikidata_id: string | null;
   wikipedia: string | null;
   prominence: number;
+  /** +18 venue: stored but never listed on the site (see lib/import/filters.ts). */
+  adult?: boolean;
   tags: Record<string, string>;
 };
 
@@ -264,9 +267,13 @@ export function parseElements(elements: OverpassElement[]): PlaceInput[] {
     const lng = el.lon ?? el.center?.lon;
     if (lat === undefined || lng === undefined) continue;
     const name = displayName(tags);
-    if (!name || name.length > 120) continue;
+    if (!name || name.length > 120 || isJunkName(name)) continue;
     const cls = classify(tags);
     if (!cls) continue;
+    const adult =
+      isAdultOsm(tags) ||
+      hasAdultName(name, cls.category === "nightlife" || cls.category === "bar") ||
+      hasAdultName(tags.name, cls.category === "nightlife" || cls.category === "bar");
     seen.add(source_id);
     const kept: Record<string, string> = {};
     for (const k of KEEP_TAGS) if (tags[k]) kept[k] = tags[k].slice(0, 300);
@@ -286,6 +293,7 @@ export function parseElements(elements: OverpassElement[]): PlaceInput[] {
       wikidata_id: tags.wikidata && /^Q\d+$/.test(tags.wikidata) ? tags.wikidata : null,
       wikipedia: tags.wikipedia ?? null,
       prominence: baseProminence(tags),
+      adult,
       tags: kept,
     });
   }

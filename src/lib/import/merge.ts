@@ -104,8 +104,8 @@ type Existing = {
 /**
  * Add places from one source to a city without duplicating what other sources already gave.
  * A place matching an existing one (by name and distance) enriches that row: missing website,
- * phone and address are filled, prominence takes the higher value, and the other source's id is
- * kept in tags. Ratings stay on the existing row. Everything else is inserted.
+ * phone and address are filled, prominence takes the higher value, the other source's id is
+ * kept in tags, and a +18 flag from either source sticks. Ratings stay on the existing row. Everything else is inserted.
  */
 export async function mergePlaces(
   cityId: number,
@@ -133,9 +133,19 @@ export async function mergePlaces(
       `update places set
          website = coalesce(website, $2), phone = coalesce(phone, $3), address = coalesce(address, $4),
          prominence = greatest(prominence, $5),
-         tags = tags || jsonb_build_object($6::text, $7::text)
+         tags = tags || jsonb_build_object($6::text, $7::text),
+         adult = adult or $8
        where id = $1`,
-      [match.id, p.website, p.phone, p.address, p.prominence, `${p.source}_id`, p.source_id],
+      [
+        match.id,
+        p.website,
+        p.phone,
+        p.address,
+        p.prominence,
+        `${p.source}_id`,
+        p.source_id,
+        p.adult ?? false,
+      ],
     );
   }
   await upsertPlaces(cityId, toInsert);

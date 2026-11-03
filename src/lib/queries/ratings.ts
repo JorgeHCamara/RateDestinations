@@ -44,7 +44,7 @@ export async function getMyRatings(userId: string, limit = 100): Promise<MyRatin
        select 'place'::text as kind, r.id, r.stars, p.name as label, c.name as city_name, c.slug as city_slug,
               c.country_code, p.id as place_id, r.updated_at::text as updated_at
        from place_ratings r join places p on p.id = r.place_id join cities c on c.id = p.city_id
-       where r.user_id = $1
+       where r.user_id = $1 and not p.adult and not p.hidden
        union all
        select 'city', r.id, r.stars, r.dimension::text, c.name, c.slug, c.country_code, null, r.updated_at::text
        from city_ratings r join cities c on c.id = r.city_id
