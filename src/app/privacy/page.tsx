@@ -54,34 +54,15 @@ export default function PrivacyPage() {
         </li>
       </ul>
 
-      <h2>Who processes data for us</h2>
-      <ul>
-        <li>
-          <strong>Supabase</strong> stores the database and handles sign-in (servers in the United
-          States).
-        </li>
-        <li>
-          <strong>Vercel</strong> hosts the website.
-        </li>
-        <li>
-          <strong>Google</strong> provides &ldquo;Sign in with Google&rdquo;, under Google&apos;s
-          own privacy policy. Its button loads from Google on the sign-in page, so Google sees your
-          IP address there.
-        </li>
-        <li>
-          <strong>Geoapify</strong> and <strong>OpenStreetMap</strong> provide the list of places in
-          each city. We send them only a city&apos;s location, never anything about you.
-        </li>
-        <li>
-          <strong>OpenFreeMap</strong> serves the map tiles; your browser requests them directly, so
-          that service sees your IP address.
-        </li>
-        <li>
-          <strong>Place photos</strong> load straight from <strong>Wikimedia Commons</strong> or
-          from the place&apos;s own website when you open a place or hover over one, so that site
-          sees your IP address. We send no referrer with these requests.
-        </li>
-      </ul>
+      <h2>Services we use</h2>
+      <p>
+        <strong>Supabase</strong> stores our database and handles sign-in (servers in the United
+        States), <strong>Vercel</strong> hosts the site and counts visits without cookies, and{" "}
+        <strong>Google</strong> provides &ldquo;Sign in with Google&rdquo;, under its own privacy
+        policy. Maps, map tiles and place photos load from <strong>OpenFreeMap</strong>,{" "}
+        <strong>Wikimedia Commons</strong> or a place&apos;s own website, which see your IP address
+        when they do; we never send them anything about you.
+      </p>
 
       <h2>How long we keep it</h2>
       <p>
