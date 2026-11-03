@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useActionState, useState } from "react";
 import { rateCity, type RatingActionState } from "@/app/actions/ratings";
+import { NeedsNameCard } from "@/components/rating/place-rating-form";
 import { DimensionInfo } from "@/components/dimension-info";
 import { Stars } from "@/components/stars";
 import { Button } from "@/components/ui/button";
@@ -21,6 +23,7 @@ export function CityRatingForm({
   existing,
   existingRole,
   signedIn,
+  hasName = true,
   returnTo,
 }: {
   cityId: number;
@@ -28,10 +31,13 @@ export function CityRatingForm({
   existing: Partial<Record<CityDimension, number>>;
   existingRole: RaterRole | null;
   signedIn: boolean;
+  /** Signed in with a public name; without one the form asks for it first. */
+  hasName?: boolean;
   returnTo: string;
 }) {
   const [values, setValues] = useState<Partial<Record<CityDimension, number>>>(existing);
   const [role, setRole] = useState<RaterRole | null>(existingRole);
+  const pathname = usePathname();
   const [state, action, pending] = useActionState<RatingActionState, FormData>(rateCity, {
     ok: false,
   });
@@ -51,6 +57,7 @@ export function CityRatingForm({
       </div>
     );
   }
+  if (!hasName) return <NeedsNameCard returnTo={returnTo} />;
 
   return (
     <form action={action} className="bg-card rounded-xl border">
@@ -111,7 +118,22 @@ export function CityRatingForm({
         <p className="text-muted-foreground text-xs">
           Skip anything you can&apos;t judge. You can change these any time.
         </p>
-        {state.error && <p className="text-bad text-sm">{state.error}</p>}
+        {state.error && (
+          <p className="text-bad text-sm">
+            {state.error}
+            {state.needsName && (
+              <>
+                {" "}
+                <Link
+                  href={`/welcome?next=${encodeURIComponent(pathname)}`}
+                  className="font-medium underline underline-offset-2"
+                >
+                  Choose your name
+                </Link>
+              </>
+            )}
+          </p>
+        )}
         {state.ok && <p className="text-good text-sm">Saved — the city score is updated.</p>}
         {filled > 0 && !role && (
           <p className="text-muted-foreground text-xs">

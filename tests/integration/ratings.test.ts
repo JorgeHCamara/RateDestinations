@@ -24,7 +24,7 @@ run("ratings → stats (database)", () => {
     await client.connect();
     await client.query("begin");
     await client.query(
-      "insert into auth.users (id, email, raw_user_meta_data) values ($1, 'a@example.com', '{\"full_name\":\"Ana\"}'), ($2, 'b@example.com', '{}')",
+      "insert into auth.users (id, email, raw_user_meta_data) values ($1, 'a@example.com', '{\"full_name\":\"Ana\"}'), ($2, 'b@example.com', '{\"full_name\":\"Bea\"}')",
       [userA, userB],
     );
     const city = await client.query<{ id: number }>(

@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { isDatabaseConfigured, queryOne } from "@/lib/db";
 import { cookies } from "next/headers";
 
 export function isAuthConfigured(): boolean {
@@ -33,6 +34,7 @@ export async function createSupabaseServerClient() {
 export type SessionUser = {
   id: string;
   email: string | null;
+  /** The public name shown on reviews (profiles.display_name); null until the person picks one. */
   name: string | null;
   avatarUrl: string | null;
 };
@@ -49,10 +51,16 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   } = await supabase.auth.getUser();
   if (!user) return null;
   const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
+  const profile = isDatabaseConfigured()
+    ? await queryOne<{ display_name: string | null }>(
+        "select display_name from profiles where id = $1",
+        [user.id],
+      ).catch(() => null)
+    : null;
   return {
     id: user.id,
     email: user.email ?? null,
-    name: (meta.full_name as string) ?? (meta.name as string) ?? null,
+    name: profile?.display_name ?? null,
     avatarUrl: (meta.avatar_url as string) ?? null,
   };
 }

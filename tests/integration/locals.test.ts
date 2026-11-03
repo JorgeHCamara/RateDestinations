@@ -43,7 +43,9 @@ run("locals and visitors (database)", () => {
     await client.connect();
     await client.query("begin");
     await client.query(
-      "insert into auth.users (id, email) values ($1, 'l1@example.com'), ($2, 'l2@example.com'), ($3, 'v@example.com')",
+      `insert into auth.users (id, email, raw_user_meta_data) values
+         ($1, 'l1@example.com', '{"full_name":"Lia"}'), ($2, 'l2@example.com', '{"full_name":"Leo"}'),
+         ($3, 'v@example.com', '{"full_name":"Vera"}')`,
       [local1, local2, visitor],
     );
     // A city nobody has rated, so the numbers below are only ours.

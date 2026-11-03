@@ -47,6 +47,9 @@ export type PlaceReview = {
   display_name: string | null;
   /** Whether the reviewer said they live in the place's city (from their city rating). */
   rater_role: "local" | "visitor" | null;
+  /** How many places the reviewer has rated, and when they joined: shown so readers can judge. */
+  reviewer_ratings: number;
+  member_since: string | null;
 };
 
 export async function getPlace(placeId: number): Promise<Place | null> {
@@ -75,7 +78,9 @@ export async function getPlaceReviews(placeId: number, limit = 20): Promise<Plac
   cacheTag(`place:${placeId}`);
   return query<PlaceReview>(
     `select r.id, r.stars, r.tags, r.comment, r.created_at::text as created_at, pr.display_name,
-            cr.role as rater_role
+            cr.role as rater_role,
+            (select count(*)::int from place_ratings x where x.user_id = r.user_id) as reviewer_ratings,
+            pr.created_at::text as member_since
      from place_ratings r
      join places p on p.id = r.place_id
      left join profiles pr on pr.id = r.user_id

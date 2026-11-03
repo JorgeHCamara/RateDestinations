@@ -1,3 +1,5 @@
+import { queryOne } from "@/lib/db";
+
 /** Where to send someone after they sign in: only paths on this site, never another origin. */
 export function safeNext(next: unknown): string {
   return typeof next === "string" && next.startsWith("/") && !next.startsWith("//") ? next : "/";
@@ -22,4 +24,13 @@ export function nextFromRedirectTo(raw: string | null, origin: string): string {
   if (url.pathname === "/auth/callback" || url.pathname === "/auth/confirm")
     return safeNext(url.searchParams.get("next"));
   return safeNext(url.pathname + url.search);
+}
+
+/** After signing in: someone without a public name chooses one first, then goes where they were. */
+export async function landingAfterSignIn(userId: string, next: string): Promise<string> {
+  const profile = await queryOne<{ display_name: string | null }>(
+    "select display_name from profiles where id = $1",
+    [userId],
+  ).catch(() => null);
+  return profile && !profile.display_name ? `/welcome?next=${encodeURIComponent(next)}` : next;
 }

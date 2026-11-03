@@ -21,8 +21,9 @@ export default function PrivacyPage() {
         <li>
           <strong>Your account.</strong> If you sign in with Google, we receive your name, email
           address and profile picture from Google. If you sign in with an email link, we receive
-          your email address. We use these only to sign you in and to show your name next to your
-          ratings.
+          your email address. We use these only to sign you in. Next to your ratings we show the
+          public name you choose (for a Google account, your Google name until you change it on
+          &ldquo;My ratings&rdquo;); your email address is never shown.
         </li>
         <li>
           <strong>What you post.</strong> Your star ratings, the tags you choose (for example

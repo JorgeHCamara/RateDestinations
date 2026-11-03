@@ -6,7 +6,18 @@ import { query, queryOne } from "@/lib/db";
 import { CITY_DIMENSIONS } from "@/lib/dimensions";
 import { getSessionUser } from "@/lib/supabase/server";
 
-export type RatingActionState = { ok: boolean; error?: string };
+export type RatingActionState = {
+  ok: boolean;
+  error?: string;
+  /** No public name yet: the form links to the page that sets one. */
+  needsName?: boolean;
+};
+
+const NEEDS_NAME: RatingActionState = {
+  ok: false,
+  needsName: true,
+  error: "Choose the name shown on your reviews first.",
+};
 
 const placeSchema = z.object({
   placeId: z.coerce.number().int().positive(),
@@ -25,6 +36,7 @@ export async function ratePlace(
 ): Promise<RatingActionState> {
   const user = await getSessionUser();
   if (!user) return { ok: false, error: "Please sign in to rate." };
+  if (!user.name) return NEEDS_NAME;
   const parsed = placeSchema.safeParse({
     placeId: formData.get("placeId"),
     stars: formData.get("stars"),
@@ -45,7 +57,8 @@ export async function ratePlace(
       [placeId, user.id, stars, tags, comment],
     );
   } catch (err) {
-    return { ok: false, error: friendlyDbError(err) };
+    const error = friendlyDbError(err);
+    return { ok: false, error, needsName: error === NEEDS_NAME.error };
   }
   updateTag(`place:${placeId}`);
   updateTag(`city:${place.city_id}`);
@@ -59,6 +72,7 @@ export async function rateCity(
 ): Promise<RatingActionState> {
   const user = await getSessionUser();
   if (!user) return { ok: false, error: "Please sign in to rate." };
+  if (!user.name) return NEEDS_NAME;
   const cityId = z.coerce.number().int().positive().safeParse(formData.get("cityId"));
   if (!cityId.success) return { ok: false, error: "Invalid city." };
   const entries = CITY_DIMENSIONS.map(
@@ -82,7 +96,8 @@ export async function rateCity(
       );
     }
   } catch (err) {
-    return { ok: false, error: friendlyDbError(err) };
+    const error = friendlyDbError(err);
+    return { ok: false, error, needsName: error === NEEDS_NAME.error };
   }
   updateTag(`city:${cityId.data}`);
   updateTag("trending");
@@ -91,6 +106,9 @@ export async function rateCity(
 
 function friendlyDbError(err: unknown): string {
   const msg = (err as Error).message ?? "";
+  if (msg.includes("public name required")) return NEEDS_NAME.error!;
+  if (msg.includes("email domain not allowed"))
+    return "Ratings from temporary email addresses aren't accepted. Sign in with your usual email or Google.";
   if (msg.includes("rating limit"))
     return "You've hit the limit of 30 ratings per day. Come back tomorrow!";
   if (msg.includes("unknown rating tag") || msg.includes("tags per rating"))
