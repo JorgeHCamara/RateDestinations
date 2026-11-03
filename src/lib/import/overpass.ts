@@ -107,14 +107,25 @@ export function buildGroupQuery(group: Group, lat: number, lng: number, radius: 
     .join("");
   const any = group.selectors.map((s) => `nwr${s}["name"]${around};`).join("");
   return (
-    `[out:json][timeout:45];` +
+    `[out:json][timeout:25];` +
     `(${rich})->.rich;.rich out center tags ${group.richCap};` +
     `(${any})->.any;(.any; - .rich;)->.rest;.rest out center tags ${group.anyCap};`
   );
 }
 
+/**
+ * Public Overpass instances, tried in order. The main instance throttles busy shared IPs (cloud
+ * functions), so two independent mirrors follow it. OVERPASS_ENDPOINTS overrides the list.
+ */
+export const DEFAULT_OVERPASS_ENDPOINTS = [
+  "https://overpass-api.de/api/interpreter",
+  "https://overpass.private.coffee/api/interpreter",
+  "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+];
+
 export function parseEndpoints(): string[] {
-  const raw = process.env.OVERPASS_ENDPOINTS ?? "https://overpass-api.de/api/interpreter";
+  const raw = process.env.OVERPASS_ENDPOINTS;
+  if (!raw) return [...DEFAULT_OVERPASS_ENDPOINTS];
   return raw
     .split(",")
     .map((s) => s.trim())
@@ -123,68 +134,105 @@ export function parseEndpoints(): string[] {
 
 export class OverpassError extends Error {}
 
-/** Backoff between full endpoint sweeps. Override with OVERPASS_RETRY_DELAYS_MS="3000,10000,30000". */
+/** One request never waits longer than this, so a slow server can't eat the import's budget. */
+export const REQUEST_TIMEOUT_MS = 30_000;
+/** Below this much remaining budget a new request isn't worth starting. */
+const MIN_REQUEST_MS = 3_000;
+
+/** Pause before the one extra sweep over all endpoints. Override with OVERPASS_RETRY_DELAYS_MS. */
 function retryDelays(): number[] {
   const raw = process.env.OVERPASS_RETRY_DELAYS_MS;
-  if (!raw) return [3_000, 10_000, 30_000];
+  if (!raw) return [3_000];
   return raw
     .split(",")
     .map((s) => Number(s.trim()))
     .filter((n) => Number.isFinite(n) && n >= 0);
 }
 
+export type FetchOverpassOptions = {
+  endpoints?: string[];
+  fetchImpl?: typeof fetch;
+  sleep?: (ms: number) => Promise<void>;
+  /** Epoch ms by which the call must have returned or thrown. */
+  deadline?: number;
+  now?: () => number;
+};
+
 /**
- * POST a query, trying each endpoint in order; the whole endpoint list is retried a few
- * times with backoff because public instances answer 429/503/504 when busy.
+ * POST a query, trying each endpoint in order, then once more after a short pause, because
+ * public instances answer 429/503/504 when busy. Every request is bounded by REQUEST_TIMEOUT_MS
+ * and by the caller's deadline, so the whole call always ends before the deadline.
  */
 export async function fetchOverpass(
   query: string,
-  endpoints = parseEndpoints(),
-  fetchImpl: typeof fetch = fetch,
-  sleep: (ms: number) => Promise<void> = (ms) => new Promise((r) => setTimeout(r, ms)),
+  {
+    endpoints = parseEndpoints(),
+    fetchImpl = fetch,
+    sleep = (ms) => new Promise((r) => setTimeout(r, ms)),
+    deadline = Date.now() + 120_000,
+    now = Date.now,
+  }: FetchOverpassOptions = {},
 ): Promise<OverpassElement[]> {
   const errors: string[] = [];
   const delays = retryDelays();
   for (let attempt = 0; attempt <= delays.length; attempt++) {
-    if (attempt > 0) await sleep(delays[attempt - 1]);
-    const result = await tryEndpoints(query, endpoints, fetchImpl, errors);
-    if (result) return result;
+    if (attempt > 0) {
+      const pause = delays[attempt - 1];
+      if (deadline - now() < pause + MIN_REQUEST_MS) break;
+      await sleep(pause);
+    }
+    for (const endpoint of endpoints) {
+      const remaining = deadline - now();
+      if (remaining < MIN_REQUEST_MS) {
+        errors.push("out of time");
+        throw new OverpassError(`all Overpass endpoints failed: ${errors.join("; ")}`);
+      }
+      const result = await tryEndpoint(
+        query,
+        endpoint,
+        fetchImpl,
+        Math.min(REQUEST_TIMEOUT_MS, remaining),
+        errors,
+      );
+      if (result) return result;
+    }
   }
   throw new OverpassError(`all Overpass endpoints failed: ${errors.join("; ")}`);
 }
 
-async function tryEndpoints(
+async function tryEndpoint(
   query: string,
-  endpoints: string[],
+  endpoint: string,
   fetchImpl: typeof fetch,
+  timeoutMs: number,
   errors: string[],
 ): Promise<OverpassElement[] | null> {
-  for (const endpoint of endpoints) {
-    try {
-      const res = await fetchImpl(endpoint, {
-        method: "POST",
-        headers: {
-          "content-type": "application/x-www-form-urlencoded",
-          "user-agent": process.env.IMPORT_USER_AGENT ?? "RateDestinations/0.1",
-        },
-        body: new URLSearchParams({ data: query }),
-        signal: AbortSignal.timeout(55_000),
-      });
-      if (!res.ok) {
-        errors.push(`${endpoint}: HTTP ${res.status}`);
-        continue;
-      }
-      const json = (await res.json()) as { elements?: OverpassElement[]; remark?: string };
-      if (!Array.isArray(json.elements)) {
-        errors.push(`${endpoint}: malformed response${json.remark ? ` (${json.remark})` : ""}`);
-        continue;
-      }
-      return json.elements;
-    } catch (err) {
-      errors.push(`${endpoint}: ${(err as Error).message}`);
+  try {
+    const res = await fetchImpl(endpoint, {
+      method: "POST",
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+        "user-agent": process.env.IMPORT_USER_AGENT ?? "RateDestinations/0.1",
+      },
+      body: new URLSearchParams({ data: query }),
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    if (!res.ok) {
+      errors.push(`${endpoint}: HTTP ${res.status}`);
+      return null;
     }
+    const json = (await res.json()) as { elements?: OverpassElement[]; remark?: string };
+    if (!Array.isArray(json.elements)) {
+      errors.push(`${endpoint}: malformed response${json.remark ? ` (${json.remark})` : ""}`);
+      return null;
+    }
+    return json.elements;
+  } catch (err) {
+    errors.push(
+      `${endpoint}: ${(err as Error).name === "TimeoutError" ? `no answer in ${Math.round(timeoutMs / 1000)}s` : (err as Error).message}`,
+    );
+    return null;
   }
-  return null;
 }
 
 const KEEP_TAGS = [

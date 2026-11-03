@@ -1,34 +1,71 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 /**
- * Shown while a city's guide is being built on first visit. Polls the status endpoint and
- * refreshes the page when the import finishes (or fails).
+ * Shown while a city's guide is being built. On mount it asks the server to build the guide
+ * (the server claims the city, so this is a no-op while another import is running), then polls
+ * the status endpoint and refreshes the page when the import finishes or fails.
  */
 type Status = "none" | "pending" | "done" | "failed";
 
-export function ImportStatus({ cityId, initialStatus }: { cityId: number; initialStatus: Status }) {
-  const router = useRouter();
-  // A fresh or previously failed city is being (re)built as soon as this mounts: show it as pending.
-  const [status, setStatus] = useState<Status>(initialStatus === "done" ? "done" : "pending");
-  const [elapsed, setElapsed] = useState(0);
+/** An import always ends within 4 minutes; past 6 it was cut off and can be started again. */
+const STUCK_AFTER_S = 360;
 
-  // First visit (or a retry after a failure): ask the server to build the guide. The
-  // endpoint claims the city, so repeat calls and concurrent visitors are no-ops.
+export function ImportStatus({
+  cityId,
+  initialStatus,
+  startedAt,
+}: {
+  cityId: number;
+  initialStatus: Status;
+  /** When the current import was claimed (ISO), if one is pending. */
+  startedAt: string | null;
+}) {
+  const router = useRouter();
+  const [status, setStatus] = useState<Status>(initialStatus === "done" ? "done" : "pending");
+  const [since, setSince] = useState<number | null>(startedAt ? Date.parse(startedAt) : null);
+  const [elapsed, setElapsed] = useState(0);
+  const [note, setNote] = useState<string | null>(null);
+
+  const build = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/cities/${cityId}/build`, { method: "POST" });
+      const data = (await res.json()) as { status?: Status; started?: boolean };
+      if (data.started) {
+        setSince(Date.now());
+        setStatus("pending");
+        setNote(null);
+      }
+      return Boolean(data.started);
+    } catch {
+      return false;
+    }
+  }, [cityId]);
+
+  // Ask for a build on every visit that isn't done; the server decides whether one is needed.
   useEffect(() => {
-    if (initialStatus !== "none" && initialStatus !== "failed") return;
-    fetch(`/api/cities/${cityId}/build`, { method: "POST" }).catch(() => {});
-  }, [cityId, initialStatus]);
+    if (initialStatus === "done") return;
+    fetch(`/api/cities/${cityId}/build`, { method: "POST" })
+      .then((res) => res.json() as Promise<{ started?: boolean }>)
+      .then((data) => {
+        if (data.started) setSince(Date.now());
+      })
+      .catch(() => {});
+  }, [initialStatus, cityId]);
 
   useEffect(() => {
     if (status === "done") return;
-    const tick = setInterval(() => setElapsed((e) => e + 1), 1000);
+    const tick = setInterval(() => {
+      setElapsed(since ? Math.max(0, Math.round((Date.now() - since) / 1000)) : 0);
+    }, 1000);
     const poll = setInterval(async () => {
       try {
         const res = await fetch(`/api/cities/${cityId}/status`, { cache: "no-store" });
-        const data = (await res.json()) as { status: Status };
+        const data = (await res.json()) as { status: Status; importedAt: string | null };
+        if (data.status === "pending" && data.importedAt) setSince(Date.parse(data.importedAt));
         if (data.status !== status) {
           setStatus(data.status);
           if (data.status === "done" || data.status === "failed") router.refresh();
@@ -41,16 +78,34 @@ export function ImportStatus({ cityId, initialStatus }: { cityId: number; initia
       clearInterval(tick);
       clearInterval(poll);
     };
-  }, [cityId, status, router]);
+  }, [cityId, status, since, router]);
 
-  if (status === "failed") {
+  async function retry() {
+    setNote(null);
+    const started = await build();
+    if (!started) setNote("The last attempt only just ended. Please try again in a minute or two.");
+  }
+
+  const stuck = status === "pending" && elapsed > STUCK_AFTER_S;
+
+  if (status === "failed" || stuck) {
     return (
-      <div className="border-bad/30 bg-bad-soft/50 rounded-xl border p-5 text-sm">
-        <p className="font-medium">We couldn&apos;t build this guide right now.</p>
-        <p className="text-muted-foreground">
-          OpenStreetMap&apos;s servers were busy. It will be retried automatically; please check
-          back in a bit.
-        </p>
+      <div className="border-bad/30 bg-bad-soft/50 space-y-3 rounded-xl border p-5 text-sm">
+        <div>
+          <p className="font-medium">
+            {stuck
+              ? "This is taking longer than usual."
+              : "We couldn't build this guide right now."}
+          </p>
+          <p className="text-muted-foreground">
+            OpenStreetMap&apos;s public servers are busy. You can try again now, or come back later;
+            it is also retried automatically.
+          </p>
+        </div>
+        <Button size="sm" variant="outline" onClick={retry}>
+          Try again
+        </Button>
+        {note && <p className="text-muted-foreground text-xs">{note}</p>}
       </div>
     );
   }
@@ -63,8 +118,12 @@ export function ImportStatus({ cityId, initialStatus }: { cityId: number; initia
       <div className="text-sm">
         <p className="font-medium">Building this guide for the first time…</p>
         <p className="text-muted-foreground">
-          Collecting restaurants, parks, sights and more from OpenStreetMap. Usually under a minute
-          {elapsed > 5 ? ` · ${elapsed}s` : ""}.
+          Collecting restaurants, parks, sights and more from OpenStreetMap. This usually takes one
+          to three minutes; big cities take longer
+          {elapsed > 5
+            ? ` · ${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")}`
+            : ""}
+          .
         </p>
       </div>
     </div>

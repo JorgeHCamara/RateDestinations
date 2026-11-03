@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     `select id, name from cities
      where (import_status = 'done' and imported_at < now() - interval '90 days')
         or (import_status = 'failed' and imported_at < now() - interval '1 day')
-        or (import_status = 'pending' and coalesce(imported_at, created_at) < now() - interval '1 hour')
+        or (import_status = 'pending' and coalesce(imported_at, created_at) < now() - interval '6 minutes')
      order by population desc limit 5`,
   );
   const refreshed: { id: number; name: string; ok: boolean; places?: number; error?: string }[] =

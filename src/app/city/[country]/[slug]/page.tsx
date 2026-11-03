@@ -70,7 +70,13 @@ async function CityGuide({ params }: { params: Props["params"] }) {
 
       <div className="container-page grid gap-10 py-8 lg:grid-cols-[1fr_20rem]">
         <div className="min-w-0 space-y-12">
-          {building && <ImportStatus cityId={city.id} initialStatus={city.import_status} />}
+          {building && (
+            <ImportStatus
+              cityId={city.id}
+              initialStatus={city.import_status}
+              startedAt={city.import_status === "pending" ? city.imported_at : null}
+            />
+          )}
 
           {guide && (
             <>

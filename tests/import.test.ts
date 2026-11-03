@@ -112,18 +112,71 @@ describe("overpass queries", () => {
         elements: [{ type: "node", id: 1, lat: 1, lon: 2, tags: { amenity: "cafe", name: "A" } }],
       });
     };
-    const elements = await fetchOverpass(
-      "q",
-      ["https://bad/api", "https://good/api"],
-      fakeFetch,
-      async () => {},
-    );
+    const elements = await fetchOverpass("q", {
+      endpoints: ["https://bad/api", "https://good/api"],
+      fetchImpl: fakeFetch,
+      sleep: async () => {},
+    });
     expect(elements).toHaveLength(1);
     expect(calls).toEqual(["https://bad/api", "https://good/api"]);
 
     const alwaysBad: typeof fetch = async () => new Response("busy", { status: 504 });
     await expect(
-      fetchOverpass("q", ["https://bad/api"], alwaysBad, async () => {}),
+      fetchOverpass("q", {
+        endpoints: ["https://bad/api"],
+        fetchImpl: alwaysBad,
+        sleep: async () => {},
+      }),
     ).rejects.toThrow(/all Overpass endpoints failed/);
+  });
+
+  it("retries the endpoint list once, then gives up", async () => {
+    let calls = 0;
+    const busy: typeof fetch = async () => {
+      calls++;
+      return new Response("busy", { status: 503 });
+    };
+    await expect(
+      fetchOverpass("q", {
+        endpoints: ["https://a/api", "https://b/api"],
+        fetchImpl: busy,
+        sleep: async () => {},
+      }),
+    ).rejects.toThrow();
+    expect(calls).toBe(4);
+  });
+
+  it("never runs past its deadline, even when every server hangs", async () => {
+    let clock = 0;
+    const requestTimeouts: number[] = [];
+    const realTimeout = AbortSignal.timeout;
+    // Record each request's timeout; the fake server "hangs" until that timeout fires.
+    let pending = 0;
+    AbortSignal.timeout = (ms: number) => {
+      pending = ms;
+      return realTimeout.call(AbortSignal, ms);
+    };
+    const hanging: typeof fetch = async () => {
+      requestTimeouts.push(pending);
+      clock += pending;
+      throw Object.assign(new Error("timed out"), { name: "TimeoutError" });
+    };
+    try {
+      await expect(
+        fetchOverpass("q", {
+          endpoints: ["https://a/api", "https://b/api", "https://c/api"],
+          fetchImpl: hanging,
+          sleep: async (ms) => {
+            clock += ms;
+          },
+          deadline: 50_000,
+          now: () => clock,
+        }),
+      ).rejects.toThrow(/all Overpass endpoints failed/);
+    } finally {
+      AbortSignal.timeout = realTimeout;
+    }
+    expect(Math.max(...requestTimeouts)).toBeLessThanOrEqual(30_000);
+    expect(clock).toBeLessThanOrEqual(50_000);
   });
 });
