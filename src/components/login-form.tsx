@@ -14,7 +14,9 @@ export function LoginForm({ next, error }: { next: string; error: string | null 
         <p className="bg-bad-soft text-bad rounded-lg p-3 text-sm">
           {error === "oauth"
             ? "Google sign-in failed. Try again or use email."
-            : "Sign-in failed. Please try again."}
+            : error === "link"
+              ? "That sign-in link has expired or was already used. Enter your email below for a new one."
+              : "Sign-in failed. Please try again."}
         </p>
       )}
       <form action={signInWithGoogle}>

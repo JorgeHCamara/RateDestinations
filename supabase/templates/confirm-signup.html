@@ -100,7 +100,7 @@
                   <tr>
                     <td style="border-radius: 10px; background-color: #e8613c">
                       <a
-                        href="{{ .ConfirmationURL }}"
+                        href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next={{ .RedirectTo }}"
                         style="
                           display: inline-block;
                           padding: 13px 26px;
@@ -145,8 +145,11 @@
                   "
                 >
                   Button not working? Copy this link into your browser:<br />
-                  <a href="{{ .ConfirmationURL }}" style="color: #c4502f; word-break: break-all"
-                    >{{ .ConfirmationURL }}</a
+                  <a
+                    href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next={{ .RedirectTo }}"
+                    style="color: #c4502f; word-break: break-all"
+                    >{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next={{
+                    .RedirectTo }}</a
                   >
                 </p>
               </td>
