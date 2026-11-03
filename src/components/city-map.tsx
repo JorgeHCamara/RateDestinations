@@ -1,5 +1,6 @@
 "use client";
 
+import { CategoryIcon } from "@/components/category-icon";
 import "maplibre-gl/dist/maplibre-gl.css";
 import Link from "next/link";
 import { useState } from "react";
@@ -73,9 +74,11 @@ export function CityMap({
                 p.warning ? pinTone.bad : pinTone[toneFor(p.score, p.count)],
               )}
             >
-              <span aria-hidden className="leading-none">
-                {CATEGORY_META[p.category].emoji}
-              </span>
+              <CategoryIcon
+                category={p.category}
+                className="size-3 text-white"
+                strokeWidth={2.25}
+              />
             </button>
           </Marker>
         ))}

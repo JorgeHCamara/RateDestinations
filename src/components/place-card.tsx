@@ -1,3 +1,4 @@
+import { CategoryIcon } from "@/components/category-icon";
 import Link from "next/link";
 import { ScorePill } from "@/components/score";
 import { CATEGORY_META } from "@/lib/import/categories";
@@ -16,7 +17,7 @@ export function PlaceCard({ place, rank }: { place: TopPlace; rank?: number }) {
         {rank ? (
           <span className="text-muted-foreground font-mono text-xs">#{rank}</span>
         ) : (
-          CATEGORY_META[place.category].emoji
+          <CategoryIcon category={place.category} className="text-muted-foreground" />
         )}
       </span>
       <span className="min-w-0 flex-1">

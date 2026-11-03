@@ -21,42 +21,37 @@ export type OsmTags = Record<string, string>;
 
 export const CATEGORY_META: Record<
   PlaceCategory,
-  { label: string; plural: string; emoji: string; blurb: string }
+  { label: string; plural: string; blurb: string }
 > = {
-  restaurant: { label: "Restaurant", plural: "Restaurants", emoji: "🍽️", blurb: "Where to eat" },
+  restaurant: { label: "Restaurant", plural: "Restaurants", blurb: "Where to eat" },
   cafe: {
     label: "Café",
     plural: "Cafés & bakeries",
-    emoji: "☕",
     blurb: "Coffee, pastries, slow mornings",
   },
-  bar: { label: "Bar", plural: "Bars & pubs", emoji: "🍻", blurb: "Drinks after dark" },
+  bar: { label: "Bar", plural: "Bars & pubs", blurb: "Drinks after dark" },
   nightlife: {
     label: "Nightlife",
     plural: "Nightlife",
-    emoji: "🪩",
     blurb: "Clubs and late nights",
   },
-  park: { label: "Park", plural: "Parks & gardens", emoji: "🌳", blurb: "Green space to breathe" },
+  park: { label: "Park", plural: "Parks & gardens", blurb: "Green space to breathe" },
   attraction: {
     label: "Attraction",
     plural: "Sights & landmarks",
-    emoji: "🏛️",
     blurb: "The must-sees",
   },
   museum: {
     label: "Museum",
     plural: "Museums & galleries",
-    emoji: "🖼️",
     blurb: "Culture and history",
   },
-  viewpoint: { label: "Viewpoint", plural: "Viewpoints", emoji: "🌄", blurb: "Best views in town" },
-  beach: { label: "Beach", plural: "Beaches", emoji: "🏖️", blurb: "Sand and sea" },
-  market: { label: "Market", plural: "Markets", emoji: "🧺", blurb: "Local food and crafts" },
+  viewpoint: { label: "Viewpoint", plural: "Viewpoints", blurb: "Best views in town" },
+  beach: { label: "Beach", plural: "Beaches", blurb: "Sand and sea" },
+  market: { label: "Market", plural: "Markets", blurb: "Local food and crafts" },
   shopping: {
     label: "Shopping",
     plural: "Shopping",
-    emoji: "🛍️",
     blurb: "Malls and department stores",
   },
 };

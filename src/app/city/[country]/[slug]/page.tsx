@@ -1,3 +1,4 @@
+import { CategoryIcon } from "@/components/category-icon";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -105,9 +106,10 @@ async function CityGuide({ params }: { params: Props["params"] }) {
                     <a
                       key={c}
                       href={`#${c}`}
-                      className="bg-card hover:bg-accent rounded-full border px-3 py-1 text-xs"
+                      className="bg-card hover:bg-accent inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs"
                     >
-                      {CATEGORY_META[c].emoji} {CATEGORY_META[c].plural}{" "}
+                      <CategoryIcon category={c} className="text-muted-foreground size-3.5" />
+                      {CATEGORY_META[c].plural}{" "}
                       <span className="text-muted-foreground">{guide.counts[c]}</span>
                     </a>
                   ))}
