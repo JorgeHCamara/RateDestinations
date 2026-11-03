@@ -164,6 +164,36 @@
     color: var(--ss-text-strong);
   }
 
+  .rdh-row__head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  /* Hidden but in the layout, so nothing shifts when it appears a beat after the score */
+  .rdh-badge {
+    flex-shrink: 0;
+    height: 15px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: rgba(46, 150, 88, 0.12);
+    color: #1f7a45;
+    font-size: 9px;
+    font-weight: 600;
+    line-height: 15px;
+    opacity: 0;
+    transform: translateY(2px) scale(0.9);
+    transition:
+      opacity 0.3s ease 0.35s,
+      transform 0.3s ease 0.35s;
+  }
+
+  .rdh-badge[data-show="true"] {
+    opacity: 1;
+    transform: none;
+  }
+
   .rdh-row__sub {
     display: block;
     margin-top: 2px;
@@ -197,6 +227,11 @@
   .rdh-pill[data-tone="warn"] {
     background: rgba(214, 150, 38, 0.16);
     color: #9a6a12;
+  }
+
+  .rdh-pill[data-tone="good"] {
+    background: rgba(46, 150, 88, 0.14);
+    color: #1f7a45;
   }
 
   .rdh-rate {
@@ -280,16 +315,24 @@
     color: var(--ss-text-strong);
   }
 
+  /* Stars with Save beside them, tags below: short enough to open over the lower rows */
+  .rdh-pop__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
   .rdh-stars {
     display: flex;
     gap: 2px;
-    margin-bottom: 6px;
   }
 
   .rdh-star {
     display: grid;
     place-items: center;
-    width: 24px;
+    width: 22px;
     height: 24px;
     border-radius: 6px;
     color: #d9d9dc;
@@ -321,7 +364,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
-    margin-bottom: 8px;
   }
 
   .rdh-tag {
@@ -350,12 +392,15 @@
     color: #b2382a;
   }
 
-  .rdh-pop__actions {
-    display: flex;
-    justify-content: flex-end;
+  .rdh-tag[data-tone="good"][data-on="true"] {
+    border-color: #2e9658;
+    background: rgba(46, 150, 88, 0.1);
+    color: #1f7a45;
   }
 
   .rdh-save {
+    flex-shrink: 0;
+    white-space: nowrap;
     display: inline-flex;
     align-items: center;
     height: 24px;
@@ -485,6 +530,6 @@
     width: 300px;
   }
   & .ss-stage[data-layout="compact"] .rdh-pop {
-    width: 220px;
+    width: 232px;
   }
 }
