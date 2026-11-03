@@ -2,6 +2,8 @@ import { CategoryIcon } from "@/components/category-icon";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PlacePagePhoto } from "@/components/place-hover-preview";
+import { toPlaceImage } from "@/lib/images/place-image";
 import { Suspense } from "react";
 import { CityMapLazy } from "@/components/city-map-lazy";
 import { PlaceRatingForm } from "@/components/rating/place-rating-form";
@@ -99,6 +101,14 @@ async function PlaceDetail({ params }: { params: Props["params"] }) {
         </div>
         <ScoreRing score={place.blended_score} count={place.user_count} label="Score" />
       </header>
+
+      <PlacePagePhoto
+        placeId={place.id}
+        category={place.category}
+        initial={toPlaceImage(place)}
+        checked={place.image_checked}
+        className="mt-6 max-w-2xl rounded-xl border"
+      />
 
       {(warningTags.length > 0 || goodTags.length > 0) && (
         <div className="mt-6 flex flex-wrap gap-1.5">

@@ -30,6 +30,13 @@ Tailwind v4 + shadcn/ui, MapLibre with OpenFreeMap tiles. Deploys on Vercel.
     'why');` or `select hide_place(123, 'why');`. The flag lives in `place_overrides`, survives
     re-imports, and covers the same name in that city from any source. To un-flag one, insert a
     row with `adult = false` for its `source`/`source_id`.
+- **Photos** (`src/lib/images`): one per place, for the hover card and the place page. Free
+  sources only: the Wikimedia Commons photo of the place's Wikidata item (found by name within
+  300 m when the place has no Wikidata link), else the share image (`og:image`) of the place's
+  website, kept only if it looks like a photo (size, shape, and not a few flat colours like a
+  logo). Website fetches refuse private addresses. A website that describes itself as an adult
+  venue gets the place flagged. Looked up on first hover and by the scheduled workflow for the
+  places guides show first; kept 30 days. Places without a photo show their category icon.
 - **Scores** blend community ratings with a prior (an external rating when there is one,
   otherwise prominence): `w = n / (n + 10)`, `score = w·user_avg + (1 − w)·prior`. One rating
   barely moves a place; thirty dominate it. The same formula lives in `src/lib/scoring.ts` and in
@@ -135,8 +142,8 @@ Import the repo, then set these environment variables (Production and Preview):
 once, places are saved as each search returns, and the city is always marked `done` or `failed`
 before the budget ends. A city still `pending` after 6 minutes can be claimed again (the page's
 "Try again" button, or the daily cron). After pulling this change, run
-`supabase/migrations/0002_import_claims.sql`, `0003_overture.sql` and `0004_place_filters.sql`
-in the SQL Editor.
+`supabase/migrations/0002_import_claims.sql` through `0005_place_images.sql` in the SQL
+Editor.
 
 ## Data and attribution
 
