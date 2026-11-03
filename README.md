@@ -128,9 +128,15 @@ film it with `node .claude/skills/stageshow/scripts/film.mjs http://localhost:30
    **Authorized JavaScript origins**, and keep the same ID in the Google provider's Client IDs in
    Supabase (with "Skip nonce check" off). Without the variable, or if Google's script can't
    load, the login page falls back to the redirect flow.
-3. **Authentication → URL configuration**: Site URL = your production URL; add
+3. **Bot check on sign-in (optional, recommended)**: in the Cloudflare dashboard → **Turnstile**,
+   add a widget (Managed mode) for `ratedestinations.com` and `www.ratedestinations.com`. Put its
+   **site key** in Vercel as `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and deploy. Only then, in Supabase →
+   **Authentication → Attack Protection**, enable CAPTCHA protection with provider **Turnstile**
+   and paste the **secret key**. In that order: once Supabase asks for a token, sign-in only works
+   from pages that send one. To undo, turn the Supabase toggle off.
+4. **Authentication → URL configuration**: Site URL = your production URL; add
    `https://<your-domain>/auth/callback` and `http://localhost:3000/auth/callback` to the redirect list.
-4. Seed cities. With a database connection (the **Session pooler** string from the
+5. Seed cities. With a database connection (the **Session pooler** string from the
    dashboard's **Connect** button): `DATABASE_URL=postgres://… pnpm db:seed:cities`.
    Where only HTTPS is allowed, seed through the Data API instead. First run in the SQL Editor:
    `grant usage on schema public to service_role; grant all on all tables in schema public to service_role; grant all on all sequences in schema public to service_role;`
@@ -154,6 +160,7 @@ Import the repo, then set these environment variables (Production and Preview):
 | `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Project Settings → API                                                                                    |
 | `NEXT_PUBLIC_SITE_URL`                                       | `https://<your-domain>`                                                                                   |
 | `NEXT_PUBLIC_GOOGLE_CLIENT_ID`                               | the Google OAuth client ID (same as in Supabase); shows Google's own sign-in button, see Supabase step 2  |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY`                             | optional: Cloudflare Turnstile site key, adds a bot check to sign-in; see Supabase step 3                 |
 | `CRON_SECRET`                                                | a long random string (Vercel sends it to `/api/cron/refresh`)                                             |
 | `GEOAPIFY_API_KEY`                                           | recommended: free key from geoapify.com; places come from Geoapify instead of the public Overpass servers |
 | `OVERPASS_ENDPOINTS`                                         | optional; defaults to overpass-api.de plus two public mirrors, comma-separated to override                |

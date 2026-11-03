@@ -60,9 +60,11 @@ export default function PrivacyPage() {
         <strong>Supabase</strong> stores our database and handles sign-in (servers in the United
         States), <strong>Vercel</strong> hosts the site and counts visits without cookies, and{" "}
         <strong>Google</strong> provides &ldquo;Sign in with Google&rdquo;, under its own privacy
-        policy. Maps, map tiles and place photos load from <strong>OpenFreeMap</strong>,{" "}
-        <strong>Wikimedia Commons</strong> or a place&apos;s own website, which see your IP address
-        when they do; we never send them anything about you.
+        policy. On the sign-in page, <strong>Cloudflare Turnstile</strong> checks that a person, not
+        a bot, is signing in (it sees your IP address and browser to do so). Maps, map tiles and
+        place photos load from <strong>OpenFreeMap</strong>, <strong>Wikimedia Commons</strong> or a
+        place&apos;s own website, which see your IP address when they do; we never send them
+        anything about you.
       </p>
 
       <h2>How long we keep it</h2>
