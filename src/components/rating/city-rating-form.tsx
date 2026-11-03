@@ -52,9 +52,7 @@ export function CityRatingForm({
   }
 
   return (
-    // Header and Save always in view; only the list scrolls when the card is height-limited
-    // (the city page caps it to the screen on wide layouts).
-    <form action={action} className="bg-card flex min-h-0 flex-col rounded-xl border">
+    <form action={action} className="bg-card rounded-xl border">
       <input type="hidden" name="cityId" value={cityId} />
       <div className="space-y-3 px-5 pt-5 pb-2">
         <p className="text-sm font-medium">
@@ -89,12 +87,16 @@ export function CityRatingForm({
           </div>
         </fieldset>
       </div>
-      <ul className="min-h-0 divide-y overflow-y-auto overscroll-contain px-5">
+      <ul className="divide-y px-5">
         {CITY_DIMENSIONS.map((d) => (
-          <li key={d} className="flex items-center justify-between gap-3 py-1.5">
-            <div className="min-w-0">
+          <li key={d} className="flex items-center justify-between gap-3 py-1.5 lg:py-2">
+            {/* Wide screens show the question as a tooltip, so the whole form fits a laptop
+                screen beside the guide; phones show it under the label. */}
+            <div className="min-w-0" title={DIMENSION_META[d].question}>
               <p className="text-sm font-medium">{DIMENSION_META[d].label}</p>
-              <p className="text-muted-foreground truncate text-xs">{DIMENSION_META[d].question}</p>
+              <p className="text-muted-foreground truncate text-xs lg:sr-only">
+                {DIMENSION_META[d].question}
+              </p>
             </div>
             <Stars
               name={`dim:${d}`}
@@ -107,7 +109,7 @@ export function CityRatingForm({
         ))}
       </ul>
       {/* On narrow screens the form is long: keep Save pinned to the bottom of the screen while the
-          form is in view (wide screens pin the whole card instead). */}
+          form is in view (wide screens keep the whole card in view instead). */}
       <div className="bg-card space-y-2.5 rounded-b-xl border-t px-5 pt-3 pb-5 max-lg:sticky max-lg:bottom-0 max-lg:shadow-[0_-8px_16px_-12px_rgb(0_0_0/0.25)]">
         <p className="text-muted-foreground text-xs">
           Skip anything you can&apos;t judge. You can change these any time.

@@ -10,6 +10,7 @@ import { ImportStatus } from "@/components/import-status";
 import { LocalsVisitors } from "@/components/locals-visitors";
 import { CityRatingForm } from "@/components/rating/city-rating-form";
 import { ScoreRing } from "@/components/score";
+import { StickyAside } from "@/components/sticky-aside";
 import { WatchOutList } from "@/components/watch-out-list";
 import { CATEGORY_META, PLACE_CATEGORIES } from "@/lib/import/categories";
 import {
@@ -143,29 +144,25 @@ async function CityGuide({ params }: { params: Props["params"] }) {
                   zoom={city.population > 2_000_000 ? 11.5 : 12.5}
                 />
               </section>
+
+              <aside className="bg-surface text-muted-foreground rounded-xl border p-4 text-sm leading-relaxed">
+                <p className="text-foreground font-medium">About this guide</p>
+                <p className="mt-1">
+                  Before anyone rates a place, its score is an estimate based on how well documented
+                  and established it is. Community ratings take over as they come in.
+                </p>
+              </aside>
             </>
           )}
         </div>
 
-        {/* Pinned beside the guide on wide screens, never taller than the screen: the rating form
-            shrinks and scrolls its list, so its Save button stays in view. */}
-        <aside
-          id="rate"
-          className="scroll-mt-20 space-y-4 lg:sticky lg:top-20 lg:flex lg:max-h-[calc(100dvh-6rem)] lg:flex-col lg:gap-4 lg:space-y-0 lg:self-start"
-        >
-          <div className="lg:flex lg:min-h-0 lg:flex-col">
-            <Suspense fallback={<div className="bg-muted h-72 animate-pulse rounded-xl border" />}>
-              <CityRatingPanel city={city} returnTo={returnTo} />
-            </Suspense>
-          </div>
-          <div className="bg-surface text-muted-foreground shrink-0 rounded-xl border p-4 text-xs leading-relaxed">
-            <p className="text-foreground font-medium">About this guide</p>
-            <p className="mt-1">
-              Before anyone rates a place, its score is an estimate based on how well documented and
-              established it is. Community ratings take over as they come in.
-            </p>
-          </div>
-        </aside>
+        {/* Stays in view beside the guide on wide screens, at full height: on a short screen it
+            pins by its bottom edge, so Save is always a short scroll away. */}
+        <StickyAside id="rate" className="scroll-mt-20">
+          <Suspense fallback={<div className="bg-muted h-72 animate-pulse rounded-xl border" />}>
+            <CityRatingPanel city={city} returnTo={returnTo} />
+          </Suspense>
+        </StickyAside>
       </div>
     </article>
   );
