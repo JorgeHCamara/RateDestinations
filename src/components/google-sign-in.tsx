@@ -77,19 +77,12 @@ export function GoogleSignIn({
   clientId,
   next,
   fallback,
-  getCaptchaToken,
 }: {
   clientId: string;
   next: string;
   fallback: ReactNode;
-  /** The bot-check token Supabase asks for when CAPTCHA protection is on (see turnstile.tsx). */
-  getCaptchaToken?: () => Promise<string | undefined>;
 }) {
   const slot = useRef<HTMLDivElement>(null);
-  const getCaptchaRef = useRef(getCaptchaToken);
-  useEffect(() => {
-    getCaptchaRef.current = getCaptchaToken;
-  });
   const [state, setState] = useState<"loading" | "ready" | "failed">("loading");
   const [error, setError] = useState<string | null>(null);
 
@@ -108,20 +101,14 @@ export function GoogleSignIn({
         context: "signin",
         callback: async ({ credential }) => {
           setError(null);
-          const captchaToken = await getCaptchaRef.current?.();
           const supabase = createSupabaseBrowserClient();
           const { error: signInError } = await supabase.auth.signInWithIdToken({
             provider: "google",
             token: credential,
             nonce,
-            options: captchaToken ? { captchaToken } : undefined,
           });
           if (signInError) {
-            setError(
-              signInError.code === "captcha_failed"
-                ? "We couldn't confirm you're not a bot. Please try again."
-                : "Google sign-in failed. Try again or use email.",
-            );
+            setError("Google sign-in failed. Try again or use email.");
             return;
           }
           // A full load, so the server renders the page signed in.

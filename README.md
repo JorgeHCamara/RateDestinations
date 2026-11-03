@@ -133,7 +133,8 @@ film it with `node .claude/skills/stageshow/scripts/film.mjs http://localhost:30
    **site key** in Vercel as `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and deploy. Only then, in Supabase →
    **Authentication → Attack Protection**, enable CAPTCHA protection with provider **Turnstile**
    and paste the **secret key**. In that order: once Supabase asks for a token, sign-in only works
-   from pages that send one. To undo, turn the Supabase toggle off.
+   from pages that send one. To undo, turn the Supabase toggle off. Supabase checks the token on
+   email sign-in only; Google sign-in has Google's own bot checks.
 4. **Authentication → URL configuration**: Site URL = your production URL; add
    `https://<your-domain>/auth/callback` and `http://localhost:3000/auth/callback` to the redirect list.
 5. Seed cities. With a database connection (the **Session pooler** string from the

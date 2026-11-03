@@ -9,27 +9,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-// Cloudflare Turnstile: the bot check Supabase verifies on every sign-in once CAPTCHA protection
-// is on (Authentication → Attack Protection). Without a site key, sign-in works without it.
+// Cloudflare Turnstile: the bot check Supabase verifies on email sign-in once CAPTCHA protection is
+// on (Authentication → Attack Protection). Supabase doesn't check it on Google sign-in (Google runs
+// its own bot checks), so the Google button never waits for it. Without a site key, no check.
 const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-/** How long Google sign-in waits for the bot check to finish before giving up. */
-const CAPTCHA_WAIT_MS = 10_000;
 
 export function LoginForm({ next, error }: { next: string; error: string | null }) {
   const [state, action, pending] = useActionState<EmailSignInState, FormData>(signInWithEmail, {});
   const [captcha, setCaptcha] = useState<string | null>(null);
   const [captchaFailed, setCaptchaFailed] = useState(false);
-  const captchaRef = useRef<string | null>(null);
-  const waiters = useRef(new Set<(token: string) => void>());
+  // Cloudflare wants the visitor to tick its box (it couldn't tell on its own).
+  const [captchaNeedsTick, setCaptchaNeedsTick] = useState(false);
   const controls = useRef<TurnstileControls | null>(null);
 
   const onToken = useCallback((token: string | null) => {
-    captchaRef.current = token;
     setCaptcha(token);
     if (token) {
       setCaptchaFailed(false);
-      for (const w of waiters.current) w(token);
-      waiters.current.clear();
+      setCaptchaNeedsTick(false);
     }
   }, []);
   const onCaptchaError = useCallback(() => setCaptchaFailed(true), []);
@@ -38,27 +35,6 @@ export function LoginForm({ next, error }: { next: string; error: string | null 
   useEffect(() => {
     if (state.error) controls.current?.reset();
   }, [state]);
-
-  // For Google sign-in: the current token (waiting for one if the check is still running), then a
-  // fresh check for any later attempt.
-  const getCaptchaToken = useCallback(async (): Promise<string | undefined> => {
-    if (!turnstileSiteKey) return undefined;
-    const token =
-      captchaRef.current ??
-      (await new Promise<string | undefined>((resolve) => {
-        const w = (t: string) => {
-          clearTimeout(timer);
-          resolve(t);
-        };
-        const timer = setTimeout(() => {
-          waiters.current.delete(w);
-          resolve(undefined);
-        }, CAPTCHA_WAIT_MS);
-        waiters.current.add(w);
-      }));
-    controls.current?.reset();
-    return token;
-  }, []);
 
   const waitingForCaptcha = Boolean(turnstileSiteKey) && !captcha;
   // The redirect flow: Google's screen names the Supabase project's URL. Used only when Google's
@@ -108,6 +84,7 @@ export function LoginForm({ next, error }: { next: string; error: string | null 
           siteKey={turnstileSiteKey}
           onToken={onToken}
           onError={onCaptchaError}
+          onInteractive={setCaptchaNeedsTick}
           controls={controls}
         />
       )}
@@ -118,12 +95,7 @@ export function LoginForm({ next, error }: { next: string; error: string | null 
         </p>
       )}
       {googleClientId ? (
-        <GoogleSignIn
-          clientId={googleClientId}
-          next={next}
-          fallback={googleRedirect}
-          getCaptchaToken={getCaptchaToken}
-        />
+        <GoogleSignIn clientId={googleClientId} next={next} fallback={googleRedirect} />
       ) : (
         googleRedirect
       )}
@@ -156,7 +128,9 @@ export function LoginForm({ next, error }: { next: string; error: string | null 
             {pending
               ? "Sending…"
               : waitingForCaptcha
-                ? "Checking you're not a bot…"
+                ? captchaNeedsTick
+                  ? "Tick the box above to continue"
+                  : "Checking you're not a bot…"
                 : "Email me a magic link"}
           </Button>
         </form>

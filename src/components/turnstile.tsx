@@ -22,6 +22,8 @@ type TurnstileApi = {
       callback?: (token: string) => void;
       "expired-callback"?: () => void;
       "error-callback"?: () => void;
+      "before-interactive-callback"?: () => void;
+      "after-interactive-callback"?: () => void;
     },
   ): string;
   reset(widgetId: string): void;
@@ -61,6 +63,7 @@ export function Turnstile({
   siteKey,
   onToken,
   onError,
+  onInteractive,
   controls,
 }: {
   siteKey: string;
@@ -68,14 +71,18 @@ export function Turnstile({
   onToken: (token: string | null) => void;
   /** The check couldn't load or run (blocked by an extension, offline). */
   onError?: () => void;
+  /** True while Cloudflare shows its "Verify you are human" box, false once it is done. */
+  onInteractive?: (showing: boolean) => void;
   controls?: MutableRefObject<TurnstileControls | null>;
 }) {
   const el = useRef<HTMLDivElement>(null);
   const onTokenRef = useRef(onToken);
   const onErrorRef = useRef(onError);
+  const onInteractiveRef = useRef(onInteractive);
   useEffect(() => {
     onTokenRef.current = onToken;
     onErrorRef.current = onError;
+    onInteractiveRef.current = onInteractive;
   });
 
   useEffect(() => {
@@ -91,6 +98,8 @@ export function Turnstile({
           size: "flexible",
           callback: (token) => onTokenRef.current(token),
           "expired-callback": () => onTokenRef.current(null),
+          "before-interactive-callback": () => onInteractiveRef.current?.(true),
+          "after-interactive-callback": () => onInteractiveRef.current?.(false),
           "error-callback": () => {
             onTokenRef.current(null);
             onErrorRef.current?.();
