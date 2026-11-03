@@ -36,13 +36,13 @@ export function PublicNameForm({
           onBlur={() => setTouched(true)}
           maxLength={PUBLIC_NAME_MAX}
           autoComplete="nickname"
-          placeholder="e.g. Ana, or a nickname like TokyoLocal"
+          placeholder="e.g. Ana Silva"
           aria-invalid={Boolean(error)}
           aria-describedby="public-name-help"
           required
         />
         <p id="public-name-help" className="text-muted-foreground text-xs">
-          Shown next to your reviews. A nickname is fine; your email is never shown.
+          Shown next to your reviews. Your email is never shown.
         </p>
       </div>
       {error && <p className="text-bad text-sm">{error}</p>}
