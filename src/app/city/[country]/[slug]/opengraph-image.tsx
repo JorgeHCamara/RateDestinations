@@ -52,7 +52,7 @@ export default async function Image({
         {sub}
       </div>
       <div style={{ fontSize: 30, marginTop: 36, color: "#8a7d75", fontFamily: "sans-serif" }}>
-        The good, the bad, and what to avoid — rated by travellers.
+        The good, the bad, and what to avoid — rated by locals and travellers.
       </div>
     </div>,
     size,

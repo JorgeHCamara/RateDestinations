@@ -26,8 +26,8 @@ async function MyRatings() {
   if (rows.length === 0) {
     return (
       <p className="text-muted-foreground mt-6 rounded-xl border border-dashed p-6 text-sm">
-        You haven&apos;t rated anything yet. Open a city you know and tell the next traveller what
-        it&apos;s really like.
+        You haven&apos;t rated anything yet. Open a city you know and tell everyone what it&apos;s
+        really like.
       </p>
     );
   }

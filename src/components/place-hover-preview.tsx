@@ -80,7 +80,8 @@ export function PlaceHoverPreview({
           {place.warning_count > 0 && (
             <p className="text-bad flex items-center gap-1.5 text-xs">
               <TriangleAlert className="size-3.5 shrink-0" aria-hidden />
-              {place.warning_count} traveller warning{place.warning_count > 1 ? "s" : ""}
+              {place.warning_count} warning{place.warning_count > 1 ? "s" : ""} from people
+              who&apos;ve been
             </p>
           )}
         </div>

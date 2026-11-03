@@ -9,8 +9,8 @@ export function WatchOutList({ places, tags }: { places: WatchOutPlace[]; tags: 
   if (places.length === 0) {
     return (
       <div className="text-muted-foreground rounded-xl border border-dashed p-6 text-sm">
-        Nothing flagged yet. When travellers rate a place 1–2 stars or tag it as dirty, unsafe, a
-        scam or overpriced, it shows up here so the next visitor knows.
+        Nothing flagged yet. When people rate a place 1–2 stars or tag it as dirty, unsafe, a scam
+        or overpriced, it shows up here so everyone knows.
       </div>
     );
   }

@@ -32,7 +32,7 @@ export function PlaceRatingForm({
       <div className="bg-card rounded-xl border p-5 text-sm">
         <p className="font-medium">Been here?</p>
         <p className="text-muted-foreground mb-3">
-          Sign in to rate this place and warn (or encourage) the next traveller.
+          Sign in to rate this place and warn (or encourage) everyone who goes next.
         </p>
         <Button asChild size="sm">
           <Link href={`/login?next=/place/${placeId}`}>Sign in to rate</Link>

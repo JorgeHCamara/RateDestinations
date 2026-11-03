@@ -15,6 +15,17 @@ export async function getMyPlaceRating(
   );
 }
 
+export type RaterRole = "local" | "visitor";
+
+/** Whether the user said they live in the city or are visiting it, if they ever rated it. */
+export async function getMyCityRole(userId: string, cityId: number): Promise<RaterRole | null> {
+  const row = await queryOne<{ role: RaterRole }>(
+    "select role from city_raters where user_id = $1 and city_id = $2",
+    [userId, cityId],
+  );
+  return row?.role ?? null;
+}
+
 export async function getMyCityRatings(
   userId: string,
   cityId: number,

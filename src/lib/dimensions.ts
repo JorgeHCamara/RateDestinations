@@ -16,16 +16,16 @@ export const DIMENSION_META: Record<
   CityDimension,
   { label: string; question: string; negative: boolean }
 > = {
-  safety: { label: "Safety", question: "How safe did you feel, day and night?", negative: true },
+  safety: { label: "Safety", question: "How safe is it, day and night?", negative: true },
   cleanliness: {
     label: "Cleanliness",
     question: "Streets, parks, public spaces: clean or dirty?",
     negative: true,
   },
-  food: { label: "Food", question: "How good was the food overall?", negative: false },
+  food: { label: "Food", question: "How good is the food overall?", negative: false },
   sights: {
     label: "Sights",
-    question: "Were the landmarks and culture worth it?",
+    question: "Are the landmarks and culture worth it?",
     negative: false,
   },
   nature: { label: "Nature", question: "Parks, beaches, green space?", negative: false },
@@ -35,10 +35,10 @@ export const DIMENSION_META: Record<
     question: "Public transport, walking, traffic?",
     negative: false,
   },
-  value: { label: "Value", question: "Did prices match what you got?", negative: false },
+  value: { label: "Value", question: "Do prices match what you get?", negative: false },
   friendliness: {
     label: "Friendliness",
-    question: "How were you treated as a visitor?",
+    question: "How friendly and welcoming are people?",
     negative: false,
   },
 };

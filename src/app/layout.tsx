@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: "RateDestinations — the whole city, rated", template: "%s · RateDestinations" },
   description:
-    "One honest guide per city: the restaurants, parks and sights worth your time, and the places, scams and streets to avoid. Rated by travellers.",
+    "One honest guide per city: the restaurants, parks and sights worth your time, and the places, scams and streets to avoid. Rated by locals and travellers.",
   openGraph: { type: "website", siteName: "RateDestinations" },
 };
 

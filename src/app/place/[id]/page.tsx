@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!place) return { title: "Place not found" };
   return {
     title: `${place.name} · ${place.city_name}`,
-    description: `${place.name}, ${CATEGORY_META[place.category].label.toLowerCase()} in ${place.city_name}, ${place.country_name}: traveller ratings, warnings and what's nearby.`,
+    description: `${place.name}, ${CATEGORY_META[place.category].label.toLowerCase()} in ${place.city_name}, ${place.country_name}: ratings from locals and travellers, warnings and what's nearby.`,
   };
 }
 
@@ -134,7 +134,7 @@ async function PlaceDetail({ params }: { params: Props["params"] }) {
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_22rem]">
         <div className="space-y-10">
           <section>
-            <h2 className="font-display mb-3 text-2xl font-semibold">What travellers say</h2>
+            <h2 className="font-display mb-3 text-2xl font-semibold">What people say</h2>
             {reviews.length === 0 ? (
               <p className="text-muted-foreground rounded-xl border border-dashed p-6 text-sm">
                 No ratings yet. The score above is an estimate from how well documented this place
@@ -151,7 +151,15 @@ async function PlaceDetail({ params }: { params: Props["params"] }) {
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2">
                         <Stars value={r.stars} readOnly size="sm" label={`${r.stars} stars`} />
-                        <span className="text-sm font-medium">{r.display_name ?? "Traveller"}</span>
+                        <span className="text-sm font-medium">{r.display_name ?? "Member"}</span>
+                        {r.rater_role === "local" && (
+                          <span
+                            className="bg-brand-soft text-brand rounded-full px-2 py-0.5 text-[11px] font-medium"
+                            title={`Lives in ${place.city_name}`}
+                          >
+                            Local
+                          </span>
+                        )}
                       </div>
                       <time className="text-muted-foreground text-xs" dateTime={r.created_at}>
                         {new Date(r.created_at).toLocaleDateString("en", {

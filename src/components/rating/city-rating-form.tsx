@@ -6,21 +6,31 @@ import { rateCity, type RatingActionState } from "@/app/actions/ratings";
 import { Stars } from "@/components/stars";
 import { Button } from "@/components/ui/button";
 import { CITY_DIMENSIONS, DIMENSION_META, type CityDimension } from "@/lib/dimensions";
+import type { RaterRole } from "@/lib/queries/ratings";
+import { cn } from "@/lib/utils";
+
+const ROLES: { value: RaterRole; label: string }[] = [
+  { value: "local", label: "I live here" },
+  { value: "visitor", label: "Visiting / visited" },
+];
 
 export function CityRatingForm({
   cityId,
   cityName,
   existing,
+  existingRole,
   signedIn,
   returnTo,
 }: {
   cityId: number;
   cityName: string;
   existing: Partial<Record<CityDimension, number>>;
+  existingRole: RaterRole | null;
   signedIn: boolean;
   returnTo: string;
 }) {
   const [values, setValues] = useState<Partial<Record<CityDimension, number>>>(existing);
+  const [role, setRole] = useState<RaterRole | null>(existingRole);
   const [state, action, pending] = useActionState<RatingActionState, FormData>(rateCity, {
     ok: false,
   });
@@ -31,8 +41,8 @@ export function CityRatingForm({
       <div className="bg-card rounded-xl border p-5 text-sm">
         <p className="font-medium">Know {cityName}?</p>
         <p className="text-muted-foreground mb-3">
-          Rate safety, cleanliness, food and more. Nine quick taps that help every traveller after
-          you.
+          Live here or visited? Rate safety, cleanliness, food and more: nine quick taps that tell
+          everyone what {cityName} is really like.
         </p>
         <Button asChild size="sm">
           <Link href={`/login?next=${encodeURIComponent(returnTo)}`}>Sign in to rate</Link>
@@ -47,6 +57,32 @@ export function CityRatingForm({
       <p className="text-sm font-medium">
         {filled ? "Your ratings for" : "Rate"} {cityName}
       </p>
+      <fieldset>
+        <legend className="text-muted-foreground mb-1.5 text-xs">Do you live in {cityName}?</legend>
+        <div className="bg-muted grid grid-cols-2 gap-1 rounded-lg p-1" role="radiogroup">
+          {ROLES.map((r) => (
+            <label
+              key={r.value}
+              className={cn(
+                "has-focus-visible:ring-ring/60 cursor-pointer rounded-md px-2 py-1.5 text-center text-sm transition has-focus-visible:ring-2",
+                role === r.value
+                  ? "bg-background text-foreground font-medium shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <input
+                type="radio"
+                name="role"
+                value={r.value}
+                checked={role === r.value}
+                onChange={() => setRole(r.value)}
+                className="sr-only"
+              />
+              {r.label}
+            </label>
+          ))}
+        </div>
+      </fieldset>
       <ul className="divide-y">
         {CITY_DIMENSIONS.map((d) => (
           <li key={d} className="flex items-center justify-between gap-3 py-2">
@@ -69,7 +105,12 @@ export function CityRatingForm({
       </p>
       {state.error && <p className="text-bad text-sm">{state.error}</p>}
       {state.ok && <p className="text-good text-sm">Saved — the city score is updated.</p>}
-      <Button type="submit" disabled={pending || filled === 0}>
+      {filled > 0 && !role && (
+        <p className="text-muted-foreground text-xs">
+          Pick whether you live here or are visiting to save.
+        </p>
+      )}
+      <Button type="submit" disabled={pending || filled === 0 || !role}>
         {pending ? "Saving…" : "Save ratings"}
       </Button>
     </form>

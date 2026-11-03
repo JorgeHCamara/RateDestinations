@@ -65,7 +65,15 @@ export async function rateCity(
     (d) => [d, Number(formData.get(`dim:${d}`) || 0)] as const,
   ).filter(([, v]) => v >= 1 && v <= 5);
   if (entries.length === 0) return { ok: false, error: "Rate at least one aspect of the city." };
+  const role = z.enum(["local", "visitor"]).safeParse(formData.get("role"));
+  if (!role.success) return { ok: false, error: "Tell us whether you live here or are visiting." };
   try {
+    // The answer first, so the stats refreshed by the ratings below already count it.
+    await query(
+      `insert into city_raters (city_id, user_id, role) values ($1, $2, $3)
+       on conflict (city_id, user_id) do update set role = excluded.role`,
+      [cityId.data, user.id, role.data],
+    );
     for (const [dimension, stars] of entries) {
       await query(
         `insert into city_ratings (city_id, user_id, dimension, stars) values ($1, $2, $3, $4)

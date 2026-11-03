@@ -46,7 +46,7 @@ export default function Image() {
         Know a city before you go.
       </div>
       <div style={{ fontSize: 44, marginTop: 20, color: "#6b5f58", fontFamily: "sans-serif" }}>
-        The good and the bad, rated by travellers.
+        The good and the bad, rated by locals and travellers.
       </div>
     </div>,
     size,
