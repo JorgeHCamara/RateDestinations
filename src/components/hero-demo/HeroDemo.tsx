@@ -26,7 +26,9 @@ type S = {
 const initial: S = { open: false, stars: 0, tag: false, saved: false };
 const poster: S = { open: false, stars: 2, tag: true, saved: true };
 
-const PLACE = "Cervejaria Ramiro";
+// Every place in this demo is fictional (checked against Overture Maps: no place in Portugal has
+// these names), so the demo never rates a real business.
+const PLACE = "Polvo Dourado";
 const REST = { wide: { x: 300, y: 330 }, compact: { x: 310, y: 250 } };
 
 async function script(a: Act<S>) {
@@ -142,7 +144,7 @@ export function HeroDemo() {
 
                     <div className="rdh-row">
                       <div>
-                        <Text className="rdh-row__name">Time Out Market</Text>
+                        <Text className="rdh-row__name">Mercado Lagarto Azul</Text>
                         <Text className="rdh-row__sub">Food hall · Cais do Sodré</Text>
                       </div>
                       <div className="rdh-row__end">
@@ -152,7 +154,7 @@ export function HeroDemo() {
 
                     <div className="rdh-row rdh-wide-only">
                       <div>
-                        <Text className="rdh-row__name">Pastéis de Belém</Text>
+                        <Text className="rdh-row__name">Nata Dourada</Text>
                         <Text className="rdh-row__sub">Pastry · Belém</Text>
                       </div>
                       <div className="rdh-row__end">
@@ -266,7 +268,7 @@ export function HeroDemo() {
               </Collapse>
               <div className="rdh-warn rdh-wide-only">
                 <div>
-                  <div className="rdh-warn__name">Pink Street bars</div>
+                  <div className="rdh-warn__name">Bar Esquina Torta</div>
                   <div className="rdh-warn__why">Overpriced ×3 · Felt unsafe ×1</div>
                 </div>
                 <span className="rdh-pill" data-tone="warn">
