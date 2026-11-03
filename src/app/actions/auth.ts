@@ -1,11 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { safeNext } from "@/lib/auth-next";
 import { createSupabaseServerClient, isAuthConfigured } from "@/lib/supabase/server";
-
-function safeNext(next: unknown): string {
-  return typeof next === "string" && next.startsWith("/") && !next.startsWith("//") ? next : "/";
-}
 
 function siteUrl() {
   return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";

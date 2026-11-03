@@ -165,6 +165,10 @@ sender, which also makes the email come from RateDestinations instead of "Supaba
    you approve them in Vercel; they are all under `mail`. Otherwise add them by hand in Vercel →
    Domains → DNS Records. Wait until Resend shows the domain as verified, then create an API key
    (sending access).
+   - **DMARC** (Auto configure doesn't add it): in Vercel → Domains → DNS Records add a `TXT`
+     record named `_dmarc` with the value `v=DMARC1; p=none;`. Outlook and Gmail treat mail
+     from domains without one with suspicion; it covers `mail.` too. Once delivery is fine for
+     a few weeks, `p=quarantine` is stricter protection against spoofing.
 2. **Supabase → Authentication → Emails → SMTP Settings**: enable custom SMTP with host
    `smtp.resend.com`, port `465`, username `resend`, password = the Resend API key, sender email
    `noreply@mail.ratedestinations.com`, sender name `RateDestinations`.
@@ -178,6 +182,12 @@ RateDestinations`, body `confirm-signup.html`
    The logo they show is `public/email/logo.png`, served from the live site. The text says the
    link expires in an hour: Supabase's default email OTP expiry (Authentication → Providers →
    Email); change both together.
+
+   The templates' links point to our own `/auth/confirm` page (`{{ .SiteURL }}/auth/confirm?
+token_hash=…`), not to the Supabase project's URL: a link to a different domain than the
+   sender's is a phishing signal for mail filters. So **Authentication → URL Configuration →
+   Site URL must be `https://www.ratedestinations.com`**. `/auth/confirm` verifies the token and
+   signs the person in; an expired or used link lands on the login page with a clear message.
 
 ## Data and attribution
 
