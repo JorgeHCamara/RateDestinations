@@ -107,12 +107,15 @@ export async function importCity(cityId: number, opts: ImportOptions = {}): Prom
     .join(" | ")
     .slice(0, 1000);
 
-  if (groups.every((g) => !g.ok)) {
+  // Nothing saved means nothing to show: record it as a failure so the city can be retried,
+  // rather than "done" with an empty guide (searches that answered with zero places count too).
+  if (saved.size === 0) {
+    const reason = failures || "every search answered with no places";
     await query(
       "update cities set import_status = 'failed', import_error = $2, imported_at = now() where id = $1",
-      [cityId, failures],
+      [cityId, reason],
     );
-    throw new Error(`import failed for city ${cityId}: ${failures}`);
+    throw new Error(`import failed for city ${cityId}: ${reason}`);
   }
 
   // Wikidata notability is a bonus: only with time to spare, and bounded by the same deadline.

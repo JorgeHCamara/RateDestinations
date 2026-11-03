@@ -184,10 +184,15 @@ export async function fetchGeoapifyCategory(
     });
     const timeoutMs = Math.min(GEOAPIFY_REQUEST_TIMEOUT_MS, remaining);
     let res: Response;
+    const started = now();
+    // One line per request in the server logs (Vercel → Logs), for diagnosing slow or empty imports.
+    const log = (outcome: string) =>
+      console.info(`[geoapify] ${category} r=${radius}m ${outcome} in ${now() - started}ms`);
     try {
       res = await fetchImpl(`${ENDPOINT}?${params}`, { signal: AbortSignal.timeout(timeoutMs) });
     } catch (err) {
       const e = err as Error;
+      log(`error ${e.name}`);
       errors.push(
         `${Math.round(radius / 1000)} km: ${e.name === "TimeoutError" || e.name === "AbortError" ? `no answer in ${Math.round(timeoutMs / 1000)}s` : e.message}`,
       );
@@ -195,8 +200,11 @@ export async function fetchGeoapifyCategory(
     }
     if (res.ok) {
       const json = (await res.json()) as { features?: Feature[] };
-      return parseGeoapify(json.features ?? [], category);
+      const places = parseGeoapify(json.features ?? [], category);
+      log(`ok ${json.features?.length ?? 0} features, ${places.length} places`);
+      return places;
     }
+    log(`HTTP ${res.status}`);
     const body = (await res.text()).slice(0, 200).replaceAll(key, "***");
     if (res.status === 429 && !rateLimitedOnce) {
       // Briefly over the per-second limit: wait and try the same circle once more.
