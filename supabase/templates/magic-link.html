@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <meta name="supported-color-schemes" content="light" />
+    <title>Your RateDestinations sign-in link</title>
+  </head>
+  <body style="margin: 0; padding: 0; background-color: #f5f1ea">
+    <!-- Preview text shown next to the subject in the inbox -->
+    <div style="display: none; max-height: 0; overflow: hidden; mso-hide: all">
+      Tap the button to sign in to RateDestinations. The link works once.
+    </div>
+    <table
+      role="presentation"
+      width="100%"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+      style="background-color: #f5f1ea"
+    >
+      <tr>
+        <td align="center" style="padding: 32px 16px">
+          <table
+            role="presentation"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="max-width: 520px"
+          >
+            <!-- Brand -->
+            <tr>
+              <td style="padding: 0 4px 20px 4px">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                  <tr>
+                    <td style="vertical-align: middle; padding-right: 10px">
+                      <img
+                        src="https://www.ratedestinations.com/email/logo.png"
+                        width="32"
+                        height="32"
+                        alt=""
+                        style="display: block; border: 0; border-radius: 7px"
+                      />
+                    </td>
+                    <td
+                      style="
+                        vertical-align: middle;
+                        font-family: Georgia, &quot;Times New Roman&quot;, serif;
+                        font-size: 21px;
+                        font-weight: bold;
+                        color: #211b17;
+                        letter-spacing: -0.3px;
+                      "
+                    >
+                      RateDestinations
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <!-- Card -->
+            <tr>
+              <td
+                style="
+                  background-color: #ffffff;
+                  border: 1px solid #e6dfd4;
+                  border-radius: 14px;
+                  padding: 32px 32px 28px 32px;
+                "
+              >
+                <h1
+                  style="
+                    margin: 0 0 12px 0;
+                    font-family: Georgia, &quot;Times New Roman&quot;, serif;
+                    font-size: 26px;
+                    line-height: 1.2;
+                    font-weight: bold;
+                    color: #211b17;
+                  "
+                >
+                  Sign in to RateDestinations
+                </h1>
+                <p
+                  style="
+                    margin: 0 0 24px 0;
+                    font-family:
+                      -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica,
+                      Arial, sans-serif;
+                    font-size: 16px;
+                    line-height: 1.55;
+                    color: #4a423c;
+                  "
+                >
+                  You asked to sign in with this email address. Tap the button below and you're in.
+                </p>
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                  <tr>
+                    <td style="border-radius: 10px; background-color: #e8613c">
+                      <a
+                        href="{{ .ConfirmationURL }}"
+                        style="
+                          display: inline-block;
+                          padding: 13px 26px;
+                          font-family:
+                            -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto,
+                            Helvetica, Arial, sans-serif;
+                          font-size: 16px;
+                          font-weight: 600;
+                          color: #ffffff;
+                          text-decoration: none;
+                          border-radius: 10px;
+                        "
+                      >
+                        Sign in
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+                <p
+                  style="
+                    margin: 24px 0 0 0;
+                    font-family:
+                      -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica,
+                      Arial, sans-serif;
+                    font-size: 14px;
+                    line-height: 1.55;
+                    color: #6b625b;
+                  "
+                >
+                  The link works once and expires in an hour. If you didn't ask to sign in, you can
+                  ignore this email: no one can get into your account without it.
+                </p>
+                <p
+                  style="
+                    margin: 16px 0 0 0;
+                    font-family:
+                      -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica,
+                      Arial, sans-serif;
+                    font-size: 12px;
+                    line-height: 1.5;
+                    color: #8d847c;
+                  "
+                >
+                  Button not working? Copy this link into your browser:<br />
+                  <a href="{{ .ConfirmationURL }}" style="color: #c4502f; word-break: break-all"
+                    >{{ .ConfirmationURL }}</a
+                  >
+                </p>
+              </td>
+            </tr>
+            <!-- Footer -->
+            <tr>
+              <td
+                style="
+                  padding: 20px 4px 0 4px;
+                  font-family:
+                    -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica,
+                    Arial, sans-serif;
+                  font-size: 12px;
+                  line-height: 1.5;
+                  color: #8d847c;
+                "
+              >
+                RateDestinations: the whole city, rated by locals and travellers.<br />
+                <a href="https://www.ratedestinations.com" style="color: #8d847c"
+                  >www.ratedestinations.com</a
+                >
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
