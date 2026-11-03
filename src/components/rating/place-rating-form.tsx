@@ -131,7 +131,7 @@ export function NeedsNameCard({ returnTo }: { returnTo: string }) {
     <div className="bg-card rounded-xl border p-5 text-sm">
       <p className="font-medium">One step before rating</p>
       <p className="text-muted-foreground mb-3">
-        Choose the name shown next to your reviews. A nickname is fine; your email is never shown.
+        Choose the name shown next to your reviews. Your email is never shown.
       </p>
       <Button asChild size="sm">
         <Link href={`/welcome?next=${encodeURIComponent(returnTo)}`}>Choose your name</Link>
