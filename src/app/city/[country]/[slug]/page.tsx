@@ -11,16 +11,24 @@ import { LocalsVisitors } from "@/components/locals-visitors";
 import { CityRatingForm } from "@/components/rating/city-rating-form";
 import { ScoreRing } from "@/components/score";
 import { StickyAside } from "@/components/sticky-aside";
+import { JsonLd } from "@/components/json-ld";
 import { WatchOutList } from "@/components/watch-out-list";
 import { CATEGORY_META, PLACE_CATEGORIES } from "@/lib/import/categories";
 import {
-  getCityBasic,
   getCityBySlug,
   getCityGuide,
   getFeaturedCityParams,
   type City,
 } from "@/lib/queries/cities";
 import { getRatingTags } from "@/lib/queries/places";
+import { cityHasContent } from "@/lib/queries/seo";
+import {
+  breadcrumbJsonLd,
+  cityDescription,
+  cityJsonLd,
+  cityPath,
+  cityTitle,
+} from "@/lib/structured-data";
 import { getMyCityRatings, getMyCityRole } from "@/lib/queries/ratings";
 import { getSessionUser } from "@/lib/supabase/server";
 
@@ -34,15 +42,34 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { country, slug } = await params;
-  const city = await getCityBasic(country, slug);
+  const city = await getCityBySlug(country, slug);
   if (!city) return { title: "City not found" };
-  const title = `${city.name}, ${city.country_name}`;
+  const guide =
+    city.import_status === "done" ? await getCityGuide(city.id, city.imported_at ?? "0") : null;
+  // A city nobody has opened yet shows only "Building this guide…": kept out of search results
+  // until it has places or ratings (it is left out of the sitemap too).
+  const indexable = guide
+    ? guide.placeCount > 0 || guide.stats.rating_count > 0
+    : await cityHasContent(city.id);
+  const description = cityDescription(city, seoGuide(guide));
   return {
-    title,
-    description: `${city.name} travel guide: the best restaurants, parks, sights and nightlife, and what to avoid — safety, cleanliness and scams rated by locals and travellers.`,
-    alternates: { canonical: `/city/${country.toLowerCase()}/${slug}` },
-    openGraph: { title: `${title} — the whole city, rated`, type: "article" },
+    title: cityTitle(city),
+    description,
+    alternates: { canonical: cityPath(country, slug) },
+    robots: indexable ? undefined : { index: false, follow: true },
+    openGraph: {
+      title: `${city.name}, ${city.country_name} — the whole city, rated`,
+      description,
+      type: "article",
+    },
   };
+}
+
+/** The guide's numbers for the search snippet: its size and its best-known place per category. */
+function seoGuide(guide: Awaited<ReturnType<typeof getCityGuide>> | null) {
+  if (!guide) return null;
+  const topNames = PLACE_CATEGORIES.flatMap((c) => guide.byCategory.get(c)?.[0]?.name ?? []);
+  return { placeCount: guide.placeCount, ratingCount: guide.stats.rating_count, topNames };
 }
 
 export default function CityPage(props: Props) {
@@ -64,6 +91,13 @@ async function CityGuide({ params }: { params: Props["params"] }) {
 
   return (
     <article>
+      <JsonLd data={cityJsonLd(city, cityDescription(city, seoGuide(guide)))} />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "RateDestinations", path: "/" },
+          { name: city.name, path: returnTo },
+        ])}
+      />
       <Hero
         city={city}
         overall={guide?.stats.overall ?? null}

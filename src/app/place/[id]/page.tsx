@@ -19,6 +19,8 @@ import {
 } from "@/lib/queries/places";
 import { getMyPlaceRating } from "@/lib/queries/ratings";
 import { getSessionUser } from "@/lib/supabase/server";
+import { JsonLd } from "@/components/json-ld";
+import { breadcrumbJsonLd, placeDescription, placeJsonLd, placeTitle } from "@/lib/structured-data";
 
 type Props = PageProps<"/place/[id]">;
 
@@ -32,9 +34,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const placeId = parseId(id);
   const place = placeId ? await getPlace(placeId) : null;
   if (!place) return { title: "Place not found" };
+  const description = placeDescription(place);
   return {
-    title: `${place.name} · ${place.city_name}`,
-    description: `${place.name}, ${CATEGORY_META[place.category].label.toLowerCase()} in ${place.city_name}, ${place.country_name}: ratings from locals and travellers, warnings and what's nearby.`,
+    title: placeTitle(place),
+    description,
+    alternates: { canonical: `/place/${place.id}` },
+    openGraph: {
+      title: `${place.name}, ${place.city_name}`,
+      description,
+      ...(place.image_url ? { images: [place.image_url] } : {}),
+    },
   };
 }
 
@@ -75,6 +84,15 @@ async function PlaceDetail({ params }: { params: Props["params"] }) {
 
   return (
     <article className="container-page py-8">
+      <JsonLd data={placeJsonLd(place)} />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "RateDestinations", path: "/" },
+          { name: place.city_name, path: cityHref },
+          { name: meta.plural, path: `${cityHref}/${place.category}` },
+          { name: place.name, path: `/place/${place.id}` },
+        ])}
+      />
       <nav className="text-muted-foreground mb-4 text-sm">
         <Link href={cityHref} prefetch={true} className="hover:underline">
           {place.city_name}

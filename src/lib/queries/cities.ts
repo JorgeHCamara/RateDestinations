@@ -281,19 +281,6 @@ export async function getCityCategory(cityId: number, category: PlaceCategory, v
   );
 }
 
-/** For sitemaps and generateStaticParams: the biggest cities. */
-export async function getTopCitySlugs(limit = 200) {
-  if (!isDatabaseConfigured()) return [];
-  try {
-    return await query<{ country_code: string; slug: string; imported_at: string | null }>(
-      "select country_code, slug, imported_at::text from cities order by population desc limit $1",
-      [limit],
-    );
-  } catch {
-    return [];
-  }
-}
-
 /** Cached minimal city lookup for metadata and breadcrumbs (names don't change). */
 export async function getCityBasic(countryCode: string, slug: string) {
   "use cache";

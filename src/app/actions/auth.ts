@@ -3,10 +3,11 @@
 import { redirect } from "next/navigation";
 import { safeNext } from "@/lib/auth-next";
 import { isThrowawayEmail } from "@/lib/blocked-email";
+import { SITE_URL } from "@/lib/site-url";
 import { createSupabaseServerClient, isAuthConfigured } from "@/lib/supabase/server";
 
 function siteUrl() {
-  return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  return SITE_URL;
 }
 
 export async function signInWithGoogle(formData: FormData) {

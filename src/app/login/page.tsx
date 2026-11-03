@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { LoginForm } from "@/components/login-form";
 import { isAuthConfigured } from "@/lib/supabase/server";
 
-export const metadata = { title: "Sign in" };
+export const metadata = { title: "Sign in", robots: { index: false, follow: true } };
 
 export default function LoginPage(props: PageProps<"/login">) {
   return (

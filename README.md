@@ -214,6 +214,19 @@ token_hash=…`), not to the Supabase project's URL: a link to a different domai
    Site URL must be `https://www.ratedestinations.com`**. `/auth/confirm` verifies the token and
    signs the person in; an expired or used link lands on the login page with a clear message.
 
+### 5. Search engines
+
+`/sitemap.xml` (refreshed hourly) lists the home page, every city whose guide has places or
+ratings, category lists with at least 3 places, and every rated place. Cities nobody has opened
+yet only show "Building this guide…", so they are left out and marked `noindex` until their guide
+exists. Pages carry schema.org data: breadcrumbs everywhere, and restaurants, cafés, bars and shops
+get an `aggregateRating` once rated, which makes them eligible for star ratings in Google.
+
+In [Google Search Console](https://search.google.com/search-console) (Domain property
+`ratedestinations.com`), submit `https://www.ratedestinations.com/sitemap.xml` under **Sitemaps**.
+In [Bing Webmaster Tools](https://www.bing.com/webmasters), import the site from Search Console;
+Bing's index also feeds DuckDuckGo, Yahoo and ChatGPT search.
+
 ## Data and attribution
 
 Place data © OpenStreetMap contributors (ODbL) and Overture Maps Foundation (CDLA Permissive
