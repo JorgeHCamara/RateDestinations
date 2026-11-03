@@ -11,8 +11,9 @@ Tailwind v4 + shadcn/ui, MapLibre with OpenFreeMap tiles. Deploys on Vercel.
 
 - **Cities** come from GeoNames (every populated place over 15,000 people), seeded into Postgres,
   searched with trigram matching (`search_cities`).
-- **Places** come from OpenStreetMap through the Overpass API, imported per city the first time
-  anyone visits its guide (`POST /api/cities/:id/build`), refreshed every 90 days by a cron.
+- **Places** come from OpenStreetMap, through the Geoapify Places API when `GEOAPIFY_API_KEY` is
+  set (recommended in production: the public Overpass servers throttle shared cloud IPs such as
+  Vercel's), otherwise straight from Overpass. A city is imported the first time anyone visits its guide (`POST /api/cities/:id/build`), refreshed every 90 days by a cron.
   Wikidata sitelink counts add a _prominence_ signal for sights.
 - **Scores** blend community ratings with a prior (an external rating when there is one,
   otherwise prominence): `w = n / (n + 10)`, `score = w·user_avg + (1 − w)·prior`. One rating
@@ -94,15 +95,16 @@ film it with `node .claude/skills/stageshow/scripts/film.mjs http://localhost:30
 
 Import the repo, then set these environment variables (Production and Preview):
 
-| Variable                                                     | Value                                                                                           |
-| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`                                               | Supabase **transaction pooler** URL (port 6543), pasted as is: no quotes, no `?sslmode=require` |
-| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Project Settings → API                                                                          |
-| `NEXT_PUBLIC_SITE_URL`                                       | `https://<your-domain>`                                                                         |
-| `CRON_SECRET`                                                | a long random string (Vercel sends it to `/api/cron/refresh`)                                   |
-| `OVERPASS_ENDPOINTS`                                         | optional; defaults to overpass-api.de plus two public mirrors, comma-separated to override      |
-| `IMPORT_USER_AGENT`                                          | `RateDestinations/1.0 (contact: you@example.com)` — OSM and Wikidata ask for this               |
-| `GOOGLE_PLACES_ENABLED` / `GOOGLE_PLACES_API_KEY`            | optional, see above                                                                             |
+| Variable                                                     | Value                                                                                                     |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                                               | Supabase **transaction pooler** URL (port 6543), pasted as is: no quotes, no `?sslmode=require`           |
+| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Project Settings → API                                                                                    |
+| `NEXT_PUBLIC_SITE_URL`                                       | `https://<your-domain>`                                                                                   |
+| `CRON_SECRET`                                                | a long random string (Vercel sends it to `/api/cron/refresh`)                                             |
+| `GEOAPIFY_API_KEY`                                           | recommended: free key from geoapify.com; places come from Geoapify instead of the public Overpass servers |
+| `OVERPASS_ENDPOINTS`                                         | optional; defaults to overpass-api.de plus two public mirrors, comma-separated to override                |
+| `IMPORT_USER_AGENT`                                          | `RateDestinations/1.0 (contact: you@example.com)` — OSM and Wikidata ask for this                         |
+| `GOOGLE_PLACES_ENABLED` / `GOOGLE_PLACES_API_KEY`            | optional, see above                                                                                       |
 
 `vercel.json` schedules the daily refresh cron. City imports run inside `after()` on the
 `/api/cities/[id]/build` route (`maxDuration = 300`). Each import has a 4-minute budget

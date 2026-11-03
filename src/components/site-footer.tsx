@@ -33,6 +33,14 @@ export function SiteFooter() {
           >
             OpenFreeMap
           </a>
+          . Places powered by{" "}
+          <a
+            className="underline-offset-2 hover:underline"
+            href="https://www.geoapify.com/"
+            rel="noreferrer"
+          >
+            Geoapify
+          </a>
           .{" "}
           <Link className="underline-offset-2 hover:underline" href="/#how-it-works">
             How scores work
