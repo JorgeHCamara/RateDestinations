@@ -47,23 +47,23 @@ The last pass. Every answer comes from a frame you looked at, never from the cod
 
 ## What you see, what you do
 
-| You see | You do |
-|---|---|
-| A void under a list or pane (`empty pane:`) | More product into it until it runs off the crop, or crop the pane; never spread the rows |
-| A one-line row three times taller than its words (`fat row:`) | Padding 12px (8px dense) and more rows; never air inside the row |
-| Rows spaced wider than they are tall (`loose list:`) | Tighten the pitch to the row's padding; add rows |
-| A whole window floating with even margins on a hero | Bleed it off two edges with one gutter, or fill it |
-| Gray bars where the eye lands | Words there; bars beside it and off the crop stay |
-| A label beside a real value drawn as a bar | Both words, or drop the row |
-| A stat's unit on its own line (`unit wrapped:`) | Nowrap the pair, size the number to the tile, or move the unit to the lead |
-| A phone drawn small, or whole, in a narrow host | Crop it: a gutter from one edge, off the other, screen 1:1 |
-| A grabber or sheet under the island | Start the sheet below the status bar |
-| A popover that shifts while open (`anchor drift:`) | Pin it by the edge it opened from; reserve the height |
-| An emoji where an icon belongs (`emoji icon:`) | A drawn glyph from one family; emoji stay in messages and reactions |
-| An icon cut by its box (`clipped glyph:`) | Fit the drawing in its viewBox, or use the kit's glyph |
-| A reaction, dot or mark on the words | Move it to the edge or gutter the kit gives it |
-| A gate line you think is intentional | Look again; if it still looks fine, say so in REHEARSAL.md with the frame; never clear it by hiding the thing |
-| Ten film runs, gate green, frame unchanged | Stop. Fresh eye |
+| You see                                                       | You do                                                                                                        |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| A void under a list or pane (`empty pane:`)                   | More product into it until it runs off the crop, or crop the pane; never spread the rows                      |
+| A one-line row three times taller than its words (`fat row:`) | Padding 12px (8px dense) and more rows; never air inside the row                                              |
+| Rows spaced wider than they are tall (`loose list:`)          | Tighten the pitch to the row's padding; add rows                                                              |
+| A whole window floating with even margins on a hero           | Bleed it off two edges with one gutter, or fill it                                                            |
+| Gray bars where the eye lands                                 | Words there; bars beside it and off the crop stay                                                             |
+| A label beside a real value drawn as a bar                    | Both words, or drop the row                                                                                   |
+| A stat's unit on its own line (`unit wrapped:`)               | Nowrap the pair, size the number to the tile, or move the unit to the lead                                    |
+| A phone drawn small, or whole, in a narrow host               | Crop it: a gutter from one edge, off the other, screen 1:1                                                    |
+| A grabber or sheet under the island                           | Start the sheet below the status bar                                                                          |
+| A popover that shifts while open (`anchor drift:`)            | Pin it by the edge it opened from; reserve the height                                                         |
+| An emoji where an icon belongs (`emoji icon:`)                | A drawn glyph from one family; emoji stay in messages and reactions                                           |
+| An icon cut by its box (`clipped glyph:`)                     | Fit the drawing in its viewBox, or use the kit's glyph                                                        |
+| A reaction, dot or mark on the words                          | Move it to the edge or gutter the kit gives it                                                                |
+| A gate line you think is intentional                          | Look again; if it still looks fine, say so in REHEARSAL.md with the frame; never clear it by hiding the thing |
+| Ten film runs, gate green, frame unchanged                    | Stop. Fresh eye                                                                                               |
 
 ## Hand over
 
@@ -71,6 +71,7 @@ The last pass. Every answer comes from a frame you looked at, never from the cod
 
 ```md
 # Rehearsal: <demo>
+
 Gold: <example> (what you kept, what you changed)
 Beats: 1 … 2 … 3 … payoff, loop <n>s
 Captured: widths <wide, 390>, looks, states, reduced motion
@@ -80,4 +81,5 @@ Assumptions:
 Unresolved:
 Not checked:
 ```
+
 - Did you say what you did not watch?

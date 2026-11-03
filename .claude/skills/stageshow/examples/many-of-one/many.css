@@ -26,7 +26,9 @@
 .mo-tile[data-focus] {
   position: relative;
   z-index: 1;
-  box-shadow: var(--ss-shadow-hero), 0 0 0 1.5px var(--ss-accent);
+  box-shadow:
+    var(--ss-shadow-hero),
+    0 0 0 1.5px var(--ss-accent);
 }
 
 .mo-thumb {
@@ -83,6 +85,6 @@
 }
 
 /* Narrow: the same grid, shifted so the focus tile sits in the middle */
-.mo .ss-stage[data-layout='compact'] .mo-grid {
+.mo .ss-stage[data-layout="compact"] .mo-grid {
   left: -321px;
 }

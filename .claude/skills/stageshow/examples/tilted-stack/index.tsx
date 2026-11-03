@@ -1,5 +1,5 @@
-import { Bar, Stage, Text } from '../../kit'
-import './tilted.css'
+import { Bar, Stage, Text } from "../../kit";
+import "./tilted.css";
 
 // A loose tilted stack: three receipts dropped on a desk, the newest on top.
 // A still. Tilt is the exception in faux UI, not a default: it earns its
@@ -20,7 +20,12 @@ import './tilted.css'
 
 export default function TiltedStack() {
   return (
-    <Stage width={480} height={360} compact={{ below: 480, width: 358, height: 340 }} className="ts">
+    <Stage
+      width={480}
+      height={360}
+      compact={{ below: 480, width: 358, height: 340 }}
+      className="ts"
+    >
       {() => (
         <div className="ts-pile">
           <section className="ts-card ts-card--back">
@@ -37,13 +42,22 @@ export default function TiltedStack() {
             <Text className="ts-merchant">Lumen Coffee</Text>
             <Text className="ts-date">Oct 28, 9:14 AM</Text>
             <div className="ts-items">
-              <div className="ts-item"><Text>Flat white</Text><Text>$4.50</Text></div>
-              <div className="ts-item"><Text>Almond croissant</Text><Text>$3.75</Text></div>
+              <div className="ts-item">
+                <Text>Flat white</Text>
+                <Text>$4.50</Text>
+              </div>
+              <div className="ts-item">
+                <Text>Almond croissant</Text>
+                <Text>$3.75</Text>
+              </div>
             </div>
-            <div className="ts-total"><Text>Total</Text><Text>$8.25</Text></div>
+            <div className="ts-total">
+              <Text>Total</Text>
+              <Text>$8.25</Text>
+            </div>
           </section>
         </div>
       )}
     </Stage>
-  )
+  );
 }

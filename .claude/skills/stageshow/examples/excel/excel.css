@@ -357,7 +357,9 @@
   border-bottom: 1px solid var(--xl-grid);
   font-size: 11px;
   color: #77777a;
-  transition: background 0.1s ease, color 0.1s ease;
+  transition:
+    background 0.1s ease,
+    color 0.1s ease;
 }
 
 .xl-colhead[data-sel],
@@ -413,7 +415,9 @@
   top: 3px;
   opacity: 0;
   /* Rises by top, not a transform, so the figure lands without a hop */
-  transition: opacity 0.25s ease, top 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition:
+    opacity 0.25s ease,
+    top 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .xl-total[data-show] {
@@ -425,7 +429,9 @@
   position: absolute;
   box-shadow: inset 0 0 0 2px var(--xl-green);
   pointer-events: none;
-  transition: top 0.1s ease-out, height 0.1s ease-out;
+  transition:
+    top 0.1s ease-out,
+    height 0.1s ease-out;
 }
 
 .xl-handle {
@@ -469,7 +475,9 @@
   position: relative;
   top: 3px;
   opacity: 0;
-  transition: opacity 0.4s ease, top 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition:
+    opacity 0.4s ease,
+    top 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .xl-chart-value {
@@ -548,7 +556,9 @@
   color: #404040;
   font-variant-numeric: tabular-nums;
   opacity: 0;
-  transition: opacity 0.4s ease, margin-top 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition:
+    opacity 0.4s ease,
+    margin-top 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .xl-label[data-show] {

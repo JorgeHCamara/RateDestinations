@@ -4,20 +4,20 @@
      under &. Two columns of rounded tiles on a gap, tall and
      short alternating so the rows never line up across the columns. Each
      picture is its own Stage at 1:1, pinned to its tile's bottom. */
-    --pad: 30px;
-    --gap: 18px;
-    --tile: #f5f5f7;
-    --ink: #1d1d1f;
-    --ink-2: #6e6e73;
-    --accent: #f2643b;
-    --short: 310px;
-    --tall: 518px;
-    container-type: inline-size;
-    /* No padding of its own: on a page, the tiles span the content column */
-    box-sizing: border-box;
-    background: #fff;
-    font-family: var(--sg-font, inherit);
-    -webkit-font-smoothing: antialiased;
+  --pad: 30px;
+  --gap: 18px;
+  --tile: #f5f5f7;
+  --ink: #1d1d1f;
+  --ink-2: #6e6e73;
+  --accent: #f2643b;
+  --short: 310px;
+  --tall: 518px;
+  container-type: inline-size;
+  /* No padding of its own: on a page, the tiles span the content column */
+  box-sizing: border-box;
+  background: #fff;
+  font-family: var(--sg-font, inherit);
+  -webkit-font-smoothing: antialiased;
 
   & .sg-grid {
     display: grid;
@@ -32,12 +32,30 @@
     display: contents;
   }
 
-  & .sg-tile--coast { order: 1; height: 460px; }
-  & .sg-tile--private { order: 2; height: 230px; }
-  & .sg-tile--stat { order: 3; height: 250px; }
-  & .sg-tile--voice { order: 4; height: 310px; }
-  & .sg-tile--book { order: 5; height: 300px; }
-  & .sg-tile--day { order: 6; height: 500px; }
+  & .sg-tile--coast {
+    order: 1;
+    height: 460px;
+  }
+  & .sg-tile--private {
+    order: 2;
+    height: 230px;
+  }
+  & .sg-tile--stat {
+    order: 3;
+    height: 250px;
+  }
+  & .sg-tile--voice {
+    order: 4;
+    height: 310px;
+  }
+  & .sg-tile--book {
+    order: 5;
+    height: 300px;
+  }
+  & .sg-tile--day {
+    order: 6;
+    height: 500px;
+  }
 
   /* Two columns: tall, short, short on the left; short, short, tall on the right */
   @container (min-width: 600px) {
@@ -51,9 +69,13 @@
       gap: var(--gap);
     }
 
-    & .sg-tile { height: var(--short); }
+    & .sg-tile {
+      height: var(--short);
+    }
     & .sg-tile--coast,
-    & .sg-tile--day { height: var(--tall); }
+    & .sg-tile--day {
+      height: var(--tall);
+    }
   }
 
   @container (min-width: 900px) {
@@ -154,7 +176,9 @@
   }
 
   /* The tile's ground matches the picture's top, so nothing shows round it */
-  & .sg-tile--coast:has([data-art='azulejo']) { background: #1f3f8f; }
+  & .sg-tile--coast:has([data-art="azulejo"]) {
+    background: #1f3f8f;
+  }
 
   /* ---- Private (statement) ---- */
 
@@ -224,8 +248,12 @@
     text-align: right;
   }
 
-  & .sg-stat-value > * { grid-area: 1 / 1; }
-  & .sg-stat-sizer { visibility: hidden; }
+  & .sg-stat-value > * {
+    grid-area: 1 / 1;
+  }
+  & .sg-stat-sizer {
+    visibility: hidden;
+  }
 
   & .sg-stat-unit {
     margin-left: 6px;
@@ -257,7 +285,10 @@
     mask-image: linear-gradient(180deg, #000 150px, transparent 200px);
     border-radius: 26px;
     background: #fff;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 14px 34px -14px rgba(40, 30, 20, 0.24), 0 2px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.04),
+      0 14px 34px -14px rgba(40, 30, 20, 0.24),
+      0 2px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
   & .sg-recorder {
@@ -357,7 +388,9 @@
     width: 150px;
     height: 196px;
     background: linear-gradient(90deg, #c9b590 0, #dccaa6 12px, #e4d4b2 100%);
-    box-shadow: 0 0 0 1px rgba(80, 60, 30, 0.12), 0 14px 26px -12px rgba(60, 40, 20, 0.35);
+    box-shadow:
+      0 0 0 1px rgba(80, 60, 30, 0.12),
+      0 14px 26px -12px rgba(60, 40, 20, 0.35);
     transform: translateY(70px);
     transition-delay: 0.08s;
   }
@@ -376,7 +409,10 @@
       repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 3px),
       repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.05) 0 1px, transparent 1px 3px),
       linear-gradient(160deg, #3b6b5c 0%, #2c5548 60%, #234539 100%);
-    box-shadow: 0 0 0 1px rgba(20, 40, 30, 0.3), 0 22px 36px -14px rgba(20, 40, 30, 0.55), 0 4px 10px -4px rgba(0, 0, 0, 0.2);
+    box-shadow:
+      0 0 0 1px rgba(20, 40, 30, 0.3),
+      0 22px 36px -14px rgba(20, 40, 30, 0.55),
+      0 4px 10px -4px rgba(0, 0, 0, 0.2);
     color: #e8d3a0;
     transform: translateY(60px);
   }
@@ -392,7 +428,12 @@
     left: 0;
     width: 14px;
     border-radius: 4px 0 0 4px;
-    background: linear-gradient(90deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.06) 70%, rgba(255, 255, 255, 0.08));
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.28),
+      rgba(0, 0, 0, 0.06) 70%,
+      rgba(255, 255, 255, 0.08)
+    );
   }
 
   & .sg-book__title {
@@ -425,7 +466,9 @@
 
   /* Keep the clock legible inside the smallest, guttered phone. */
   @container (max-width: 340px) {
-    & .sg-phone .ss-phone__time { font-size: 19px; }
+    & .sg-phone .ss-phone__time {
+      font-size: 19px;
+    }
   }
 
   & .sg-page {

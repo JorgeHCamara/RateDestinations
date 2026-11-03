@@ -25,10 +25,14 @@
     padding: 0 11px;
     border-radius: var(--ss-radius-md);
     background: var(--ss-surface);
-    box-shadow: inset 0 0 0 1px var(--ss-ink-4), 0 0 0 0 transparent;
+    box-shadow:
+      inset 0 0 0 1px var(--ss-ink-4),
+      0 0 0 0 transparent;
     font-size: 13px;
     color: var(--ss-text-strong);
-    transition: box-shadow 0.2s ease, padding 0.35s cubic-bezier(0.45, 0, 0.1, 1);
+    transition:
+      box-shadow 0.2s ease,
+      padding 0.35s cubic-bezier(0.45, 0, 0.1, 1);
   }
 
   /* A chip sits the same distance from every edge of the field: the box gives
@@ -39,11 +43,15 @@
   }
 
   .ss-field[data-focused] .ss-field__box {
-    box-shadow: inset 0 0 0 1px var(--ss-accent), 0 0 0 3px var(--ss-accent-soft);
+    box-shadow:
+      inset 0 0 0 1px var(--ss-accent),
+      0 0 0 3px var(--ss-accent-soft);
   }
 
   .ss-field[data-status="error"] .ss-field__box {
-    box-shadow: inset 0 0 0 1px var(--ss-danger), 0 0 0 3px var(--ss-danger-soft);
+    box-shadow:
+      inset 0 0 0 1px var(--ss-danger),
+      0 0 0 3px var(--ss-danger-soft);
   }
 
   .ss-field__text {
@@ -177,7 +185,9 @@
   }
 
   @keyframes ss-caret {
-    50% { opacity: 0; }
+    50% {
+      opacity: 0;
+    }
   }
 
   .ss-field__ok {
@@ -196,6 +206,8 @@
   }
 
   @keyframes ss-draw {
-    from { stroke-dashoffset: 1; }
+    from {
+      stroke-dashoffset: 1;
+    }
   }
 }

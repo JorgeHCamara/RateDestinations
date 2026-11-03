@@ -17,6 +17,7 @@ Put the scene beside the gold example it is closest to and say the one differenc
 Return a ranked list, framing first, then hierarchy and density, then motion, then polish. Each item: what you would screenshot, which frame shows it, and what the fix is in one line. Say what you could not check. If there is nothing, say "nothing" and list the frames you looked at.
 
 Rules of the review:
+
 - The bar for a finding is a frame. Quote the frame file.
 - Rank by how much of the scene it spoils, not by how easy it is to fix.
 - A line the builder judged intentional is not settled: look at the frame and judge it again.

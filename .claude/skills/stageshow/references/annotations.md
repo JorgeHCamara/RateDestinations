@@ -6,16 +6,16 @@ Design the product before its annotations. A line that attaches perfectly cannot
 
 See `examples/annotations/`. Its picker mounts one of eight studies, so only the chosen story runs. The scenes use a native canvas width down to 288px instead of shrinking their labels, and each has a reduced-motion result.
 
-| Study | Cause and result | Geometry owner |
-|---|---|---|
-| Usage into an invoice | Three usage sources connect, deliver their first combined result, then the feeds stay open. | Each source is measured; one white-rimmed junction joins the inputs before the solid delivery. |
-| A payout and its detail | Select a payout; its linked settlement opens; a leader explains its arrival; clearing closes the detail. | A dotted record link and a separate solid leader meet measured surface edges. |
-| A chart point | Select a point; its explanation appears; click away to clear it. | Point and label are measured with `rect()`; their edges go to `Connector`. |
-| Selection and dimensions | Select a card, resize it by its handle, drag back, deselect. | Card, ring and guides share one changing box, which shows its real dimensions. |
-| A request and its reply | Send an event; the request draws; the acknowledgement returns after delivery; the trace clears. | Measured source and destination edges. Solid outbound arrow, dashed return. |
-| Following a layer | Select a photograph; Arrange moves and resizes it; Reset returns it; click away to clear. | `Follow` owns the object and its note together. |
-| A shared processing graph | Store an asset, fan out to three jobs, then clear the completed result. | One measured trunk and one shared spine; each branch starts at its own junction. |
-| An ongoing event stream | Connect a checkout source; events keep arriving in its activity table. | A static measured route under moving dots; the path never moves. |
+| Study                     | Cause and result                                                                                         | Geometry owner                                                                                 |
+| ------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Usage into an invoice     | Three usage sources connect, deliver their first combined result, then the feeds stay open.              | Each source is measured; one white-rimmed junction joins the inputs before the solid delivery. |
+| A payout and its detail   | Select a payout; its linked settlement opens; a leader explains its arrival; clearing closes the detail. | A dotted record link and a separate solid leader meet measured surface edges.                  |
+| A chart point             | Select a point; its explanation appears; click away to clear it.                                         | Point and label are measured with `rect()`; their edges go to `Connector`.                     |
+| Selection and dimensions  | Select a card, resize it by its handle, drag back, deselect.                                             | Card, ring and guides share one changing box, which shows its real dimensions.                 |
+| A request and its reply   | Send an event; the request draws; the acknowledgement returns after delivery; the trace clears.          | Measured source and destination edges. Solid outbound arrow, dashed return.                    |
+| Following a layer         | Select a photograph; Arrange moves and resizes it; Reset returns it; click away to clear.                | `Follow` owns the object and its note together.                                                |
+| A shared processing graph | Store an asset, fan out to three jobs, then clear the completed result.                                  | One measured trunk and one shared spine; each branch starts at its own junction.               |
+| An ongoing event stream   | Connect a checkout source; events keep arriving in its activity table.                                   | A static measured route under moving dots; the path never moves.                               |
 
 ## Choose a line for a relationship
 

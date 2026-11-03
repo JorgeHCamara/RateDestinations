@@ -1,6 +1,7 @@
 /* The Dynamic Island example. Island units are screen points. */
 .di {
-  --di-wall: radial-gradient(80% 40% at 70% 0%, rgba(176, 210, 255, 0.45), rgba(176, 210, 255, 0) 70%),
+  --di-wall:
+    radial-gradient(80% 40% at 70% 0%, rgba(176, 210, 255, 0.45), rgba(176, 210, 255, 0) 70%),
     linear-gradient(178deg, #8fb3e6 0%, #5a7fc2 26%, #34508f 52%, #1d2b56 78%, #121a33 100%);
 
   .ss-stage {
@@ -13,14 +14,19 @@
 
   .di-device {
     position: absolute;
-    filter: drop-shadow(0 40px 50px rgba(30, 45, 90, 0.2)) drop-shadow(0 10px 16px rgba(30, 45, 90, 0.1));
+    filter: drop-shadow(0 40px 50px rgba(30, 45, 90, 0.2))
+      drop-shadow(0 10px 16px rgba(30, 45, 90, 0.1));
   }
 
-  .di-lock .ss-lock__date, .di-lock .ss-lock__clock {
-    transition: opacity .18s ease, filter .18s ease;
+  .di-lock .ss-lock__date,
+  .di-lock .ss-lock__clock {
+    transition:
+      opacity 0.18s ease,
+      filter 0.18s ease;
   }
   /* The expanded activity covers the clock; clear it before the edge passes. */
-  .di-lock[data-obscured] .ss-lock__date, .di-lock[data-obscured] .ss-lock__clock {
+  .di-lock[data-obscured] .ss-lock__date,
+  .di-lock[data-obscured] .ss-lock__clock {
     opacity: 0;
     filter: blur(6px);
   }
@@ -281,9 +287,9 @@
   .ss-phone__screen:has(.di-island:not([data-mode="idle"])) .ss-phone__signal {
     opacity: 0;
   }
-& .ss-stage[data-layout='compact'] {
-  --gutter: 16px;
-}
+  & .ss-stage[data-layout="compact"] {
+    --gutter: 16px;
+  }
 }
 
 /* Phone layout: the phone fills the column, one 16px gutter each side */

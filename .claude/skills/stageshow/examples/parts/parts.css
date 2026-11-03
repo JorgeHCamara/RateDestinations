@@ -13,12 +13,24 @@
   gap: 16px;
 }
 
-.pt-a { grid-area: 1 / 1; }
-.pt-b { grid-area: 2 / 1; }
-.pt-c { grid-area: 3 / 1; }
-.pt-d { grid-area: 1 / 2; }
-.pt-e { grid-area: 2 / 2 / 4 / 3; }
-.pt-f { grid-area: 1 / 3 / 4 / 4; }
+.pt-a {
+  grid-area: 1 / 1;
+}
+.pt-b {
+  grid-area: 2 / 1;
+}
+.pt-c {
+  grid-area: 3 / 1;
+}
+.pt-d {
+  grid-area: 1 / 2;
+}
+.pt-e {
+  grid-area: 2 / 2 / 4 / 3;
+}
+.pt-f {
+  grid-area: 1 / 3 / 4 / 4;
+}
 
 .pt-tile {
   position: relative;
@@ -28,11 +40,16 @@
   padding: 16px;
   border-radius: 14px;
   background: var(--ss-raised);
-  box-shadow: var(--ss-shadow-card), 0 0 0 1px var(--ss-line-faint);
+  box-shadow:
+    var(--ss-shadow-card),
+    0 0 0 1px var(--ss-line-faint);
 }
 
 .pt-name {
-  font: 500 10.5px/14px ui-monospace, 'SF Mono', monospace;
+  font:
+    500 10.5px/14px ui-monospace,
+    "SF Mono",
+    monospace;
   color: var(--ss-text-faint);
 }
 
@@ -63,7 +80,7 @@
   background: #000;
 }
 
-.pt-button[data-state='done'] {
+.pt-button[data-state="done"] {
   background: var(--ss-success);
 }
 
@@ -142,13 +159,17 @@
   opacity: 0;
   /* Drops in by margin, not transform, so its text lands without a hop */
   margin-block: -12px 12px;
-  transition: opacity 0.2s ease, margin 0.3s ease;
+  transition:
+    opacity 0.2s ease,
+    margin 0.3s ease;
 }
 
 .pt-note[data-show] {
   opacity: 1;
   margin-block: 0;
-  transition: opacity 0.45s ease-out, margin 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition:
+    opacity 0.45s ease-out,
+    margin 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 /* Reflow the catalog rather than shrinking its controls and labels. */

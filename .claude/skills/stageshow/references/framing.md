@@ -29,25 +29,25 @@ The layouts are recipes, not a requirement to crop every product; a whole window
 
 ## The layouts
 
-| Layout | Hero | Satellite | Use for |
-|---|---|---|---|
-| **Pinned, bottom bleed** | Inset 8 to 12% left, right and top; 15 to 35% past the bottom; centered | Optional, straddling a side | Feature cards and bento tiles, their first composition (`examples/static-card`) |
-| **Corner bleed** | Inset 10% top and left; 15 to 35% past right and bottom | Straddling the left or bottom edge | Heroes beside copy, their first composition (`examples/hero-demo`) |
-| **Stage with gutters** | Inset 8 to 20% each side on a colored stage; off the bottom | Straddling one side, hero stays centered | Brand moments (`examples/raycast`) |
-| **Satellite focus** | Cropped hard, mostly context | Large, 30 to 40% of hero width, straddling, carries the story | One small thing: a notification, a receipt, a diff (`examples/share`) |
-| **Wide hero** | A 900 to 1100px window at 1:1, inset top, off the bottom and often both sides; realistic fidelity | A card or thread on its lower edge | Homepage heroes at full width (`examples/linear`) |
-| **Row of windows** | Three or four at the same height, the outer ones off both sides | None | Agents, tabs or sessions side by side (`examples/window-row`) |
-| **Device pair** | Desktop inset top and left, about 75 to 80% wide, off the bottom | Phone straddling the right edge, about a third outside, top in the upper half, present from frame one; `LockScreen stack="top"` if its bottom is cropped (`examples/device-pair`) | Cross-device stories |
-| **Many of one** | A grid of one small thing at one size, off every edge | None; one tile in focus by depth (hero shadow, accent ring), the only one with words | Previews, deploys, templates, sessions: scale shown as repetition (`examples/many-of-one`) |
-| **Fade crop** | A window inset top and sides, fading out over its last third | Optional | When a stage edge would cut the window at an arbitrary line (`examples/fade-crop`) |
-| **Close-up** | The whole window scaled 1.3 to 1.6x, chrome and all, inset top and sides, off the bottom; the subject row whole across | None | A feature card about one control: a setting, a field, a button (`examples/close-up`) |
-| **Panel over product** | The product inset top and left, off the bottom; its focal control whole | A settings panel straddling the product's right edge over its margin, never over the form; one leader, in neutral ink, from the panel's edge to the thing it changed, through empty ground | A setting and its effect: branding, theme, a toggle that changes the page (`examples/panel-annotation`) |
-| **Overlapping windows** | A window inset top, off the bottom, its words clear of the stage edges | A smaller chromeless card in front whose edge lands on a structural line of the window (its sidebar edge), covering only filler | Two views of one event: the buyer's card over the merchant's dashboard (`examples/overlap`) |
-| **Stacked cards** | Two components at one width and left edge, 12px apart, centered; the lower one off the bottom | None | A setting over the detail it drives: a plan over its usage (`examples/stacked-cards`) |
-| **Opposite corners** | Copy bottom-left at the tile's inset; the product in a panel hung off the top-right corner, its words clear of the cut | None | Bento tiles with a line of copy (`examples/opposite-corners`) |
-| **Tilted stack** | Three same-size cards in one cell, -6, 4 and -2 degrees, offset 12 to 20px; the straightest on top, the only one with words | None | Paper: receipts, tickets, cards gathered. The one place tilt earns its keep (`examples/tilted-stack`) |
-| **Corner chip** | A window inset top-left, off the bottom | A small pill centered on the window's corner, half outside, over chrome only | One live fact about the whole product: people online, a status (`examples/corner-chip`) |
-| **Monochrome row** | Three windows at one height, whole across, grayscale, faded at the foot by a mask | None | Customers or integrations, where their brand colors would fight (`examples/monochrome`) |
+| Layout                   | Hero                                                                                                                        | Satellite                                                                                                                                                                                  | Use for                                                                                                 |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| **Pinned, bottom bleed** | Inset 8 to 12% left, right and top; 15 to 35% past the bottom; centered                                                     | Optional, straddling a side                                                                                                                                                                | Feature cards and bento tiles, their first composition (`examples/static-card`)                         |
+| **Corner bleed**         | Inset 10% top and left; 15 to 35% past right and bottom                                                                     | Straddling the left or bottom edge                                                                                                                                                         | Heroes beside copy, their first composition (`examples/hero-demo`)                                      |
+| **Stage with gutters**   | Inset 8 to 20% each side on a colored stage; off the bottom                                                                 | Straddling one side, hero stays centered                                                                                                                                                   | Brand moments (`examples/raycast`)                                                                      |
+| **Satellite focus**      | Cropped hard, mostly context                                                                                                | Large, 30 to 40% of hero width, straddling, carries the story                                                                                                                              | One small thing: a notification, a receipt, a diff (`examples/share`)                                   |
+| **Wide hero**            | A 900 to 1100px window at 1:1, inset top, off the bottom and often both sides; realistic fidelity                           | A card or thread on its lower edge                                                                                                                                                         | Homepage heroes at full width (`examples/linear`)                                                       |
+| **Row of windows**       | Three or four at the same height, the outer ones off both sides                                                             | None                                                                                                                                                                                       | Agents, tabs or sessions side by side (`examples/window-row`)                                           |
+| **Device pair**          | Desktop inset top and left, about 75 to 80% wide, off the bottom                                                            | Phone straddling the right edge, about a third outside, top in the upper half, present from frame one; `LockScreen stack="top"` if its bottom is cropped (`examples/device-pair`)          | Cross-device stories                                                                                    |
+| **Many of one**          | A grid of one small thing at one size, off every edge                                                                       | None; one tile in focus by depth (hero shadow, accent ring), the only one with words                                                                                                       | Previews, deploys, templates, sessions: scale shown as repetition (`examples/many-of-one`)              |
+| **Fade crop**            | A window inset top and sides, fading out over its last third                                                                | Optional                                                                                                                                                                                   | When a stage edge would cut the window at an arbitrary line (`examples/fade-crop`)                      |
+| **Close-up**             | The whole window scaled 1.3 to 1.6x, chrome and all, inset top and sides, off the bottom; the subject row whole across      | None                                                                                                                                                                                       | A feature card about one control: a setting, a field, a button (`examples/close-up`)                    |
+| **Panel over product**   | The product inset top and left, off the bottom; its focal control whole                                                     | A settings panel straddling the product's right edge over its margin, never over the form; one leader, in neutral ink, from the panel's edge to the thing it changed, through empty ground | A setting and its effect: branding, theme, a toggle that changes the page (`examples/panel-annotation`) |
+| **Overlapping windows**  | A window inset top, off the bottom, its words clear of the stage edges                                                      | A smaller chromeless card in front whose edge lands on a structural line of the window (its sidebar edge), covering only filler                                                            | Two views of one event: the buyer's card over the merchant's dashboard (`examples/overlap`)             |
+| **Stacked cards**        | Two components at one width and left edge, 12px apart, centered; the lower one off the bottom                               | None                                                                                                                                                                                       | A setting over the detail it drives: a plan over its usage (`examples/stacked-cards`)                   |
+| **Opposite corners**     | Copy bottom-left at the tile's inset; the product in a panel hung off the top-right corner, its words clear of the cut      | None                                                                                                                                                                                       | Bento tiles with a line of copy (`examples/opposite-corners`)                                           |
+| **Tilted stack**         | Three same-size cards in one cell, -6, 4 and -2 degrees, offset 12 to 20px; the straightest on top, the only one with words | None                                                                                                                                                                                       | Paper: receipts, tickets, cards gathered. The one place tilt earns its keep (`examples/tilted-stack`)   |
+| **Corner chip**          | A window inset top-left, off the bottom                                                                                     | A small pill centered on the window's corner, half outside, over chrome only                                                                                                               | One live fact about the whole product: people online, a status (`examples/corner-chip`)                 |
+| **Monochrome row**       | Three windows at one height, whole across, grayscale, faded at the foot by a mask                                           | None                                                                                                                                                                                       | Customers or integrations, where their brand colors would fight (`examples/monochrome`)                 |
 
 ## Recipes
 
@@ -55,17 +55,33 @@ Position the hero with plain CSS inside the `Stage` render. Reserve a wider colu
 
 ```tsx
 <Stage width={656} height={340} initial={{}} className="my-well">
-  {() => (<>
-    <Window url="dashboard.northwind.co" className="hero" style={{ position: 'absolute', left: 129, top: 24, width: 720, height: 420 }} />
-    <div className="satellite" style={{ position: 'absolute', left: 24, top: 150, width: 210 }} />
-  </>)}
+  {() => (
+    <>
+      <Window
+        url="dashboard.northwind.co"
+        className="hero"
+        style={{ position: "absolute", left: 129, top: 24, width: 720, height: 420 }}
+      />
+      <div className="satellite" style={{ position: "absolute", left: 24, top: 150, width: 210 }} />
+    </>
+  )}
 </Stage>
 ```
 
 ```css
-.my-well .ss-stage { overflow: hidden; background: var(--ss-well); border-radius: 12px; }
-.my-well .hero { box-shadow: var(--ss-shadow-hero); }
-.my-well .satellite { box-shadow: var(--ss-shadow-satellite); border-radius: 10px; background: var(--ss-surface); }
+.my-well .ss-stage {
+  overflow: hidden;
+  background: var(--ss-well);
+  border-radius: 12px;
+}
+.my-well .hero {
+  box-shadow: var(--ss-shadow-hero);
+}
+.my-well .satellite {
+  box-shadow: var(--ss-shadow-satellite);
+  border-radius: 10px;
+  background: var(--ss-surface);
+}
 ```
 
 The shadow tokens in `kit/stage.css` (loaded by `kit/stageshow.css`), set by every theme:

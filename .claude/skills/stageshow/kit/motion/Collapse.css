@@ -14,13 +14,17 @@
     display: grid;
     grid-template-rows: 0fr;
     opacity: 0;
-    transition: grid-template-rows 0.42s cubic-bezier(0.4, 0, 0.2, 1) 0.05s, opacity 0.42s cubic-bezier(0, 0.8, 0.5, 1);
+    transition:
+      grid-template-rows 0.42s cubic-bezier(0.4, 0, 0.2, 1) 0.05s,
+      opacity 0.42s cubic-bezier(0, 0.8, 0.5, 1);
   }
 
   .ss-collapse[data-open] {
     grid-template-rows: 1fr;
     opacity: 1;
-    transition: grid-template-rows 0.46s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.24s ease-out 0.15s;
+    transition:
+      grid-template-rows 0.46s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.24s ease-out 0.15s;
   }
 
   /* solid: a surface unlike the ground opens and closes without fading
@@ -40,7 +44,7 @@
      equally above and below, so a row's text (in its middle) is whole by about
      half the height and can be seen early without ever looking sliced. Closing
      folds back into that line. */
-  .ss-collapse[data-reveal='clip'] > .ss-collapse__inner {
+  .ss-collapse[data-reveal="clip"] > .ss-collapse__inner {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -51,12 +55,14 @@
   /* Taller than a row (a comment, a card): it reveals from the top, and its
      content comes in as the space finishes opening, so no line is seen cut.
      Cards and messages read better with reveal="drop". */
-  .ss-collapse[data-reveal='clip'][data-tall] > .ss-collapse__inner {
+  .ss-collapse[data-reveal="clip"][data-tall] > .ss-collapse__inner {
     justify-content: flex-start;
   }
 
-  .ss-collapse[data-reveal='clip'][data-tall][data-open] {
-    transition: grid-template-rows 0.46s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.24s ease-out 0.3s;
+  .ss-collapse[data-reveal="clip"][data-tall][data-open] {
+    transition:
+      grid-template-rows 0.46s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.24s ease-out 0.3s;
   }
 
   /* Settled open, nothing clips: a toolbar or popover can hang off a row */
@@ -65,7 +71,7 @@
   }
 
   /* drop: nothing clips; the content arrives whole into the opening space */
-  .ss-collapse[data-reveal='drop'] > .ss-collapse__inner {
+  .ss-collapse[data-reveal="drop"] > .ss-collapse__inner {
     overflow: visible;
   }
 
@@ -74,24 +80,26 @@
      a pill hops inside it; and text that ends a transform without a layer of
      its own is redrawn snapped and hops as it lands. On a lasting layer it
      moves as one picture and rests drawn exactly as it moved. */
-  .ss-collapse[data-reveal='drop'] > .ss-collapse__inner > * {
+  .ss-collapse[data-reveal="drop"] > .ss-collapse__inner > * {
     transform: translateY(-10px);
     will-change: transform;
     transition: transform 0.3s ease;
   }
 
-  .ss-collapse[data-reveal='drop'][data-from='below'] > .ss-collapse__inner > * {
+  .ss-collapse[data-reveal="drop"][data-from="below"] > .ss-collapse__inner > * {
     transform: translateY(10px);
   }
 
-  .ss-collapse[data-reveal='drop'][data-open] > .ss-collapse__inner > * {
+  .ss-collapse[data-reveal="drop"][data-open] > .ss-collapse__inner > * {
     transform: none;
     transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
   }
 
   /* Drop content is whole and unclipped, so it waits for most of its space:
      shown early, it would hang over whatever sits below the opening gap */
-  .ss-collapse[data-reveal='drop'][data-open] {
-    transition: grid-template-rows 0.5s cubic-bezier(0.45, 0, 0.2, 1), opacity 0.3s ease 0.24s;
+  .ss-collapse[data-reveal="drop"][data-open] {
+    transition:
+      grid-template-rows 0.5s cubic-bezier(0.45, 0, 0.2, 1),
+      opacity 0.3s ease 0.24s;
   }
 }

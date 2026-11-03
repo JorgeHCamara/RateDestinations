@@ -23,8 +23,12 @@
       radial-gradient(40% 50% at 100% 0%, rgba(91, 91, 214, 0.07), transparent 70%);
   }
 
-  .sb-strong { font-weight: 600; }
-  .sb-muted { color: var(--ss-text); }
+  .sb-strong {
+    font-weight: 600;
+  }
+  .sb-muted {
+    color: var(--ss-text);
+  }
 
   /* ---- The dashboard: pinned top and left of center, off the right and bottom ---- */
 
@@ -94,7 +98,9 @@
     font-weight: 600;
   }
 
-  .sb-tile[data-scene='1'] { background: #e8833a; }
+  .sb-tile[data-scene="1"] {
+    background: #e8833a;
+  }
 
   .sb-nav {
     display: flex;
@@ -105,7 +111,9 @@
     border-radius: 6px;
   }
 
-  .sb-nav[data-on] { background: var(--ss-ink-2); }
+  .sb-nav[data-on] {
+    background: var(--ss-ink-2);
+  }
 
   .sb-main {
     flex: 1;
@@ -181,11 +189,21 @@
     font-weight: 600;
   }
 
-  .sb-av[data-i='1'] { background: #dff1ea; color: #23744f; }
-  .sb-av[data-scene='1'] { background: #fde9da; color: #b05a1c; }
+  .sb-av[data-i="1"] {
+    background: #dff1ea;
+    color: #23744f;
+  }
+  .sb-av[data-scene="1"] {
+    background: #fde9da;
+    color: #b05a1c;
+  }
 
-  .sb-name { font-weight: 500; }
-  .sb-plan { color: var(--ss-text); }
+  .sb-name {
+    font-weight: 500;
+  }
+  .sb-plan {
+    color: var(--ss-text);
+  }
 
   /* The row's words arrive with the chip; the pill is the chip itself, so it
      shows the instant the flying one is gone, with no fade between them */
@@ -199,7 +217,9 @@
     transition: opacity 0.45s ease 0.05s;
   }
 
-  .sb-row--old > * { opacity: 1 !important; }
+  .sb-row--old > * {
+    opacity: 1 !important;
+  }
 
   .sb-pill {
     justify-self: end;
@@ -214,7 +234,9 @@
     visibility: hidden;
   }
 
-  .sb-row[data-landed] > .sb-pill { visibility: visible; }
+  .sb-row[data-landed] > .sb-pill {
+    visibility: visible;
+  }
 
   /* In flight it lifts off the page: a white chip with the same words. Over
      the last of its flight it lowers into the soft pill (fill eases to the
@@ -224,14 +246,20 @@
     display: inline-block;
     visibility: visible;
     background: #fff;
-    box-shadow: 0 0 0 1px rgba(91, 91, 214, 0.18), 0 6px 16px -4px rgba(50, 50, 93, 0.3);
+    box-shadow:
+      0 0 0 1px rgba(91, 91, 214, 0.18),
+      0 6px 16px -4px rgba(50, 50, 93, 0.3);
   }
 
   .ss-fly[data-go] .sb-pill--chip {
     /* The tint over the row's white, as one opaque color */
     background: #efeffb;
-    box-shadow: 0 0 0 1px rgba(91, 91, 214, 0), 0 0 0 -4px rgba(50, 50, 93, 0);
-    transition: background-color 0.35s ease 0.5s, box-shadow 0.35s ease 0.5s;
+    box-shadow:
+      0 0 0 1px rgba(91, 91, 214, 0),
+      0 0 0 -4px rgba(50, 50, 93, 0);
+    transition:
+      background-color 0.35s ease 0.5s,
+      box-shadow 0.35s ease 0.5s;
   }
 
   /* ---- The checkout: straddles the dashboard's sidebar ---- */
@@ -250,13 +278,17 @@
     opacity: 0;
     transform: translateX(-14px);
     will-change: transform;
-    transition: opacity 0.22s ease, transform 0.4s var(--sb-travel);
+    transition:
+      opacity 0.22s ease,
+      transform 0.4s var(--sb-travel);
   }
 
   .sb-checkout[data-in] {
     opacity: 1;
     transform: none;
-    transition: opacity 0.6s ease 0.28s, transform 0.9s var(--sb-arrive) 0.28s;
+    transition:
+      opacity 0.6s ease 0.28s,
+      transform 0.9s var(--sb-arrive) 0.28s;
   }
 
   .sb-checkout__head {
@@ -295,7 +327,9 @@
     padding: 0 10px;
   }
 
-  .sb-field + .sb-field { border-top: 1px solid var(--ss-line); }
+  .sb-field + .sb-field {
+    border-top: 1px solid var(--ss-line);
+  }
 
   .sb-pay {
     display: grid;
@@ -308,8 +342,10 @@
     transition: background-color 0.2s ease;
   }
 
-  .sb-pay[data-state='paid'],
-  .sb-pay[data-state='done'] { background: #1f9d55; }
+  .sb-pay[data-state="paid"],
+  .sb-pay[data-state="done"] {
+    background: #1f9d55;
+  }
 
   .sb-done {
     display: inline-flex;
@@ -317,29 +353,35 @@
     gap: 6px;
   }
 
-  .sb-head-tile { display: none; }
+  .sb-head-tile {
+    display: none;
+  }
 
   /* ---- Compact (below 600): the dashboard on top, the checkout over its
      filler rows at the bottom, so the chip flies up into the list ---- */
 
-  & .ss-stage[data-layout='compact'] {
+  & .ss-stage[data-layout="compact"] {
     --gutter: 24px;
   }
 
-  [data-layout='compact'] .sb-window {
+  [data-layout="compact"] .sb-window {
     left: 48px;
     width: 334px;
     height: 460px;
   }
 
-  [data-layout='compact'] .sb-side { display: none; }
-  [data-layout='compact'] .sb-head-tile { display: grid; }
+  [data-layout="compact"] .sb-side {
+    display: none;
+  }
+  [data-layout="compact"] .sb-head-tile {
+    display: grid;
+  }
 
-  [data-layout='compact'] .sb-main {
+  [data-layout="compact"] .sb-main {
     padding: 16px calc(18px + 24px) 16px 18px;
   }
 
-  [data-layout='compact'] .sb-checkout {
+  [data-layout="compact"] .sb-checkout {
     /* One gutter above the stage's bottom edge, like the left */
     top: auto;
     bottom: var(--gutter);
@@ -348,5 +390,7 @@
     padding: 16px;
   }
 
-  [data-layout='compact'] .sb-fields { display: none; }
+  [data-layout="compact"] .sb-fields {
+    display: none;
+  }
 }

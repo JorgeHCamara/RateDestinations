@@ -28,7 +28,7 @@ controls stay outside the example's isolated clock.
 Copy `kit/` into your React project. Its components import their own CSS:
 
 ```tsx
-import { Stage, Window, type Act } from './kit'
+import { Stage, Window, type Act } from "./kit";
 ```
 
 Copy an example as a starting point. Keep its relative kit imports, copy any

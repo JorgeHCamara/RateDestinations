@@ -7,7 +7,13 @@
 
   /* Only once it has scrolled: both edges soften over the rows passing them */
   .ss-scroll[data-scrolled] {
-    mask-image: linear-gradient(to bottom, transparent, #000 18px, #000 calc(100% - 18px), transparent);
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      #000 18px,
+      #000 calc(100% - 18px),
+      transparent
+    );
   }
 
   /* Scroll: the overlay bar shows while scrolling and fades once it rests */

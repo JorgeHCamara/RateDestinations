@@ -92,11 +92,21 @@
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
   }
 
-  .db-art--1 { background: radial-gradient(circle at 30% 30%, #6a6a6e, #2a2a2d 70%); }
-  .db-art--2 { background: linear-gradient(160deg, #3c3c40 0%, #1f1f22 100%); }
-  .db-art--3 { background: radial-gradient(circle at 50% 120%, #d9d9dc 0%, #8a8a8e 28%, #2c2c30 70%); }
-  .db-art--4 { background: linear-gradient(200deg, #55555a, #232326 60%); }
-  .db-art--5 { background: radial-gradient(circle at 75% 25%, #4a4a4e, #1d1d20 65%); }
+  .db-art--1 {
+    background: radial-gradient(circle at 30% 30%, #6a6a6e, #2a2a2d 70%);
+  }
+  .db-art--2 {
+    background: linear-gradient(160deg, #3c3c40 0%, #1f1f22 100%);
+  }
+  .db-art--3 {
+    background: radial-gradient(circle at 50% 120%, #d9d9dc 0%, #8a8a8e 28%, #2c2c30 70%);
+  }
+  .db-art--4 {
+    background: linear-gradient(200deg, #55555a, #232326 60%);
+  }
+  .db-art--5 {
+    background: radial-gradient(circle at 75% 25%, #4a4a4e, #1d1d20 65%);
+  }
 
   /* The playlist cover: four sleeves, the way a shared mix shows its parts */
   .db-art--cover {
@@ -104,16 +114,30 @@
     height: 48px;
     border-radius: 6px;
     background:
-      radial-gradient(circle at 50% 120%, #d9d9dc 0%, #8a8a8e 28%, #2c2c30 70%) 0 0 / 50% 50% no-repeat,
+      radial-gradient(circle at 50% 120%, #d9d9dc 0%, #8a8a8e 28%, #2c2c30 70%) 0 0 / 50% 50%
+        no-repeat,
       radial-gradient(circle at 30% 30%, #6a6a6e, #2a2a2d 70%) 100% 0 / 50% 50% no-repeat,
       linear-gradient(200deg, #55555a, #232326 60%) 0 100% / 50% 50% no-repeat,
       radial-gradient(circle at 75% 25%, #4a4a4e, #1d1d20 65%) 100% 100% / 50% 50% no-repeat;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 6px 14px -6px rgba(0, 0, 0, 0.6);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+      0 6px 14px -6px rgba(0, 0, 0, 0.6);
   }
 
-  .db-art--tiny { width: 12px; height: 12px; border-radius: 3px; }
-  .db-art--row { width: 26px; height: 26px; }
-  .db-art--detail { width: 32px; height: 32px; border-radius: 6px; }
+  .db-art--tiny {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+  }
+  .db-art--row {
+    width: 26px;
+    height: 26px;
+  }
+  .db-art--detail {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+  }
 
   /* ---- Faces: who the playlist is shared with ---- */
 
@@ -122,10 +146,18 @@
   }
 
   /* Four people as gray photos; the kit's Avatar takes the shape and centering */
-  .db-pile .ss-facepile__face:nth-child(1) .ss-avatar { background: linear-gradient(160deg, #f2f2f3, #b9b9bd); }
-  .db-pile .ss-facepile__face:nth-child(2) .ss-avatar { background: linear-gradient(160deg, #8e8e93, #5a5a5f); }
-  .db-pile .ss-facepile__face:nth-child(3) .ss-avatar { background: linear-gradient(160deg, #5e5e63, #3a3a3e); }
-  .db-pile .ss-facepile__face:nth-child(4) .ss-avatar { background: linear-gradient(160deg, #3e3e42, #2a2a2e); }
+  .db-pile .ss-facepile__face:nth-child(1) .ss-avatar {
+    background: linear-gradient(160deg, #f2f2f3, #b9b9bd);
+  }
+  .db-pile .ss-facepile__face:nth-child(2) .ss-avatar {
+    background: linear-gradient(160deg, #8e8e93, #5a5a5f);
+  }
+  .db-pile .ss-facepile__face:nth-child(3) .ss-avatar {
+    background: linear-gradient(160deg, #5e5e63, #3a3a3e);
+  }
+  .db-pile .ss-facepile__face:nth-child(4) .ss-avatar {
+    background: linear-gradient(160deg, #3e3e42, #2a2a2e);
+  }
 
   .db-face.ss-avatar {
     background: linear-gradient(160deg, #f2f2f3, #b9b9bd) !important;
@@ -145,8 +177,6 @@
     bottom: -5px;
     box-shadow: 0 0 0 2px #29292c;
   }
-
-
 
   /* ---- Track list ---- */
 

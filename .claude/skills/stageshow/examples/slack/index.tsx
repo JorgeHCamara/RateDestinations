@@ -25,9 +25,9 @@ import {
   Type,
   X,
   type LucideIcon,
-} from 'lucide-react'
-import { Bar, Collapse, Stage, Text, Window, type Act } from '../../kit'
-import './slack.css'
+} from "lucide-react";
+import { Bar, Collapse, Stage, Text, Window, type Act } from "../../kit";
+import "./slack.css";
 
 // Slack, in #design. Maya's message arrives, the user hovers it and taps 👀
 // from the quick reactions, opens the thread and replies. Closing the thread
@@ -37,97 +37,114 @@ import './slack.css'
 // rounded 1.75 stroke is the closest match to Slack's outline glyphs.
 
 type S = {
-  arrived: boolean
-  reacted: boolean
-  thread: boolean
-  focus: boolean
-  typing: boolean
-  draft: string
-  replied: boolean
-}
+  arrived: boolean;
+  reacted: boolean;
+  thread: boolean;
+  focus: boolean;
+  typing: boolean;
+  draft: string;
+  replied: boolean;
+};
 
-const initial: S = { arrived: true, reacted: false, thread: false, focus: false, typing: false, draft: '', replied: false }
+const initial: S = {
+  arrived: true,
+  reacted: false,
+  thread: false,
+  focus: false,
+  typing: false,
+  draft: "",
+  replied: false,
+};
 
 // Under reduced motion: the finished moment, reacted and replied in the open thread
-const poster: S = { ...initial, arrived: true, reacted: true, thread: true, replied: true }
+const poster: S = { ...initial, arrived: true, reacted: true, thread: true, replied: true };
 
-const MESSAGE = 'The new onboarding flow is ready for review. Can you take a look before standup?'
-const REPLY = "On it, I'll leave notes in the file"
-const REST = { x: 560, y: 250 }
+const MESSAGE = "The new onboarding flow is ready for review. Can you take a look before standup?";
+const REPLY = "On it, I'll leave notes in the file";
+const REST = { x: 560, y: 250 };
 
 async function script(a: Act<S>) {
   // Opens on the channel with Maya's message already in.
-  await a.wait(1200)
+  await a.wait(1200);
 
   // Hover the message: the row lights up and its toolbar shows
-  a.mark('hover')
-  await a.move({ at: 'msg', x: 0.42, y: 0.55 })
-  await a.wait(500)
+  a.mark("hover");
+  await a.move({ at: "msg", x: 0.42, y: 0.55 });
+  await a.wait(500);
 
   // 👀 from the quick reactions
-  await a.move({ at: 'react-eyes', x: 0.82, y: 0.86 })
-  await a.wait(220)
-  a.mark('react')
-  await a.click()
-  await a.set({ reacted: true })
-  await a.wait(1000)
+  await a.move({ at: "react-eyes", x: 0.82, y: 0.86 });
+  await a.wait(220);
+  a.mark("react");
+  await a.click();
+  await a.set({ reacted: true });
+  await a.wait(1000);
 
   // Reply in thread
-  await a.move({ at: 'reply-btn', x: 0.78, y: 0.82 })
-  await a.wait(260)
-  a.mark('thread')
-  await a.click()
-  await a.set({ thread: true })
-  await a.wait(800)
+  await a.move({ at: "reply-btn", x: 0.78, y: 0.82 });
+  await a.wait(260);
+  a.mark("thread");
+  await a.click();
+  await a.set({ thread: true });
+  await a.wait(800);
 
   // Write the reply
-  await a.move({ at: 'tbox', x: 0.62, y: 0.3 })
-  await a.click()
-  await a.set({ focus: true })
-  await a.wait(350)
-  await a.set({ typing: true })
-  await a.type('draft', REPLY, { interval: 52 })
-  await a.set({ typing: false })
-  await a.wait(450)
-  a.mark('send')
-  await a.key('enter')
-  await a.set({ draft: '', replied: true })
-  await a.wait(500)
+  await a.move({ at: "tbox", x: 0.62, y: 0.3 });
+  await a.click();
+  await a.set({ focus: true });
+  await a.wait(350);
+  await a.set({ typing: true });
+  await a.type("draft", REPLY, { interval: 52 });
+  await a.set({ typing: false });
+  await a.wait(450);
+  a.mark("send");
+  await a.key("enter");
+  await a.set({ draft: "", replied: true });
+  await a.wait(500);
   // Step off the reply as it lands, so the pointer isn't parked on its words
-  const box = a.rect('tbox')
-  await a.move({ x: box.x + box.width * 0.7, y: box.y + box.height + 60 })
-  await a.wait(1800)
+  const box = a.rect("tbox");
+  await a.move({ x: box.x + box.width * 0.7, y: box.y + box.height + 60 });
+  await a.wait(1800);
 
   // Close the thread and hold the result. Replay is the explicit reset.
-  a.mark('exit')
-  await a.move({ at: 'tclose', x: 0.5, y: 0.5 })
-  await a.wait(200)
-  await a.click()
-  await a.set({ thread: false, focus: false })
-  await a.wait(500)
-  await a.move(REST)
-  await a.wait(1500)
-  a.mark('done')
+  a.mark("exit");
+  await a.move({ at: "tclose", x: 0.5, y: 0.5 });
+  await a.wait(200);
+  await a.click();
+  await a.set({ thread: false, focus: false });
+  await a.wait(500);
+  await a.move(REST);
+  await a.wait(1500);
+  a.mark("done");
 }
 
 function I({ icon: Glyph, size = 16 }: { icon: LucideIcon; size?: number }) {
-  return <Glyph size={size} strokeWidth={1.75} className="sl-i" aria-hidden />
+  return <Glyph size={size} strokeWidth={1.75} className="sl-i" aria-hidden />;
 }
 
 /* ---- Pieces ---- */
 
-function Face({ who, size = 36 }: { who: 'maya' | 'alex' | 'p1' | 'p2' | 'p3'; size?: number }) {
-  const letter = { maya: 'M', alex: 'A', p1: 'J', p2: 'R', p3: 'T' }[who]
+function Face({ who, size = 36 }: { who: "maya" | "alex" | "p1" | "p2" | "p3"; size?: number }) {
+  const letter = { maya: "M", alex: "A", p1: "J", p2: "R", p3: "T" }[who];
   return (
-    <span className="sl-face" data-who={who} style={{ width: size, height: size, fontSize: Math.round(size * 0.42), borderRadius: Math.round(size * 0.22) }}>
+    <span
+      className="sl-face"
+      data-who={who}
+      style={{
+        width: size,
+        height: size,
+        fontSize: Math.round(size * 0.42),
+        borderRadius: Math.round(size * 0.22),
+      }}
+    >
       {letter}
     </span>
-  )
+  );
 }
 
 function SideBar({ w, light }: { w: number; light?: boolean }) {
   // The sidebar is aubergine, so its placeholders are a light purple from the same family
-  return <Bar w={w} h={6} style={{ background: light ? '#b192b3' : '#8c6a8e' }} />
+  return <Bar w={w} h={6} style={{ background: light ? "#b192b3" : "#8c6a8e" }} />;
 }
 
 function Sidebar() {
@@ -170,7 +187,7 @@ function Sidebar() {
           <I icon={ChevronDown} size={12} />
           <SideBar w={74} light />
         </div>
-        {(['p1', 'maya', 'p3'] as const).map((who, i) => (
+        {(["p1", "maya", "p3"] as const).map((who, i) => (
           <div key={who} className="sl-side__row">
             <Face who={who} size={18} />
             <SideBar w={[54, 66, 48][i]} />
@@ -178,16 +195,16 @@ function Sidebar() {
         ))}
       </div>
     </aside>
-  )
+  );
 }
 
 function Rail() {
   const items: { icon: LucideIcon; label: string; active?: boolean }[] = [
-    { icon: House, label: 'Home', active: true },
-    { icon: MessagesSquare, label: 'DMs' },
-    { icon: Bell, label: 'Activity' },
-    { icon: Ellipsis, label: 'More' },
-  ]
+    { icon: House, label: "Home", active: true },
+    { icon: MessagesSquare, label: "DMs" },
+    { icon: Bell, label: "Activity" },
+    { icon: Ellipsis, label: "More" },
+  ];
   return (
     <nav className="sl-rail">
       <span className="sl-rail__ws">N</span>
@@ -208,10 +225,10 @@ function Rail() {
         <span className="sl-rail__status" />
       </span>
     </nav>
-  )
+  );
 }
 
-function Older({ who, name, lines }: { who: 'p1' | 'p2'; name: number; lines: number[] }) {
+function Older({ who, name, lines }: { who: "p1" | "p2"; name: number; lines: number[] }) {
   return (
     <div className="sl-msg">
       <Face who={who} />
@@ -227,7 +244,7 @@ function Older({ who, name, lines }: { who: 'p1' | 'p2'; name: number; lines: nu
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function Reaction({ mine }: { mine?: boolean }) {
@@ -236,15 +253,19 @@ function Reaction({ mine }: { mine?: boolean }) {
       <span className="sl-react__emoji">👀</span>
       <span className="sl-react__count">1</span>
     </span>
-  )
+  );
 }
 
 function HoverBar() {
-  const quick = ['✅', '👀', '🙌']
+  const quick = ["✅", "👀", "🙌"];
   return (
     <div className="sl-hover">
       {quick.map((e) => (
-        <span key={e} className="sl-hover__btn sl-hover__emoji" data-target={e === '👀' ? 'react-eyes' : undefined}>
+        <span
+          key={e}
+          className="sl-hover__btn sl-hover__emoji"
+          data-target={e === "👀" ? "react-eyes" : undefined}
+        >
           {e}
         </span>
       ))}
@@ -265,18 +286,39 @@ function HoverBar() {
         <I icon={EllipsisVertical} />
       </span>
     </div>
-  )
+  );
 }
 
-function Composer({ placeholder, draft = '', focus, typing, target }: { placeholder: string; draft?: string; focus?: boolean; typing?: boolean; target?: string }) {
+function Composer({
+  placeholder,
+  draft = "",
+  focus,
+  typing,
+  target,
+}: {
+  placeholder: string;
+  draft?: string;
+  focus?: boolean;
+  typing?: boolean;
+  target?: string;
+}) {
   return (
-    <div className="sl-compose" data-focus={focus || undefined} data-target={target} data-cursor={target ? 'ibeam' : undefined}>
+    <div
+      className="sl-compose"
+      data-focus={focus || undefined}
+      data-target={target}
+      data-cursor={target ? "ibeam" : undefined}
+    >
       <div className="sl-compose__text">
         <span className="sl-compose__placeholder" data-hide={draft.length > 0 || undefined}>
           {placeholder}
         </span>
         <span className="sl-compose__draft">{draft}</span>
-        <span className="sl-caret" data-show={focus || undefined} data-typing={typing || undefined} />
+        <span
+          className="sl-caret"
+          data-show={focus || undefined}
+          data-typing={typing || undefined}
+        />
       </div>
       <div className="sl-compose__tools">
         <span className="sl-compose__round">
@@ -293,14 +335,25 @@ function Composer({ placeholder, draft = '', focus, typing, target }: { placehol
         </span>
       </div>
     </div>
-  )
+  );
 }
 
 /* ---- Scene ---- */
 
 export default function SlackDemo() {
   return (
-    <Stage width={940} height={540} compact={{ below: 600, width: 440, height: 440 }} initial={initial} poster={poster} script={script} play="once" cursor={{ at: REST }} className="sl" keys="bottom">
+    <Stage
+      width={940}
+      height={540}
+      compact={{ below: 600, width: 440, height: 440 }}
+      initial={initial}
+      poster={poster}
+      script={script}
+      play="once"
+      cursor={{ at: REST }}
+      className="sl"
+      keys="bottom"
+    >
       {(s) => (
         <Window
           className="sl-win"
@@ -372,28 +425,28 @@ export default function SlackDemo() {
                   <Older who="p2" name={58} lines={[142]} />
                   <Collapse open={s.arrived} className="sl-live">
                     <div className="sl-row" data-target="msg">
-                    <div className="sl-msg sl-msg--live">
-                      <Face who="maya" />
-                      <div className="sl-msg__body">
-                        <div className="sl-msg__meta">
-                          <Text className="sl-msg__name">Maya Chen</Text>
-                          <Text className="sl-msg__time">10:42 AM</Text>
+                      <div className="sl-msg sl-msg--live">
+                        <Face who="maya" />
+                        <div className="sl-msg__body">
+                          <div className="sl-msg__meta">
+                            <Text className="sl-msg__name">Maya Chen</Text>
+                            <Text className="sl-msg__time">10:42 AM</Text>
+                          </div>
+                          <p className="sl-msg__text">{MESSAGE}</p>
+                          <Collapse open={s.reacted}>
+                            <div className="sl-msg__reacts">
+                              <Reaction mine />
+                            </div>
+                          </Collapse>
+                          <Collapse open={s.replied}>
+                            <div className="sl-replies">
+                              <Face who="alex" size={20} />
+                              <Text className="sl-replies__link">1 reply</Text>
+                              <Text className="sl-replies__when">Last reply just now</Text>
+                            </div>
+                          </Collapse>
                         </div>
-                        <p className="sl-msg__text">{MESSAGE}</p>
-                        <Collapse open={s.reacted}>
-                          <div className="sl-msg__reacts">
-                            <Reaction mine />
-                          </div>
-                        </Collapse>
-                        <Collapse open={s.replied}>
-                          <div className="sl-replies">
-                            <Face who="alex" size={20} />
-                            <Text className="sl-replies__link">1 reply</Text>
-                            <Text className="sl-replies__when">Last reply just now</Text>
-                          </div>
-                        </Collapse>
                       </div>
-                    </div>
                       <HoverBar />
                     </div>
                   </Collapse>
@@ -448,7 +501,13 @@ export default function SlackDemo() {
                       </div>
                     </Collapse>
                     <div className="sl-thread__compose">
-                      <Composer placeholder="Reply…" draft={s.draft} focus={s.focus} typing={s.typing} target="tbox" />
+                      <Composer
+                        placeholder="Reply…"
+                        draft={s.draft}
+                        focus={s.focus}
+                        typing={s.typing}
+                        target="tbox"
+                      />
                     </div>
                   </div>
                 </aside>
@@ -458,5 +517,5 @@ export default function SlackDemo() {
         </Window>
       )}
     </Stage>
-  )
+  );
 }

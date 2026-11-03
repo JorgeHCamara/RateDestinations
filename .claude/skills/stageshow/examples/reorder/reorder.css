@@ -42,7 +42,9 @@
   padding: 0 14px;
   border-radius: 10px;
   background: var(--ss-surface);
-  transition: box-shadow 0.25s ease, scale 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    box-shadow 0.25s ease,
+    scale 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .ro-slot[data-lifted] .ro-row {
@@ -70,7 +72,7 @@
 }
 
 /* Narrow: a gutter each side */
-.ro .ss-stage[data-layout='compact'] .ro-win {
+.ro .ss-stage[data-layout="compact"] .ro-win {
   left: 16px;
   width: 326px;
 }

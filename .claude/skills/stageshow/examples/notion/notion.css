@@ -269,8 +269,12 @@
 }
 
 @keyframes nt-blink {
-  0% { opacity: 1; }
-  50% { opacity: 0; }
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 /* ---- The to-do block ---- */
@@ -278,11 +282,15 @@
 .nt-todo {
   gap: 8px;
   transform: translateY(0);
-  transition: opacity 0.22s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition:
+    opacity 0.22s ease,
+    transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .nt-todo:not([data-show]) {
-  transition: opacity 0.35s ease, transform 0.5s cubic-bezier(0.45, 0, 0.1, 1);
+  transition:
+    opacity 0.35s ease,
+    transform 0.5s cubic-bezier(0.45, 0, 0.1, 1);
 }
 
 .nt-box {
@@ -297,7 +305,10 @@
   box-shadow: inset 0 0 0 1.5px var(--nt-ink);
   color: #fff;
   transform: scale(0.6);
-  transition: background-color 0.14s ease, box-shadow 0.14s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition:
+    background-color 0.14s ease,
+    box-shadow 0.14s ease,
+    transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .nt-todo[data-show] .nt-box {
@@ -311,7 +322,9 @@
 .nt-box svg {
   opacity: 0;
   transform: scale(0.5);
-  transition: opacity 0.12s ease, transform 0.22s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition:
+    opacity 0.12s ease,
+    transform 0.22s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .nt-todo[data-done] .nt-box {
@@ -331,7 +344,9 @@
   text-decoration: line-through;
   text-decoration-color: transparent;
   text-decoration-thickness: 1px;
-  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    text-decoration-color 0.2s ease;
 }
 
 .nt-todo[data-done] .nt-todo__text {
@@ -348,7 +363,9 @@
   padding: 6px 4px;
   border-radius: 10px;
   --ss-popover-bg: #fff;
-  --ss-popover-shadow: 0 0 0 1px rgba(55, 53, 47, 0.09), 0 3px 6px rgba(15, 15, 15, 0.06), 0 9px 24px rgba(15, 15, 15, 0.12);
+  --ss-popover-shadow:
+    0 0 0 1px rgba(55, 53, 47, 0.09), 0 3px 6px rgba(15, 15, 15, 0.06),
+    0 9px 24px rgba(15, 15, 15, 0.12);
 }
 
 .ss-stage[data-layout="compact"] .nt-menu {

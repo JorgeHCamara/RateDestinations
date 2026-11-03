@@ -23,7 +23,7 @@
      so it never rides the transform. Restyle it with --ss-popover-bg and
      --ss-popover-shadow rather than background and box-shadow. */
   .ss-popover::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     z-index: -1;
@@ -55,7 +55,9 @@
   .ss-popover:not([data-show]):not([data-instant]) {
     transform: scale(0.96);
     transform-origin: var(--ss-popover-origin, top left);
-    transition: opacity 0.24s ease, transform 0.24s cubic-bezier(0.4, 0, 1, 1);
+    transition:
+      opacity 0.24s ease,
+      transform 0.24s cubic-bezier(0.4, 0, 1, 1);
   }
 
   .ss-popover:not([data-show]):not([data-instant])::before {

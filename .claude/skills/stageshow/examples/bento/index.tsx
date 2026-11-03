@@ -1,8 +1,22 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import { Avatar, Badge, Bar, BrandMark, Icon, Meter, Connector, Count, Stage, States, Text, Window, useReducedMotion } from '../../kit'
-import type { Act, Layout, Rect } from '../../kit'
-import { figma, notion, slack } from '../../assets/app-icons'
-import './bento.css'
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import {
+  Avatar,
+  Badge,
+  Bar,
+  BrandMark,
+  Icon,
+  Meter,
+  Connector,
+  Count,
+  Stage,
+  States,
+  Text,
+  Window,
+  useReducedMotion,
+} from "../../kit";
+import type { Act, Layout, Rect } from "../../kit";
+import { figma, notion, slack } from "../../assets/app-icons";
+import "./bento.css";
 
 // The bar for a bento grid (references/bento.md): the features section of
 // Kite, a spend management app for small teams. Five tiles, hero and strip.
@@ -22,18 +36,30 @@ import './bento.css'
 // Each tile plays one beat, once, as it scrolls in, 110ms after the tile
 // before it in reading order.
 
-const STEP = 110
-const LEAD = 450
+const STEP = 110;
+const LEAD = 450;
 
-type Beat = { on: boolean }
-const before: Beat = { on: false }
-const after: Beat = { on: true }
+type Beat = { on: boolean };
+const before: Beat = { on: false };
+const after: Beat = { on: true };
 const beat = (i: number) => async (a: Act<Beat>) => {
-  await a.wait(LEAD + i * STEP)
-  await a.set({ on: true })
-}
+  await a.wait(LEAD + i * STEP);
+  await a.set({ on: true });
+};
 
-function Tile({ area, title, children, picture, dark }: { area: string; title: ReactNode; children?: ReactNode; picture?: ReactNode; dark?: boolean }) {
+function Tile({
+  area,
+  title,
+  children,
+  picture,
+  dark,
+}: {
+  area: string;
+  title: ReactNode;
+  children?: ReactNode;
+  picture?: ReactNode;
+  dark?: boolean;
+}) {
   return (
     <section className={`kb-tile kb-tile--${area}`} data-dark={dark || undefined} data-crop>
       {title ? (
@@ -45,18 +71,18 @@ function Tile({ area, title, children, picture, dark }: { area: string; title: R
       )}
       {picture}
     </section>
-  )
+  );
 }
 
 /* ---------------- Receipts (hero) ---------------- */
 
 const ROWS = [
-  { name: 74, who: 'A', amount: 44 },
+  { name: 74, who: "A", amount: 44 },
   { real: true },
-  { name: 58, who: 'J', amount: 38 },
-  { name: 86, who: 'M', amount: 50 },
-  { name: 64, who: 'A', amount: 42 },
-]
+  { name: 58, who: "J", amount: 38 },
+  { name: 86, who: "M", amount: 50 },
+  { name: 64, who: "A", amount: 42 },
+];
 
 function Receipt() {
   return (
@@ -66,11 +92,11 @@ function Receipt() {
       <Bar w={12} h={2} r={1} tone={3} />
       <Bar w={16} h={2} r={1} tone={3} />
     </span>
-  )
+  );
 }
 
 function Ledger({ on, layout }: { on: boolean; layout: Layout }) {
-  const wide = layout === 'wide'
+  const wide = layout === "wide";
   // Columns: merchant, name, receipt and status, amount, then filler the
   // tile crops. The status sits early in the row so it stays in view.
   const list = (
@@ -83,13 +109,21 @@ function Ledger({ on, layout }: { on: boolean; layout: Layout }) {
             <span className="kb-slot" data-on={on || undefined}>
               <Receipt />
               <States
-                value={on ? 'matched' : 'missing'}
-                align={wide ? 'start' : 'end'}
+                value={on ? "matched" : "missing"}
+                align={wide ? "start" : "end"}
                 className="kb-status"
                 states={{
-                  missing: <Badge tone="warning" className="kb-pill">No receipt</Badge>,
+                  missing: (
+                    <Badge tone="warning" className="kb-pill">
+                      No receipt
+                    </Badge>
+                  ),
                   matched: (
-                    <Badge tone="success" className="kb-pill" icon={<Icon name="check" size={12} />}>
+                    <Badge
+                      tone="success"
+                      className="kb-pill"
+                      icon={<Icon name="check" size={12} />}
+                    >
                       Matched
                     </Badge>
                   ),
@@ -119,18 +153,27 @@ function Ledger({ on, layout }: { on: boolean; layout: Layout }) {
         ),
       )}
     </div>
-  )
+  );
   const toolbar = (
     <span className="kb-tools">
       <Bar w={54} h={24} r={7} tone={2} />
       <Bar w={24} h={24} r={7} tone={2} />
     </span>
-  )
-  if (!wide) return <Window title="Transactions" className="kb-window kb-window--compact" body={{ 'data-crop': '' }}>{list}</Window>
+  );
+  if (!wide)
+    return (
+      <Window
+        title="Transactions"
+        className="kb-window kb-window--compact"
+        body={{ "data-crop": "" }}
+      >
+        {list}
+      </Window>
+    );
   return (
     <Window
       className="kb-window"
-      body={{ 'data-crop': '' }}
+      body={{ "data-crop": "" }}
       title="Transactions"
       toolbar={toolbar}
       sidebarWidth={156}
@@ -152,43 +195,51 @@ function Ledger({ on, layout }: { on: boolean; layout: Layout }) {
     >
       {list}
     </Window>
-  )
+  );
 }
 
 // The tile owns the crop. Match its current width so an inner Stage never
 // slices a window before the tile edge or shifts its content off the copy gutter.
 function usePictureWidth() {
-  const ref = useRef<HTMLDivElement>(null)
-  const [width, setWidth] = useState(340)
+  const ref = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(340);
   useLayoutEffect(() => {
-    const node = ref.current
-    if (!node) return
-    const measure = () => setWidth(Math.max(1, node.getBoundingClientRect().width))
-    measure()
-    const observer = new ResizeObserver(measure)
-    observer.observe(node)
-    return () => observer.disconnect()
-  }, [])
-  return [ref, width] as const
+    const node = ref.current;
+    if (!node) return;
+    const measure = () => setWidth(Math.max(1, node.getBoundingClientRect().width));
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+  return [ref, width] as const;
 }
 
 function Receipts() {
-  const [picture, width] = usePictureWidth()
+  const [picture, width] = usePictureWidth();
   return (
     <Tile
       area="hero"
       title={<b>Every receipt, matched.</b>}
       picture={
         <div ref={picture} className="kb-picture kb-picture--hero">
-          <Stage<Beat> width={width} height={width < 600 ? 300 : 286} initial={before} poster={after} play="once" script={beat(0)} className="kb-stage">
-            {(s) => <Ledger on={s.on} layout={width < 600 ? 'compact' : 'wide'} />}
+          <Stage<Beat>
+            width={width}
+            height={width < 600 ? 300 : 286}
+            initial={before}
+            poster={after}
+            play="once"
+            script={beat(0)}
+            className="kb-stage"
+          >
+            {(s) => <Ledger on={s.on} layout={width < 600 ? "compact" : "wide"} />}
           </Stage>
         </div>
       }
     >
       Snap it or forward it, and Kite finds the charge it belongs to.
     </Tile>
-  )
+  );
 }
 
 /* ---------------- Close (stat) ---------------- */
@@ -196,29 +247,32 @@ function Receipts() {
 // Type, not a picture: page text in the tile, with one number that counts
 // down once as the grid scrolls in.
 function useInView<T extends Element>(delay: number) {
-  const ref = useRef<T>(null)
-  const [seen, setSeen] = useState(false)
+  const ref = useRef<T>(null);
+  const [seen, setSeen] = useState(false);
   useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    let t = 0
-    const io = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return
-      io.disconnect()
-      t = window.setTimeout(() => setSeen(true), delay)
-    }, { threshold: 0.4 })
-    io.observe(el)
+    const el = ref.current;
+    if (!el) return;
+    let t = 0;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        io.disconnect();
+        t = window.setTimeout(() => setSeen(true), delay);
+      },
+      { threshold: 0.4 },
+    );
+    io.observe(el);
     return () => {
-      io.disconnect()
-      clearTimeout(t)
-    }
-  }, [delay])
-  return [ref, seen] as const
+      io.disconnect();
+      clearTimeout(t);
+    };
+  }, [delay]);
+  return [ref, seen] as const;
 }
 
 function Close() {
-  const reduced = useReducedMotion()
-  const [ref, seen] = useInView<HTMLDivElement>(LEAD + STEP)
+  const reduced = useReducedMotion();
+  const [ref, seen] = useInView<HTMLDivElement>(LEAD + STEP);
   return (
     <Tile area="stat" dark title={null}>
       <div ref={ref} className="kb-stat">
@@ -227,23 +281,33 @@ function Close() {
           <Count value={seen || reduced ? 2 : 9} duration={1100} />
           <span className="kb-stat-unit"> days</span>
         </span>
-        <span className="kb-stat-label">down from nine for the average team in its first quarter.</span>
+        <span className="kb-stat-label">
+          down from nine for the average team in its first quarter.
+        </span>
       </div>
     </Tile>
-  )
+  );
 }
 
 /* ---------------- Cards (object) ---------------- */
 
 function Cards() {
-  const goldId = useId()
+  const goldId = useId();
   return (
     <Tile
       area="card"
       title={<b>A card for everyone.</b>}
       picture={
         <div className="kb-picture kb-picture--small">
-          <Stage<Beat> width={360} height={206} initial={before} poster={after} play="once" script={beat(2)} className="kb-stage">
+          <Stage<Beat>
+            width={360}
+            height={206}
+            initial={before}
+            poster={after}
+            play="once"
+            script={beat(2)}
+            className="kb-stage"
+          >
             {(s) => (
               <div className="kb-card" data-on={s.on || undefined}>
                 <span className="kb-card-mark">
@@ -252,7 +316,13 @@ function Cards() {
                   </svg>
                   Kite
                 </span>
-                <svg className="kb-card-chip" viewBox="0 0 34 26" width="34" height="26" aria-hidden>
+                <svg
+                  className="kb-card-chip"
+                  viewBox="0 0 34 26"
+                  width="34"
+                  height="26"
+                  aria-hidden
+                >
                   <defs>
                     <linearGradient id={goldId} x1="0" y1="0" x2="1" y2="1">
                       <stop offset="0" stopColor="#f3e2b0" />
@@ -260,7 +330,16 @@ function Cards() {
                       <stop offset="1" stopColor="#b8954f" />
                     </linearGradient>
                   </defs>
-                  <rect x="0.5" y="0.5" width="33" height="25" rx="4.5" fill={`url(#${goldId})`} stroke="#8f733a" strokeOpacity="0.6" />
+                  <rect
+                    x="0.5"
+                    y="0.5"
+                    width="33"
+                    height="25"
+                    rx="4.5"
+                    fill={`url(#${goldId})`}
+                    stroke="#8f733a"
+                    strokeOpacity="0.6"
+                  />
                   <g fill="none" stroke="#8f733a" strokeOpacity="0.75" strokeWidth="0.8">
                     <path d="M0.5 9H11.5M0.5 17H11.5M22.5 9H33.5M22.5 17H33.5" />
                     <rect x="11.5" y="5.5" width="11" height="15" rx="2.5" />
@@ -276,20 +355,28 @@ function Cards() {
     >
       Each with its own limit. No more reimbursements.
     </Tile>
-  )
+  );
 }
 
 /* ---------------- Approvals (component) ---------------- */
 
 function Approvals() {
-  const [picture, width] = usePictureWidth()
+  const [picture, width] = usePictureWidth();
   return (
     <Tile
       area="approve"
       title={<b>Approve in one tap.</b>}
       picture={
         <div ref={picture} className="kb-picture kb-picture--aligned">
-          <Stage<Beat> width={width} height={206} initial={before} poster={after} play="once" script={beat(3)} className="kb-stage">
+          <Stage<Beat>
+            width={width}
+            height={206}
+            initial={before}
+            poster={after}
+            play="once"
+            script={beat(3)}
+            className="kb-stage"
+          >
             {(s) => (
               <div className="kb-request">
                 <div className="kb-request-who">
@@ -304,9 +391,9 @@ function Approvals() {
                   <span className="kb-btn">Decline</span>
                   <span className="kb-btn kb-btn--primary" data-on={s.on || undefined}>
                     <States
-                      value={s.on ? 'done' : 'ask'}
+                      value={s.on ? "done" : "ask"}
                       states={{
-                        ask: 'Approve',
+                        ask: "Approve",
                         done: (
                           <>
                             <Icon name="check" size={14} /> Approved
@@ -328,31 +415,39 @@ function Approvals() {
     >
       Requests go straight to whoever owns the budget.
     </Tile>
-  )
+  );
 }
 
 /* ---------------- Coding (diagram) ---------------- */
 
 // Real app icons, from the apps themselves (assets/app-icons.ts)
 const MERCHANTS = [
-  { name: 'Figma', icon: figma },
-  { name: 'Slack', icon: slack },
-  { name: 'Notion', icon: notion },
-]
+  { name: "Figma", icon: figma },
+  { name: "Slack", icon: slack },
+  { name: "Notion", icon: notion },
+];
 
 function Coding() {
-  const [picture, width] = usePictureWidth()
+  const [picture, width] = usePictureWidth();
   return (
     <Tile
       area="code"
       title={<b>Coded as it happens.</b>}
       picture={
         <div ref={picture} className="kb-picture kb-picture--aligned">
-          <Stage<Beat> width={width} height={206} initial={before} poster={after} play="once" script={beat(4)} className="kb-stage">
+          <Stage<Beat>
+            width={width}
+            height={206}
+            initial={before}
+            poster={after}
+            play="once"
+            script={beat(4)}
+            className="kb-stage"
+          >
             {(s, rect) => {
-              const right = (r: Rect) => ({ x: r.x + r.width, y: r.y + r.height / 2 })
-              const left = (r: Rect) => ({ x: r.x, y: r.y + r.height / 2 })
-              const to = rect('account')
+              const right = (r: Rect) => ({ x: r.x + r.width, y: r.y + r.height / 2 });
+              const left = (r: Rect) => ({ x: r.x, y: r.y + r.height / 2 });
+              const to = rect("account");
               return (
                 <>
                   <div className="kb-merchants">
@@ -369,11 +464,20 @@ function Coding() {
                   </span>
                   {to &&
                     MERCHANTS.map((m, i) => {
-                      const from = rect(`m-${m.name}`)
-                      return from ? <Connector key={m.name} from={right(from)} to={left(to)} route="step" show={s.on} className={`kb-line kb-line--${i}`} /> : null
+                      const from = rect(`m-${m.name}`);
+                      return from ? (
+                        <Connector
+                          key={m.name}
+                          from={right(from)}
+                          to={left(to)}
+                          route="step"
+                          show={s.on}
+                          className={`kb-line kb-line--${i}`}
+                        />
+                      ) : null;
                     })}
                 </>
-              )
+              );
             }}
           </Stage>
         </div>
@@ -381,7 +485,7 @@ function Coding() {
     >
       Every charge lands in the right account, no spreadsheet.
     </Tile>
-  )
+  );
 }
 
 export default function Bento() {
@@ -395,5 +499,5 @@ export default function Bento() {
         <Coding />
       </div>
     </div>
-  )
+  );
 }

@@ -20,7 +20,7 @@
 
 .sw-app {
   color: var(--sw-ink);
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
 }
 
 .sw-head {
@@ -130,7 +130,7 @@
   left: 84px;
   height: 0.5px;
   background: var(--sw-line);
-  content: '';
+  content: "";
 }
 
 .sw-time {
@@ -163,7 +163,19 @@
 
 /* Placeholder rows at the real ones' height: the gold's bars are 11pt for
    the sender and 9pt for the lines, centered in their line boxes */
-.sw-row .ss-row__title > .ss-bar { margin: 5.5px 0; }
-.sw-row .ss-row__subtitle > .ss-bar { display: block; margin: 5.5px 0; }
-.sw-fill { display: flex; align-items: center; height: 20px; }
-.sw-row .ss-row__meta > .ss-bar { display: block; margin: 6.5px 0; }
+.sw-row .ss-row__title > .ss-bar {
+  margin: 5.5px 0;
+}
+.sw-row .ss-row__subtitle > .ss-bar {
+  display: block;
+  margin: 5.5px 0;
+}
+.sw-fill {
+  display: flex;
+  align-items: center;
+  height: 20px;
+}
+.sw-row .ss-row__meta > .ss-bar {
+  display: block;
+  margin: 6.5px 0;
+}

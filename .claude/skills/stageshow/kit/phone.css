@@ -28,7 +28,14 @@
 
   /* The iOS frames paint their bands as strokes of the screen's outline
      (Phone's BANDS), from these colors; the body and glass paint nothing */
-  .ss-phone:is([data-frame="pro"], [data-frame="silver"], [data-frame="bezel"], [data-frame="clay"], [data-frame="outline"], [data-frame="bare"]) {
+  .ss-phone:is(
+    [data-frame="pro"],
+    [data-frame="silver"],
+    [data-frame="bezel"],
+    [data-frame="clay"],
+    [data-frame="outline"],
+    [data-frame="bare"]
+  ) {
     --ss-phone-glass: #0b0b0c;
     --ss-phone-rim: #2c2c2d;
     --ss-phone-seam: #e0dfdc;
@@ -43,7 +50,14 @@
     pointer-events: none;
   }
 
-  .ss-phone:is([data-frame="pro"], [data-frame="silver"], [data-frame="bezel"], [data-frame="clay"], [data-frame="outline"]) .ss-phone__glass {
+  .ss-phone:is(
+      [data-frame="pro"],
+      [data-frame="silver"],
+      [data-frame="bezel"],
+      [data-frame="clay"],
+      [data-frame="outline"]
+    )
+    .ss-phone__glass {
     position: relative;
   }
 
@@ -264,7 +278,11 @@
      switches to the Display cut, whose 9 has a straighter tail; name Text
      first, and ask the variable system font for text optics */
   .ss-phone__time {
-    font-family: "SF Pro Text", -apple-system, system-ui, sans-serif;
+    font-family:
+      "SF Pro Text",
+      -apple-system,
+      system-ui,
+      sans-serif;
     font-variation-settings: "opsz" 17;
     font-size: 17.67px;
     font-weight: 590;
@@ -288,7 +306,6 @@
     align-items: center;
     gap: 8px;
   }
-
 
   .ss-phone__glyph {
     display: block;
@@ -372,7 +389,7 @@
   }
 
   /* Under the clock instead, for a phone cropped by the stage's bottom edge */
-  .ss-lock__stack[data-at='top'] {
+  .ss-lock__stack[data-at="top"] {
     top: 290px;
     bottom: auto;
   }
@@ -434,7 +451,9 @@
   }
 
   @keyframes ss-banner-in {
-    from { transform: translateY(-110px); }
+    from {
+      transform: translateY(-110px);
+    }
   }
 
   .ss-notification__icon {
@@ -503,14 +522,14 @@
   /* Satellite: a phone beside a window. No controls, and notifications stack
      under the clock so a cropped phone still shows them. Everything stays at
      true iOS proportion: a notification is never scaled up to read. */
-  .ss-lock[data-size='satellite'] .ss-lock__stack {
+  .ss-lock[data-size="satellite"] .ss-lock__stack {
     top: 232px;
     bottom: auto;
   }
 
   /* No clock: the stack takes its place, just under the status bar, as
      Notification Center sits, rather than floating where the clock was */
-  .ss-lock[data-size='satellite'][data-clock='off'] .ss-lock__stack {
+  .ss-lock[data-size="satellite"][data-clock="off"] .ss-lock__stack {
     top: 74px;
   }
 
@@ -524,7 +543,9 @@
   /* A banner on a light screen needs its own edge: frosted white on white vanishes */
   .ss-phone:not([data-dark]) .ss-notification {
     background: rgba(255, 255, 255, 0.92);
-    box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.12);
+    box-shadow:
+      0 0 0 0.5px rgba(0, 0, 0, 0.08),
+      0 8px 24px rgba(0, 0, 0, 0.12);
   }
 
   /* Minimal fidelity: the status bar time is a placeholder like any other word */

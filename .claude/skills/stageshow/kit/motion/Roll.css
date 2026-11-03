@@ -23,13 +23,13 @@
 
   /* Pinned at its right edge: the words change against that edge, so a narrower
      word doesn't ride the box's left edge as it closes */
-  .ss-roll[data-align='end'] .ss-roll__mid {
+  .ss-roll[data-align="end"] .ss-roll__mid {
     /* The column is the box itself, not the widest word, so the right edge
        holds while the box eases and the wider word spills left, unclipped */
     grid-template-columns: 100%;
   }
 
-  .ss-roll[data-align='end'] .ss-roll__item {
+  .ss-roll[data-align="end"] .ss-roll__item {
     justify-self: unsafe end;
   }
 
@@ -46,32 +46,44 @@
 
   /* A full line of travel each way, so the old and new text never overlap */
   @keyframes ss-roll-in {
-    from { opacity: 0; filter: blur(2px); transform: translateY(100%); }
+    from {
+      opacity: 0;
+      filter: blur(2px);
+      transform: translateY(100%);
+    }
   }
 
   @keyframes ss-roll-out {
-    to { opacity: 0; filter: blur(2px); transform: translateY(-100%); }
+    to {
+      opacity: 0;
+      filter: blur(2px);
+      transform: translateY(-100%);
+    }
   }
 
   /* Labels on controls crossfade in place instead of rolling a full line */
-  .ss-roll[data-variant='fade'] .ss-roll__char {
+  .ss-roll[data-variant="fade"] .ss-roll__char {
     animation-name: ss-fade-in;
     animation-duration: 0.35s;
     animation-delay: 0.12s;
   }
 
-  .ss-roll[data-variant='fade'] .ss-roll__item[data-out] {
+  .ss-roll[data-variant="fade"] .ss-roll__item[data-out] {
     animation-name: ss-fade-out;
     animation-duration: 0.16s;
   }
 
   /* The width eases in step with the crossfade, and nothing paints outside it */
-  .ss-roll[data-variant='fade'] .ss-roll__mid {
+  .ss-roll[data-variant="fade"] .ss-roll__mid {
     clip-path: inset(0);
     transition-duration: 0.4s;
   }
 
   @keyframes ss-fade-out {
-    to { opacity: 0; filter: blur(2px); transform: translateY(-3px); }
+    to {
+      opacity: 0;
+      filter: blur(2px);
+      transform: translateY(-3px);
+    }
   }
 }

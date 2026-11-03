@@ -84,6 +84,6 @@
 }
 
 /* Narrow: the column fills the stage less a 16px gutter each side */
-.sk .ss-stage[data-layout='compact'] .sk-stack {
+.sk .ss-stage[data-layout="compact"] .sk-stack {
   width: 326px;
 }

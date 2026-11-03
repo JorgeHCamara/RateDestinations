@@ -96,12 +96,17 @@
     color: color-mix(in srgb, var(--ss-accent) 70%, #000);
     /* Translate before scale, so lifting never scales its stage position. */
     will-change: translate;
-    transition: translate 0.32s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, scale 0.2s ease;
+    transition:
+      translate 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.2s ease,
+      scale 0.2s ease;
   }
 
   /* Carried: no position transition, so it stays exactly under the cursor */
   .fd-card[data-dragging] {
-    transition: box-shadow 0.2s ease, scale 0.2s ease;
+    transition:
+      box-shadow 0.2s ease,
+      scale 0.2s ease;
   }
 
   .fd-card[data-lifted] {
@@ -124,8 +129,20 @@
 
   /* The phone is a closer calendar viewport, not a smaller calendar. The two
      days involved in the drag stay fully visible; neighboring days bleed. */
-  & .ss-stage[data-layout='compact'] .fd-window { left: 16px; top: 16px; }
-  & .ss-stage[data-layout='compact'] .fd-head { transform: translateX(-104px); }
-  & .ss-stage[data-layout='compact'] .fd-grid { margin-left: -104px; }
-  & .ss-stage[data-layout='compact'] .fd-hours { position: relative; z-index: 1; flex: none; background: var(--ss-surface); }
+  & .ss-stage[data-layout="compact"] .fd-window {
+    left: 16px;
+    top: 16px;
+  }
+  & .ss-stage[data-layout="compact"] .fd-head {
+    transform: translateX(-104px);
+  }
+  & .ss-stage[data-layout="compact"] .fd-grid {
+    margin-left: -104px;
+  }
+  & .ss-stage[data-layout="compact"] .fd-hours {
+    position: relative;
+    z-index: 1;
+    flex: none;
+    background: var(--ss-surface);
+  }
 }

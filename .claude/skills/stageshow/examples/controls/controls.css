@@ -20,11 +20,16 @@
   padding: 16px;
   border-radius: 14px;
   background: var(--ss-raised);
-  box-shadow: var(--ss-shadow-card), 0 0 0 1px var(--ss-line-faint);
+  box-shadow:
+    var(--ss-shadow-card),
+    0 0 0 1px var(--ss-line-faint);
 }
 
 .ct-name {
-  font: 500 10.5px/14px ui-monospace, 'SF Mono', monospace;
+  font:
+    500 10.5px/14px ui-monospace,
+    "SF Mono",
+    monospace;
   color: var(--ss-text-faint);
 }
 
@@ -74,7 +79,9 @@
   padding: 10px;
   border-radius: 8px;
   background: var(--ss-surface);
-  box-shadow: var(--ss-shadow-card), 0 0 0 1px var(--ss-line-faint);
+  box-shadow:
+    var(--ss-shadow-card),
+    0 0 0 1px var(--ss-line-faint);
 }
 
 .ct-card .ss-badge {
@@ -94,15 +101,21 @@
    (will-change), so its text never hops onto the pixel grid as it lands */
 .ct-carry .ct-card {
   background: var(--ss-surface);
-  box-shadow: var(--ss-shadow-float), 0 0 0 1px var(--ss-line-faint);
+  box-shadow:
+    var(--ss-shadow-float),
+    0 0 0 1px var(--ss-line-faint);
   transform: rotate(-2deg);
   transform-origin: 72% 24%;
   will-change: transform;
-  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  transition:
+    transform 0.2s ease-out,
+    box-shadow 0.2s ease-out;
 }
 
 .ct-carry[data-settle] .ct-card {
-  box-shadow: var(--ss-shadow-card), 0 0 0 1px var(--ss-line-faint);
+  box-shadow:
+    var(--ss-shadow-card),
+    0 0 0 1px var(--ss-line-faint);
   transform: none;
 }
 
@@ -139,7 +152,9 @@
 }
 
 @keyframes ct-in {
-  from { opacity: 0; }
+  from {
+    opacity: 0;
+  }
 }
 
 /* Keep specimen labels at their authored size on a narrow host. */

@@ -6,7 +6,11 @@
     --ss-code-str: #15803d;
     --ss-code-num: #b45309;
     --ss-code-fn: #2563eb;
-    font: 11.5px/19px ui-monospace, 'SF Mono', Menlo, monospace;
+    font:
+      11.5px/19px ui-monospace,
+      "SF Mono",
+      Menlo,
+      monospace;
     color: var(--ss-text-strong);
   }
 
@@ -66,22 +70,43 @@
     mask-image: linear-gradient(to right, #000 calc(100% - 14px), transparent);
   }
 
-  .ss-code__line[data-kind="add"] { background: var(--ss-success-soft); }
+  .ss-code__line[data-kind="add"] {
+    background: var(--ss-success-soft);
+  }
 
-  .ss-code__line[data-kind="add"] .ss-code__mark { color: var(--ss-success-text); }
+  .ss-code__line[data-kind="add"] .ss-code__mark {
+    color: var(--ss-success-text);
+  }
 
-  .ss-code__line[data-kind="del"] { background: var(--ss-danger-soft); }
+  .ss-code__line[data-kind="del"] {
+    background: var(--ss-danger-soft);
+  }
 
-  .ss-code__line[data-kind="del"] .ss-code__mark { color: var(--ss-danger-text); }
+  .ss-code__line[data-kind="del"] .ss-code__mark {
+    color: var(--ss-danger-text);
+  }
 
-  .ss-code__key { color: var(--ss-code-key); }
+  .ss-code__key {
+    color: var(--ss-code-key);
+  }
 
-  .ss-code__str { color: var(--ss-code-str); }
+  .ss-code__str {
+    color: var(--ss-code-str);
+  }
 
   .ss-code__num + .ss-code__mark + .ss-code__text .ss-code__num,
-  .ss-code__text .ss-code__num { width: auto; padding: 0; text-align: inherit; color: var(--ss-code-num); }
+  .ss-code__text .ss-code__num {
+    width: auto;
+    padding: 0;
+    text-align: inherit;
+    color: var(--ss-code-num);
+  }
 
-  .ss-code__fn { color: var(--ss-code-fn); }
+  .ss-code__fn {
+    color: var(--ss-code-fn);
+  }
 
-  .ss-code__com { color: var(--ss-text-faint); }
+  .ss-code__com {
+    color: var(--ss-text-faint);
+  }
 }

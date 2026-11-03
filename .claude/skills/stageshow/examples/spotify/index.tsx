@@ -1,6 +1,25 @@
-import { ChevronLeft, ChevronRight, CirclePlus, Clock3, House, Library, ListMusic, MicVocal, MonitorSpeaker, Pause, Play, Plus, Repeat, Search, Shuffle, SkipBack, SkipForward, Volume2 } from 'lucide-react'
-import { Bar, Stage, Swap, Text, Window, type Act } from '../../kit'
-import './spotify.css'
+import {
+  ChevronLeft,
+  ChevronRight,
+  CirclePlus,
+  Clock3,
+  House,
+  Library,
+  ListMusic,
+  MicVocal,
+  MonitorSpeaker,
+  Pause,
+  Play,
+  Plus,
+  Repeat,
+  Search,
+  Shuffle,
+  SkipBack,
+  SkipForward,
+  Volume2,
+} from "lucide-react";
+import { Bar, Stage, Swap, Text, Window, type Act } from "../../kit";
+import "./spotify.css";
 
 // Spotify desktop, dark, about 860 wide. A hero loop.
 //
@@ -17,69 +36,69 @@ import './spotify.css'
 // Icons: Spotify's own set isn't available, so lucide, chosen for its plain
 // geometric strokes, which are close to Spotify's; play and pause are filled.
 
-type Id = 'a' | 'b'
-type S = { playing: Id; sel: Id; elapsed: number }
+type Id = "a" | "b";
+type S = { playing: Id; sel: Id; elapsed: number };
 
-const initial: S = { playing: 'a', sel: 'a', elapsed: 0 }
+const initial: S = { playing: "a", sel: "a", elapsed: 0 };
 
 const SONGS: Record<Id, { title: string; artist: string; art: number; dur: number }> = {
-  a: { title: 'Low Tide', artist: 'Marlo', art: 2, dur: 196 },
-  b: { title: 'Neon Harbor', artist: 'The Vales', art: 4, dur: 168 },
-}
+  a: { title: "Low Tide", artist: "Marlo", art: 2, dur: 196 },
+  b: { title: "Neon Harbor", artist: "The Vales", art: 4, dur: 168 },
+};
 
 // Rows of the playlist. Real text only on the two songs the story plays.
 const ROWS: { id?: Id; art: number; t: number; ar: number; al: number }[] = [
-  { id: 'a', art: 2, t: 0, ar: 0, al: 58 },
+  { id: "a", art: 2, t: 0, ar: 0, al: 58 },
   { art: 3, t: 52, ar: 46, al: 82 },
-  { id: 'b', art: 4, t: 0, ar: 0, al: 64 },
+  { id: "b", art: 4, t: 0, ar: 0, al: 64 },
   { art: 1, t: 64, ar: 40, al: 70 },
   { art: 5, t: 70, ar: 34, al: 50 },
   { art: 6, t: 58, ar: 44, al: 74 },
-]
+];
 
-const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
+const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
 async function script(a: Act<S>) {
   // The song keeps playing under everything the cursor does
-  let live = true
-  ;(async () => {
+  let live = true;
+  (async () => {
     try {
       while (live) {
-        await a.wait(1000)
-        if (live) a.put((s) => ({ elapsed: s.elapsed + 1 }))
+        await a.wait(1000);
+        if (live) a.put((s) => ({ elapsed: s.elapsed + 1 }));
       }
     } catch {
       /* stopped */
     }
-  })()
+  })();
 
-  await a.wait(1400)
+  await a.wait(1400);
 
   // Play Neon Harbor
-  a.mark('play')
-  await a.move({ at: 'row-b', x: 0.72, y: 0.5 })
-  await a.wait(350)
-  await a.click(undefined, { double: true })
-  await a.set({ playing: 'b', sel: 'b', elapsed: 0 })
-  await a.wait(1100)
+  a.mark("play");
+  await a.move({ at: "row-b", x: 0.72, y: 0.5 });
+  await a.wait(350);
+  await a.click(undefined, { double: true });
+  await a.set({ playing: "b", sel: "b", elapsed: 0 });
+  await a.wait(1100);
 
   // Down to the player, where the new song is running: hovering the
   // progress bar lights it green and shows its handle, as Spotify does
-  a.mark('progress')
-  await a.move({ at: 'progress', x: 0.62, y: 0.5 })
-  await a.wait(4400)
+  a.mark("progress");
+  await a.move({ at: "progress", x: 0.62, y: 0.5 });
+  await a.wait(4400);
 
   // Back to Low Tide, which starts again from the top: the opening frame
-  a.mark('back')
-  await a.move({ at: 'row-a', x: 0.72, y: 0.5 })
-  await a.wait(350)
-  await a.click(undefined, { double: true })
-  live = false
-  await a.set({ playing: 'a', sel: 'a', elapsed: 0 })
+  a.mark("back");
+  await a.move({ at: "row-a", x: 0.72, y: 0.5 });
+  await a.wait(350);
+  await a.click(undefined, { double: true });
+  live = false;
+  await a.set({ playing: "a", sel: "a", elapsed: 0 });
 }
 
-function Art({ n, className = '' }: { n: number; className?: string }) {
-  return <span className={`spt-art spt-art--${n} ${className}`} />
+function Art({ n, className = "" }: { n: number; className?: string }) {
+  return <span className={`spt-art spt-art--${n} ${className}`} />;
 }
 
 function Eq() {
@@ -90,7 +109,7 @@ function Eq() {
       <i />
       <i />
     </span>
-  )
+  );
 }
 
 export default function SpotifyDemo() {
@@ -103,12 +122,12 @@ export default function SpotifyDemo() {
       script={script}
       theme="dark"
       accent="#1ed760"
-      cursor={{ at: { at: 'row-a', x: 0.72, y: 0.5 } }}
+      cursor={{ at: { at: "row-a", x: 0.72, y: 0.5 } }}
       className="spt-stage"
     >
       {(s, _rect, layout) => {
-        const song = SONGS[s.playing]
-        const compact = layout === 'compact'
+        const song = SONGS[s.playing];
+        const compact = layout === "compact";
         return (
           <Window
             className="spt-window"
@@ -211,8 +230,8 @@ export default function SpotifyDemo() {
                     <Clock3 size={14} strokeWidth={2} className="spt-faint-icon spt-dur" />
                   </div>
                   {ROWS.map((r, i) => {
-                    const real = r.id ? SONGS[r.id] : null
-                    const on = r.id === s.playing
+                    const real = r.id ? SONGS[r.id] : null;
+                    const on = r.id === s.playing;
                     return (
                       <div
                         key={i}
@@ -244,7 +263,7 @@ export default function SpotifyDemo() {
                           <Bar w={24} h={4} tone={2} />
                         </span>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               </main>
@@ -257,13 +276,22 @@ export default function SpotifyDemo() {
                     edges, and the column is as wide as the longer title, so the
                     + after it stays put */}
                 <span className="spt-now-art">
-                  {(['a', 'b'] as Id[]).map((id) => (
-                    <Art key={id} n={SONGS[id].art} className={`spt-art--now${s.playing === id ? ' is-on' : ''}`} />
+                  {(["a", "b"] as Id[]).map((id) => (
+                    <Art
+                      key={id}
+                      n={SONGS[id].art}
+                      className={`spt-art--now${s.playing === id ? "is-on" : ""}`}
+                    />
                   ))}
                 </span>
                 <span className="spt-now-text">
-                  {(['a', 'b'] as Id[]).map((id) => (
-                    <span key={id} className="spt-now-song" data-on={s.playing === id || undefined} aria-hidden={s.playing !== id || undefined}>
+                  {(["a", "b"] as Id[]).map((id) => (
+                    <span
+                      key={id}
+                      className="spt-now-song"
+                      data-on={s.playing === id || undefined}
+                      aria-hidden={s.playing !== id || undefined}
+                    >
                       <span className="spt-now-title">{SONGS[id].title}</span>
                       <span className="spt-now-artist">{SONGS[id].artist}</span>
                     </span>
@@ -288,9 +316,15 @@ export default function SpotifyDemo() {
                     <span
                       key={s.playing}
                       className="spt-fill"
-                      style={{ clipPath: `inset(0 ${(1 - s.elapsed / song.dur) * 100}% 0 0 round 2px)` }}
+                      style={{
+                        clipPath: `inset(0 ${(1 - s.elapsed / song.dur) * 100}% 0 0 round 2px)`,
+                      }}
                     />
-                    <span key={`k${s.playing}`} className="spt-knob" style={{ transform: `translateX(${(s.elapsed / song.dur) * 100}%)` }}>
+                    <span
+                      key={`k${s.playing}`}
+                      className="spt-knob"
+                      style={{ transform: `translateX(${(s.elapsed / song.dur) * 100}%)` }}
+                    >
                       <i />
                     </span>
                   </span>
@@ -313,8 +347,8 @@ export default function SpotifyDemo() {
               </div>
             </footer>
           </Window>
-        )
+        );
       }}
     </Stage>
-  )
+  );
 }

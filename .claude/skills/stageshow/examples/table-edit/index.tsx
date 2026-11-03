@@ -1,5 +1,5 @@
-import { Badge, Roll, Stage, Window, type Act } from '../../kit'
-import './table.css'
+import { Badge, Roll, Stage, Window, type Act } from "../../kit";
+import "./table.css";
 
 // Editing a cell in place: an amount in an invoices table is corrected and
 // the total follows. Beats: the pointer double-clicks one amount, the cell
@@ -21,48 +21,58 @@ import './table.css'
 // Real strings: every row. A table is the one place dense real data reads
 // right; it is short (five rows) so none of it is noise.
 
-type S = { edit: boolean; sel: boolean; val: string; amount: number; wash: boolean }
+type S = { edit: boolean; sel: boolean; val: string; amount: number; wash: boolean };
 
 const ROWS = [
-  { who: 'Halvorsen & Co', amount: 2400, status: 'Paid', due: 'Oct 2' },
-  { who: 'Lumen Studio', amount: 1200, status: 'Open', due: 'Oct 30' },
-  { who: 'Tidepool', amount: 860, status: 'Open', due: 'Nov 4' },
-  { who: 'Northwind Air', amount: 3150, status: 'Overdue', due: 'Oct 12' },
-  { who: 'Kite Labs', amount: 540, status: 'Paid', due: 'Oct 9' },
-]
-const EDIT = 1
-const money = (n: number) => `$${n.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
-const TONES = { Paid: 'success', Open: 'neutral', Overdue: 'danger' } as const
+  { who: "Halvorsen & Co", amount: 2400, status: "Paid", due: "Oct 2" },
+  { who: "Lumen Studio", amount: 1200, status: "Open", due: "Oct 30" },
+  { who: "Tidepool", amount: 860, status: "Open", due: "Nov 4" },
+  { who: "Northwind Air", amount: 3150, status: "Overdue", due: "Oct 12" },
+  { who: "Kite Labs", amount: 540, status: "Paid", due: "Oct 9" },
+];
+const EDIT = 1;
+const money = (n: number) => `$${n.toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+const TONES = { Paid: "success", Open: "neutral", Overdue: "danger" } as const;
 
-const initial: S = { edit: false, sel: false, val: '', amount: 1200, wash: false }
+const initial: S = { edit: false, sel: false, val: "", amount: 1200, wash: false };
 
 async function script(a: Act<S>) {
-  await a.wait(900)
-  a.mark('open')
-  await a.move({ at: 'cell', x: 0.7, y: 0.5 })
-  await a.wait(200)
-  await a.click({ at: 'cell', x: 0.7, y: 0.5 }, { double: true })
-  a.put({ edit: true, sel: true, val: '1,200.00' })
+  await a.wait(900);
+  a.mark("open");
+  await a.move({ at: "cell", x: 0.7, y: 0.5 });
+  await a.wait(200);
+  await a.click({ at: "cell", x: 0.7, y: 0.5 }, { double: true });
+  a.put({ edit: true, sel: true, val: "1,200.00" });
   // Off the digits while typing, as a hand does once it goes to the keys
-  await a.move({ at: 'cell', x: -0.5, y: 1.5 }, { duration: 450 })
-  await a.wait(200)
-  a.mark('type')
-  a.put({ sel: false, val: '' })
-  await a.type('val', '1,450.00', { interval: 70 })
-  await a.wait(400)
+  await a.move({ at: "cell", x: -0.5, y: 1.5 }, { duration: 450 });
+  await a.wait(200);
+  a.mark("type");
+  a.put({ sel: false, val: "" });
+  await a.type("val", "1,450.00", { interval: 70 });
+  await a.wait(400);
   // Enter commits. No keycap: it would sit over the total, the payoff
-  a.mark('commit')
-  a.put({ edit: false, amount: 1450, wash: true })
-  await a.wait(900)
-  a.put({ wash: false })
-  await a.wait(1800)
+  a.mark("commit");
+  a.put({ edit: false, amount: 1450, wash: true });
+  await a.wait(900);
+  a.put({ wash: false });
+  await a.wait(1800);
 }
 
 export default function TableEdit() {
   return (
-    <Stage<S> width={660} height={400} compact={{ below: 660, width: 358, height: 400 }} initial={initial} poster={{ ...initial, amount: 1450 }} script={script} play="once" cursor={{ at: { x: 600, y: 350 } }} className="te">
+    <Stage<S>
+      width={660}
+      height={400}
+      compact={{ below: 660, width: 358, height: 400 }}
+      initial={initial}
+      poster={{ ...initial, amount: 1450 }}
+      script={script}
+      play="once"
+      cursor={{ at: { x: 600, y: 350 } }}
+      className="te"
+    >
       {(s) => {
-        const total = ROWS.reduce((n, r, i) => n + (i === EDIT ? s.amount : r.amount), 0)
+        const total = ROWS.reduce((n, r, i) => n + (i === EDIT ? s.amount : r.amount), 0);
         return (
           <Window url="app.ledger.io/invoices" className="te-win">
             <div className="te-body">
@@ -76,13 +86,20 @@ export default function TableEdit() {
                 <div key={r.who} className="te-row">
                   <span className="te-who">{r.who}</span>
                   {i === EDIT ? (
-                    <span className="te-num te-cell" data-target="cell" data-edit={s.edit || undefined} data-wash={s.wash || undefined}>
+                    <span
+                      className="te-num te-cell"
+                      data-target="cell"
+                      data-edit={s.edit || undefined}
+                      data-wash={s.wash || undefined}
+                    >
                       <span className="te-ring" />
                       <span className="te-text">
                         {s.edit ? (
                           <>
                             <span className="te-dollar">$</span>
-                            <span className="te-sel" data-on={s.sel || undefined}>{s.val}</span>
+                            <span className="te-sel" data-on={s.sel || undefined}>
+                              {s.val}
+                            </span>
                             <span className="te-caret" data-hide={s.sel || undefined} key={s.val} />
                           </>
                         ) : (
@@ -107,8 +124,8 @@ export default function TableEdit() {
               </div>
             </div>
           </Window>
-        )
+        );
       }}
     </Stage>
-  )
+  );
 }

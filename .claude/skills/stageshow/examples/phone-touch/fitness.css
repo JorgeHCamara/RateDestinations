@@ -191,7 +191,9 @@
     background: #fff;
     min-height: 100%;
     will-change: transform;
-    transition: transform 0.62s var(--fx-open), background-color 0.18s ease-out;
+    transition:
+      transform 0.62s var(--fx-open),
+      background-color 0.18s ease-out;
   }
 
   /* Closing, the clip and the screen shrink from different heights, so the
@@ -200,7 +202,9 @@
   .fx-detail:not([data-open]) .fx-detail__inner {
     background-color: transparent;
     /* The body has gone before the list shows through, so no ghost of it */
-    transition: transform 0.62s var(--fx-open), background-color 0.16s ease-out 0.08s;
+    transition:
+      transform 0.62s var(--fx-open),
+      background-color 0.16s ease-out 0.08s;
   }
 
   .fx-detail:not([data-open]) .fx-body {
@@ -259,7 +263,9 @@
     background: rgba(40, 20, 10, 0.32);
     color: #fff;
     opacity: 0;
-    transition: opacity 0.3s ease, transform 0.15s ease;
+    transition:
+      opacity 0.3s ease,
+      transform 0.15s ease;
   }
 
   .fx-detail[data-open] .fx-close {
@@ -289,7 +295,9 @@
   .fx-timer {
     grid-area: 1 / 1;
     will-change: transform;
-    transition: opacity 0.35s ease, transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition:
+      opacity 0.35s ease,
+      transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
   }
 
   .fx-about {
@@ -379,16 +387,18 @@
   /* Its fill gives under the finger; the label holds still (a label that ends
      a scale hops as it lands) */
   .fx-start::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     z-index: -1;
     border-radius: inherit;
     background-color: var(--fx-start-fill, var(--ss-accent));
-    transition: background-color 0.2s ease, transform 0.15s ease;
+    transition:
+      background-color 0.2s ease,
+      transform 0.15s ease;
   }
 
-  .fx-start[data-phase='running'] {
+  .fx-start[data-phase="running"] {
     --fx-start-fill: #f2f2f7;
     color: #000;
   }
@@ -417,11 +427,14 @@
     background: #d1d1d6;
   }
 
-  .fx-interval__dot[data-i='0'] {
+  .fx-interval__dot[data-i="0"] {
     background: var(--ss-accent);
   }
 
-  & .ss-stage[data-layout='compact'] .fx-phone { top: 16px; left: 16px; }
+  & .ss-stage[data-layout="compact"] .fx-phone {
+    top: 16px;
+    left: 16px;
+  }
 
   .fx-card__title {
     display: block;

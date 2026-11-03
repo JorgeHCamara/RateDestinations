@@ -45,7 +45,7 @@
 
 /* Narrow: a touch less zoom, so the row stays whole across with the same
    inset each side */
-.cu .ss-stage[data-layout='compact'] .cu-zoom {
+.cu .ss-stage[data-layout="compact"] .cu-zoom {
   left: 12px;
   transform: scale(1.3);
 }

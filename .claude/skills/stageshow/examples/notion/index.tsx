@@ -19,16 +19,7 @@ import {
   Type,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import {
-  Bar,
-  Menu,
-  Popover,
-  Stage,
-  Text,
-  Window,
-  type Act,
-  type Layout,
-} from "../../kit";
+import { Bar, Menu, Popover, Stage, Text, Window, type Act, type Layout } from "../../kit";
 import "./notion.css";
 
 // Notion's slash command. Beats: click into an empty line, press "/", the
@@ -142,11 +133,7 @@ function Sidebar() {
       </div>
       <div className="nt-nav">
         {[62, 0, 48, 70, 54].map((w, i) => (
-          <div
-            key={i}
-            className="nt-nav__row"
-            data-active={w === 0 || undefined}
-          >
+          <div key={i} className="nt-nav__row" data-active={w === 0 || undefined}>
             <FileText size={16} strokeWidth={1.75} className="nt-ico" />
             {w === 0 ? (
               <Text className="nt-nav__label">{TITLE}</Text>
@@ -164,11 +151,7 @@ function Crumb({ compact }: { compact: boolean }) {
   return (
     <span className="nt-crumb">
       {compact && (
-        <ChevronsRight
-          size={16}
-          strokeWidth={1.75}
-          className="nt-ico nt-crumb__toggle"
-        />
+        <ChevronsRight size={16} strokeWidth={1.75} className="nt-ico nt-crumb__toggle" />
       )}
       <FileText size={14} strokeWidth={1.75} className="nt-ico" />
       <Text className="nt-crumb__label">{TITLE}</Text>
@@ -206,14 +189,8 @@ function Page({ s }: { s: S }) {
 
         <div className="nt-layer nt-text" data-show={!s.todo || undefined}>
           {s.slash && <span className="nt-slash">/</span>}
-          <span
-            className="nt-caret"
-            data-show={(s.focus && !s.todo) || undefined}
-          />
-          <span
-            className="nt-placeholder"
-            data-show={(s.focus && !s.slash) || undefined}
-          >
+          <span className="nt-caret" data-show={(s.focus && !s.todo) || undefined} />
+          <span className="nt-placeholder" data-show={(s.focus && !s.slash) || undefined}>
             Press ‘/’ for commands
           </span>
         </div>
@@ -233,10 +210,7 @@ function Page({ s }: { s: S }) {
               data-show={(s.focus && s.todo) || undefined}
               data-typing={s.typing || undefined}
             />
-            <span
-              className="nt-placeholder"
-              data-show={(s.focus && !s.task) || undefined}
-            >
+            <span className="nt-placeholder" data-show={(s.focus && !s.task) || undefined}>
               To-do
             </span>
           </span>

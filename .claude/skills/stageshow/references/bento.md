@@ -23,28 +23,28 @@ These are starting recipes for mixed feature grids; the product, brief and conte
 
 ## Kinds of tile
 
-| Kind | What it holds | Example |
-|---|---|---|
-| **One component** | A single control or panel at real size or larger, cropped by the tile | A backup control, keycaps or locale list |
-| **Hero UI** | The one tile with a real screen: window or phone, cropped per `framing.md` | Checkout or a conversation |
-| **Stat** | One big number, a lead, a label, maybe one colored glyph | Battery life, charging progress or measured uptime |
-| **Statement** | One sentence in large type, an icon in color beside or above | A short claim about connectivity or speed |
-| **Object** | A product, a card, a chip, an isometric drawing | A payment card, processor or physical control |
-| **Diagram** | An abstract picture of what the feature does: a grid, a heatmap, nodes and lines | A heatmap, sync relationship or shared canvas |
-| **Collection** | Logos, app icons, file tiles, emoji: many small marks, bleeding off | Integration marks, file thumbnails or emoji |
-| **Photo** | A real photo, with type over its quiet part. Never a scene drawn in SVG or CSS to stand in for one: however much grain and haze it gets, a drawn "photo" reads as generated. With no licensed photo to hand, pick another kind. A landscape photo rarely fits a tall tile with copy on top: it ends up a sliver, or the horizon crowds the headline. An illustration in its place is either purely graphic (a pattern, a motif from the place, like azulejo tiles for Portugal) or drawn in smooth, continuous curves, never lumpy or faceted, and it holds still | A licensed product or lifestyle photograph |
+| Kind              | What it holds                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Example                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| **One component** | A single control or panel at real size or larger, cropped by the tile                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | A backup control, keycaps or locale list           |
+| **Hero UI**       | The one tile with a real screen: window or phone, cropped per `framing.md`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Checkout or a conversation                         |
+| **Stat**          | One big number, a lead, a label, maybe one colored glyph                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Battery life, charging progress or measured uptime |
+| **Statement**     | One sentence in large type, an icon in color beside or above                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | A short claim about connectivity or speed          |
+| **Object**        | A product, a card, a chip, an isometric drawing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | A payment card, processor or physical control      |
+| **Diagram**       | An abstract picture of what the feature does: a grid, a heatmap, nodes and lines                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | A heatmap, sync relationship or shared canvas      |
+| **Collection**    | Logos, app icons, file tiles, emoji: many small marks, bleeding off                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Integration marks, file thumbnails or emoji        |
+| **Photo**         | A real photo, with type over its quiet part. Never a scene drawn in SVG or CSS to stand in for one: however much grain and haze it gets, a drawn "photo" reads as generated. With no licensed photo to hand, pick another kind. A landscape photo rarely fits a tall tile with copy on top: it ends up a sliver, or the horizon crowds the headline. An illustration in its place is either purely graphic (a pattern, a motif from the place, like azulejo tiles for Portugal) or drawn in smooth, continuous curves, never lumpy or faceted, and it holds still | A licensed product or lifestyle photograph         |
 
 A grid of five usually wants one hero UI, one or two components, one stat or statement, and one object, diagram or collection.
 
 ## Layouts
 
-| Layout | Shape | Use for |
-|---|---|---|
-| **Hero and strip** | A row of 2/3 + 1/3, then three equal tiles | The default for five or six features |
-| **Staggered pair** | Two columns, tall and short tiles alternating, offset between columns | Four to six claims with photos |
-| **Even grid** | 3 × 2 equal tiles | Only when every neighbor is a different kind |
-| **Big square** | Four columns, a 2 × 2 hero, small tiles round it | Many products, one flagship |
-| **Ruled** | One rounded container, 1px rules, no gaps, mixed spans | Technical or developer pages |
+| Layout             | Shape                                                                 | Use for                                      |
+| ------------------ | --------------------------------------------------------------------- | -------------------------------------------- |
+| **Hero and strip** | A row of 2/3 + 1/3, then three equal tiles                            | The default for five or six features         |
+| **Staggered pair** | Two columns, tall and short tiles alternating, offset between columns | Four to six claims with photos               |
+| **Even grid**      | 3 × 2 equal tiles                                                     | Only when every neighbor is a different kind |
+| **Big square**     | Four columns, a 2 × 2 hero, small tiles round it                      | Many products, one flagship                  |
+| **Ruled**          | One rounded container, 1px rules, no gaps, mixed spans                | Technical or developer pages                 |
 
 **Every width is its own design.** Check the grid at each width it will meet, down to an article column (about 550, so half tiles near 270). Two columns work there when each picture has been composed for its narrower tile; stack when the content needs more width. At each width every picture lines up with its tile's copy: left edge on the copy's gutter, and a matching gutter on the right or a clear crop off the right or bottom. Never center a picture about as wide as the tile, so it touches both edges or loses a few pixels to each; resize it, re-lay it out or swap the card for that width.
 
@@ -52,12 +52,12 @@ A grid of five usually wants one hero UI, one or two components, one stat or sta
 
 Write the tile list before building anything:
 
-| Tile | Span | Kind | The one thing | Words |
-|---|---|---|---|---|
-| Inbox | 2 × 1 | Hero UI | One conversation arriving, selected | "Shared inbox" + one sentence |
-| SLAs | 1 × 1 | Stat | "14m" left, in the warning color | "Never miss a reply." |
-| Assign | 1 × 1 | Component | The assignee menu, Maya checked | "Assignments" |
-| AI drafts | 1 × 2 | Component | The draft reply and its Send button | "Drafts that sound like you." |
-| Integrations | 1 × 1 | Collection | App marks bleeding off the right | "Works with your tools." |
+| Tile         | Span  | Kind       | The one thing                       | Words                         |
+| ------------ | ----- | ---------- | ----------------------------------- | ----------------------------- |
+| Inbox        | 2 × 1 | Hero UI    | One conversation arriving, selected | "Shared inbox" + one sentence |
+| SLAs         | 1 × 1 | Stat       | "14m" left, in the warning color    | "Never miss a reply."         |
+| Assign       | 1 × 1 | Component  | The assignee menu, Maya checked     | "Assignments"                 |
+| AI drafts    | 1 × 2 | Component  | The draft reply and its Send button | "Drafts that sound like you." |
+| Integrations | 1 × 1 | Collection | App marks bleeding off the right    | "Works with your tools."      |
 
 Then check the plan against rules 1, 2, 3, 4 and 9: how many tiles are UI, which is the hero, does any tile sit next to the same kind, does any real string appear twice. Inspect the built grid and each crop at the widest and narrowest host; a good tile can still be the wrong neighbor. The still questions are in `verify.md`.

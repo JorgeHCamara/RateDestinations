@@ -12,7 +12,7 @@
   translate: -50% 0;
 }
 
-.pr .ss-stage[data-layout='compact'] .pr-win {
+.pr .ss-stage[data-layout="compact"] .pr-win {
   top: 16px;
   width: 326px;
 }
@@ -23,7 +23,7 @@
   background: var(--ss-surface);
 }
 
-.pr .ss-stage[data-layout='compact'] .pr-doc {
+.pr .ss-stage[data-layout="compact"] .pr-doc {
   padding: 24px 22px 0;
 }
 
@@ -53,7 +53,10 @@
    highlight's edge is always at the tip; a quicker sweep runs ahead of her */
 .pr-sel {
   border-radius: 2px;
-  background-image: linear-gradient(color-mix(in srgb, var(--who) 22%, transparent), color-mix(in srgb, var(--who) 22%, transparent));
+  background-image: linear-gradient(
+    color-mix(in srgb, var(--who) 22%, transparent),
+    color-mix(in srgb, var(--who) 22%, transparent)
+  );
   background-repeat: no-repeat;
   background-size: 0% 100%;
   /* A deselect is instant, as in the app; only selecting sweeps */
@@ -130,6 +133,13 @@
 
 /* One color per person: the pile's faces match the cursors. Ana is in the
    doc but not in shot, so her face stays quiet */
-.pr-pile .ss-facepile__face:nth-child(1) .ss-avatar { background: #d1478a !important; }
-.pr-pile .ss-facepile__face:nth-child(2) .ss-avatar { background: #2f9e8f !important; }
-.pr-pile .ss-facepile__face:nth-child(3) .ss-avatar { background: var(--ss-ink-3) !important; color: var(--ss-text) !important; }
+.pr-pile .ss-facepile__face:nth-child(1) .ss-avatar {
+  background: #d1478a !important;
+}
+.pr-pile .ss-facepile__face:nth-child(2) .ss-avatar {
+  background: #2f9e8f !important;
+}
+.pr-pile .ss-facepile__face:nth-child(3) .ss-avatar {
+  background: var(--ss-ink-3) !important;
+  color: var(--ss-text) !important;
+}

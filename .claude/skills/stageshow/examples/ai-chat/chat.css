@@ -87,7 +87,9 @@
   gap: 6px;
   opacity: 0;
   translate: 0 4px;
-  transition: opacity 0.35s ease, translate 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    opacity 0.35s ease,
+    translate 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .ac-sources[data-on] {
@@ -104,7 +106,7 @@
 }
 
 /* Narrow: a gutter each side, the window full width of the stage */
-.ac .ss-stage[data-layout='compact'] .ac-win {
+.ac .ss-stage[data-layout="compact"] .ac-win {
   left: 16px;
   width: 326px;
   height: 520px;

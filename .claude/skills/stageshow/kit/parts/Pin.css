@@ -14,14 +14,22 @@
     box-sizing: border-box;
     border-radius: var(--ss-pin-r);
     background: var(--ss-surface);
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.25);
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.06),
+      0 2px 6px -1px rgba(0, 0, 0, 0.25);
     will-change: transform;
     transition: box-shadow 0.3s ease;
   }
 
-  .ss-pin[data-corner="br"] { --ss-pin-r: 50% 50% 0 50%; }
-  .ss-pin[data-corner="tl"] { --ss-pin-r: 0 50% 50% 50%; }
-  .ss-pin[data-corner="tr"] { --ss-pin-r: 50% 0 50% 50%; }
+  .ss-pin[data-corner="br"] {
+    --ss-pin-r: 50% 50% 0 50%;
+  }
+  .ss-pin[data-corner="tl"] {
+    --ss-pin-r: 0 50% 50% 50%;
+  }
+  .ss-pin[data-corner="tr"] {
+    --ss-pin-r: 50% 0 50% 50%;
+  }
 
   .ss-pin__face {
     display: grid;
@@ -49,10 +57,16 @@
 
   /* The open pin: a ring in its own color, with the surface showing between */
   .ss-pin[data-selected] {
-    box-shadow: 0 0 0 1.5px var(--ss-surface), 0 0 0 3px var(--ss-accent), 0 2px 6px -1px rgba(0, 0, 0, 0.25);
+    box-shadow:
+      0 0 0 1.5px var(--ss-surface),
+      0 0 0 3px var(--ss-accent),
+      0 2px 6px -1px rgba(0, 0, 0, 0.25);
   }
 
   .ss-pin[data-selected][data-tone="ink"] {
-    box-shadow: 0 0 0 1.5px var(--ss-surface), 0 0 0 3px var(--ss-ink-5), 0 2px 6px -1px rgba(0, 0, 0, 0.25);
+    box-shadow:
+      0 0 0 1.5px var(--ss-surface),
+      0 0 0 3px var(--ss-ink-5),
+      0 2px 6px -1px rgba(0, 0, 0, 0.25);
   }
 }

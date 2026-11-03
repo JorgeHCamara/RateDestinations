@@ -8,18 +8,18 @@ A look is a set of design tokens: color, type, shape and density. The kit's part
 
 ## The tokens
 
-| Group | Tokens | Default |
-|---|---|---|
-| Surfaces | `--ss-canvas`, `--ss-surface`, `--ss-chrome`, `--ss-well`, `--ss-raised` | warm grays, white |
-| Lines | `--ss-line`, `--ss-line-faint` | translucent black |
-| Text | `--ss-text-strong`, `--ss-text`, `--ss-text-faint` | three grays |
-| Icons | `--ss-icon`, `--ss-icon-faint` | opaque grays |
-| Accent | `--ss-accent`, `--ss-accent-2`, `--ss-accent-soft`, `--ss-accent-text` | blue |
-| Status | `--ss-success`, `--ss-danger`, `--ss-warning`, each with `-soft` and `-text` | green, red, amber |
-| Type | `--ss-font`, `--ss-mono` | the system stacks |
-| Shape | `--ss-radius-sm` (6), `--ss-radius-md` (8), `--ss-radius-lg` (10), `--ss-radius-window` (12), `--ss-radius-pill` (999) | px |
-| Density | `--ss-control` (34, a text field), `--ss-row` (26, a menu row or segment) | px |
-| Shadows | `--ss-shadow-hero`, `-satellite`, `-ground`, `-window`, `-float`, `-lift`, `-card` | see `framing.md` |
+| Group    | Tokens                                                                                                                 | Default           |
+| -------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| Surfaces | `--ss-canvas`, `--ss-surface`, `--ss-chrome`, `--ss-well`, `--ss-raised`                                               | warm grays, white |
+| Lines    | `--ss-line`, `--ss-line-faint`                                                                                         | translucent black |
+| Text     | `--ss-text-strong`, `--ss-text`, `--ss-text-faint`                                                                     | three grays       |
+| Icons    | `--ss-icon`, `--ss-icon-faint`                                                                                         | opaque grays      |
+| Accent   | `--ss-accent`, `--ss-accent-2`, `--ss-accent-soft`, `--ss-accent-text`                                                 | blue              |
+| Status   | `--ss-success`, `--ss-danger`, `--ss-warning`, each with `-soft` and `-text`                                           | green, red, amber |
+| Type     | `--ss-font`, `--ss-mono`                                                                                               | the system stacks |
+| Shape    | `--ss-radius-sm` (6), `--ss-radius-md` (8), `--ss-radius-lg` (10), `--ss-radius-window` (12), `--ss-radius-pill` (999) | px                |
+| Density  | `--ss-control` (34, a text field), `--ss-row` (26, a menu row or segment)                                              | px                |
+| Shadows  | `--ss-shadow-hero`, `-satellite`, `-ground`, `-window`, `-float`, `-lift`, `-card`                                     | see `framing.md`  |
 
 The placeholder inks (`--ss-ink-1` to `-5`) are the kit's, not the product's. Leave them unless the product's grays are a different temperature; then pick `Stage greys="cool"` or set the inks from the same gray family.
 
@@ -34,7 +34,9 @@ As a stylesheet, which can also carry a dark variant:
   --ss-radius-md: 6px;
   --ss-control: 32px;
 }
-.look-acme .ss-stage[data-theme="dark"] { --ss-surface: #18181b; }
+.look-acme .ss-stage[data-theme="dark"] {
+  --ss-surface: #18181b;
+}
 ```
 
 ```tsx

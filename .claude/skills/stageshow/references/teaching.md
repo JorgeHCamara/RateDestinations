@@ -8,26 +8,26 @@ Use a pair to diagnose a problem in your own demo: find the one that looks like 
 
 Both halves share one stage and one timeline, with a duplicated stationary pointer so each gets exactly the same input at the same moment. That pointer is a teaching device; a product demo uses the Stage's real cursor and `a.click`. The first four pairs use a 180ms press and hold the result for 1.8s before returning. The longer ones play once and hold their ending.
 
-| Failure | Look at | Correction |
-| --- | --- | --- |
-| Instant label replacement | "Open preview" becoming "Back to editor", then returning | A stable button and a clipped label slot; the old words leave as the new words enter (`Roll`). |
-| Result without press feedback | "Save changes" under the pointer, before "Saved" appears | A small press and surface response before the result. In a demo, change state after `a.click` completes. |
-| New row shoves its neighbors | "Standard shipping" below the delivery note | Animate the note's containing track so the line moves with its height. Reserving the space is the other option. |
-| Object loses its identity | The plus becoming a close icon, then returning | Keep the same strokes and rotate them; replacing the icon skips the relationship between the shapes. |
-| Exit is skipped | "Link copied" when its close control is pressed | Keep the message mounted for its 320ms exit, then remove it. |
-| Interrupted motion restarts | The highlight heading to Month, redirected to Week after 200ms | Keep the highlight mounted and retarget from where it is; re-keying its entrance restarts it from Day. |
-| Landing jumps at handoff | The 24px avatar when the flyer becomes the assignee | Measure the avatar itself with `rect()`, not its padded wrapper. The bad flight takes the wrapper's origin and lands four pixels off. |
-| Loop erases accumulated work | Three files clearing after they have been added | Give the reset a visible cause: the good side presses Clear. |
-| Added content shifts its neighbor | A status icon appearing beside a label | Open the icon's width and gap together while the label travels; close both on removal. |
-| A list jumps around a new row | Existing rows during insertion and removal | Animate their space as the new row enters whole; let it exit before its space closes. |
-| A changing action shoves another | The secondary action beside a growing label | Carry the neighbor with the changing width, not in one frame at the end. |
-| Surface and content resize separately | A popup opening its details, returning, reversing | Surface and content on one coordinated geometry, with text that never stretches. |
-| Drag starts from the wrong point | The file just after an off-center grab | Keep the pointer's offset inside the object through travel and release. |
-| Spinner begins after appearing | The first saving-state frames | Start rotation before the spinner is visible; keep it turning through the fade out. |
-| Text shifts as it settles | The changed label and the word "Optional" as the old label hides | Move the label by transform inside a stable grid. Margin travel on overlapping inline-grid items moves the shared baseline even while hidden. |
-| A label hits a hard edge | Letters crossing the top and bottom of a label slot | Soften the moving boundary locally; resting text stays sharp and wholly inside the control. |
-| Scrolling reveals a harsh crop | Rows crossing the viewport edge | Start with whole rows; after scrolling, fade only the edges hiding content, and clear the fade at the end. |
-| Dependent changes start together | Currency, price, payment method and address in one checkout | Offset the related starts while their movements overlap. Same layout, curve and masks on both sides; see `choreography.md`. |
+| Failure                               | Look at                                                          | Correction                                                                                                                                    |
+| ------------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Instant label replacement             | "Open preview" becoming "Back to editor", then returning         | A stable button and a clipped label slot; the old words leave as the new words enter (`Roll`).                                                |
+| Result without press feedback         | "Save changes" under the pointer, before "Saved" appears         | A small press and surface response before the result. In a demo, change state after `a.click` completes.                                      |
+| New row shoves its neighbors          | "Standard shipping" below the delivery note                      | Animate the note's containing track so the line moves with its height. Reserving the space is the other option.                               |
+| Object loses its identity             | The plus becoming a close icon, then returning                   | Keep the same strokes and rotate them; replacing the icon skips the relationship between the shapes.                                          |
+| Exit is skipped                       | "Link copied" when its close control is pressed                  | Keep the message mounted for its 320ms exit, then remove it.                                                                                  |
+| Interrupted motion restarts           | The highlight heading to Month, redirected to Week after 200ms   | Keep the highlight mounted and retarget from where it is; re-keying its entrance restarts it from Day.                                        |
+| Landing jumps at handoff              | The 24px avatar when the flyer becomes the assignee              | Measure the avatar itself with `rect()`, not its padded wrapper. The bad flight takes the wrapper's origin and lands four pixels off.         |
+| Loop erases accumulated work          | Three files clearing after they have been added                  | Give the reset a visible cause: the good side presses Clear.                                                                                  |
+| Added content shifts its neighbor     | A status icon appearing beside a label                           | Open the icon's width and gap together while the label travels; close both on removal.                                                        |
+| A list jumps around a new row         | Existing rows during insertion and removal                       | Animate their space as the new row enters whole; let it exit before its space closes.                                                         |
+| A changing action shoves another      | The secondary action beside a growing label                      | Carry the neighbor with the changing width, not in one frame at the end.                                                                      |
+| Surface and content resize separately | A popup opening its details, returning, reversing                | Surface and content on one coordinated geometry, with text that never stretches.                                                              |
+| Drag starts from the wrong point      | The file just after an off-center grab                           | Keep the pointer's offset inside the object through travel and release.                                                                       |
+| Spinner begins after appearing        | The first saving-state frames                                    | Start rotation before the spinner is visible; keep it turning through the fade out.                                                           |
+| Text shifts as it settles             | The changed label and the word "Optional" as the old label hides | Move the label by transform inside a stable grid. Margin travel on overlapping inline-grid items moves the shared baseline even while hidden. |
+| A label hits a hard edge              | Letters crossing the top and bottom of a label slot              | Soften the moving boundary locally; resting text stays sharp and wholly inside the control.                                                   |
+| Scrolling reveals a harsh crop        | Rows crossing the viewport edge                                  | Start with whole rows; after scrolling, fade only the edges hiding content, and clear the fade at the end.                                    |
+| Dependent changes start together      | Currency, price, payment method and address in one checkout      | Offset the related starts while their movements overlap. Same layout, curve and masks on both sides; see `choreography.md`.                   |
 
 The neighbor pairs live in `teaching/relationships.tsx`, the drag and spinner pairs in `teaching/continuity.tsx`, the label and scroll edges in `teaching/edges.tsx`, and the baseline bug in `teaching/text-settle.tsx`. They are small standalone patterns, not imports from a library.
 
@@ -108,4 +108,3 @@ Six small pairs in `teaching/details.tsx`, `?example=contrasts`, Details group. 
 - **Balance a top bar:** one control and an empty side reads as unfinished. Put what the product puts there, or drop the bar.
 - **Choose copy that fits:** unless the brief fixes them, pick names, emails and values whose length suits the layout: no truncated chips, wrapped names or ragged labels.
 - **Pin a changing label to its icon:** in a fixed-width control the label sits against its chevron and grows away from it, so the gap never changes.
-

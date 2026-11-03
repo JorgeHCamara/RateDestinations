@@ -156,7 +156,9 @@
   background: var(--ss-ink-2);
   color: var(--ss-text);
   font-weight: 600;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .sh-invite__btn[data-ready] {

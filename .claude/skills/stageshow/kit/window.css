@@ -66,11 +66,17 @@
     box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.12);
   }
 
-  .ss-window__dot:nth-child(1) { background: #ff5f57; }
+  .ss-window__dot:nth-child(1) {
+    background: #ff5f57;
+  }
 
-  .ss-window__dot:nth-child(2) { background: #febc2e; }
+  .ss-window__dot:nth-child(2) {
+    background: #febc2e;
+  }
 
-  .ss-window__dot:nth-child(3) { background: #28c840; }
+  .ss-window__dot:nth-child(3) {
+    background: #28c840;
+  }
 
   .ss-window__url {
     flex: 1;
@@ -373,9 +379,15 @@
   }
 
   /* Status color, sparingly: a pass, a failure, a dim aside */
-  .ss-term .ok { color: var(--ss-term-ok, #6ee7a8); }
-  .ss-term .err { color: var(--ss-term-err, #f87171); }
-  .ss-term .dim { color: var(--ss-term-dim, #63636b); }
+  .ss-term .ok {
+    color: var(--ss-term-ok, #6ee7a8);
+  }
+  .ss-term .err {
+    color: var(--ss-term-err, #f87171);
+  }
+  .ss-term .dim {
+    color: var(--ss-term-dim, #63636b);
+  }
 
   .ss-term__caret {
     display: inline-block;
@@ -392,11 +404,15 @@
   }
 
   @keyframes ss-term-blink {
-    50% { opacity: 0; }
+    50% {
+      opacity: 0;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .ss-term__caret { animation: none; }
+    .ss-term__caret {
+      animation: none;
+    }
   }
 
   /* With toolbar controls the bar becomes a unified toolbar, as in Notes or

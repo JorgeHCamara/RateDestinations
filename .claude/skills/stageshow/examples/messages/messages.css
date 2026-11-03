@@ -12,7 +12,9 @@
     bottom: 16px;
     left: 47px;
   }
-  & .ss-stage[data-layout='compact'] .ms-phone { left: 16px; }
+  & .ss-stage[data-layout="compact"] .ms-phone {
+    left: 16px;
+  }
 
   .ms-phone .ss-phone__content {
     display: flex;
@@ -42,7 +44,9 @@
     padding: 0 16px 10px;
   }
 
-  .ms-send[data-pressed] { scale: .9; }
+  .ms-send[data-pressed] {
+    scale: 0.9;
+  }
 
   /* The composer: a round plus, then the field. The field's words are the
      send's origin, so they sit in a target of their own */
@@ -118,7 +122,10 @@
     color: #fff;
     opacity: 0;
     transform: scale(0.5);
-    transition: scale .12s ease, opacity 0.18s ease, transform 0.25s cubic-bezier(0.3, 0.75, 0.1, 1);
+    transition:
+      scale 0.12s ease,
+      opacity 0.18s ease,
+      transform 0.25s cubic-bezier(0.3, 0.75, 0.1, 1);
   }
 
   .ms-send[data-show] {

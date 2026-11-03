@@ -1,5 +1,5 @@
-import { Avatar, Stage, Phone, Thread, Bubble, Stamp, type Act } from '../../kit'
-import './telegram.css'
+import { Avatar, Stage, Phone, Thread, Bubble, Stamp, type Act } from "../../kit";
+import "./telegram.css";
 
 // Telegram on an iPhone, the current iOS app: floating glass header (back,
 // a pill with the name and status, the avatar), the default green wallpaper
@@ -21,40 +21,47 @@ import './telegram.css'
 //
 // Real strings: the date pills, the messages, the typed reply, the times.
 
-type Tick = 'clock' | 'sent' | 'read'
-type S = { draft: string; sent: boolean; tick: Tick; reply: boolean }
+type Tick = "clock" | "sent" | "read";
+type S = { draft: string; sent: boolean; tick: Tick; reply: boolean };
 
-const initial: S = { draft: '', sent: false, tick: 'clock', reply: false }
-const poster: S = { ...initial, sent: true, tick: 'read', reply: true }
+const initial: S = { draft: "", sent: false, tick: "clock", reply: false };
+const poster: S = { ...initial, sent: true, tick: "read", reply: true };
 
-const MINE = "I'm in, I'll bring coffee"
+const MINE = "I'm in, I'll bring coffee";
 // Where the touch rests between taps, in stage pixels (below the composer)
-const REST = { x: 300, y: 470 }
+const REST = { x: 300, y: 470 };
 
 async function script(a: Act<S>) {
-  await a.wait(900)
-  a.mark('type')
-  await a.type('draft', MINE, { interval: 70 })
-  await a.wait(250)
-  a.mark('send')
-  await a.click({ at: 'send', x: 0.5, y: 0.5 })
-  await a.set({ sent: true, draft: '' })
-  await a.wait(650)
-  await a.set({ tick: 'sent' })
-  await a.wait(1000)
-  a.mark('read')
-  await a.set({ tick: 'read' })
-  await a.wait(1500)
-  a.mark('reply')
-  await a.set({ reply: true })
-  await a.wait(3000)
-  a.mark('done')
+  await a.wait(900);
+  a.mark("type");
+  await a.type("draft", MINE, { interval: 70 });
+  await a.wait(250);
+  a.mark("send");
+  await a.click({ at: "send", x: 0.5, y: 0.5 });
+  await a.set({ sent: true, draft: "" });
+  await a.wait(650);
+  await a.set({ tick: "sent" });
+  await a.wait(1000);
+  a.mark("read");
+  await a.set({ tick: "read" });
+  await a.wait(1500);
+  a.mark("reply");
+  await a.set({ reply: true });
+  await a.wait(3000);
+  a.mark("done");
 }
 
 /** Telegram's ticks: a clock while sending, one tick sent, two read. */
 function Ticks({ state }: { state: Tick }) {
   return (
-    <svg className="tg-ticks" data-state={state} viewBox="0 0 17 11" width="17" height="11" aria-hidden>
+    <svg
+      className="tg-ticks"
+      data-state={state}
+      viewBox="0 0 17 11"
+      width="17"
+      height="11"
+      aria-hidden
+    >
       <g className="tg-ticks__clock">
         <circle cx="6" cy="5.5" r="4.6" />
         <path d="M6 3v2.7l1.7 1" />
@@ -62,7 +69,7 @@ function Ticks({ state }: { state: Tick }) {
       <path className="tg-ticks__one" pathLength={1} d="M1.2 5.9 4.1 8.8 10.4 1.6" />
       <path className="tg-ticks__two" pathLength={1} d="M7.4 8.1 8.1 8.8 14.4 1.6" />
     </svg>
-  )
+  );
 }
 
 function Meta({ time, tick }: { time: string; tick?: Tick }) {
@@ -71,20 +78,35 @@ function Meta({ time, tick }: { time: string; tick?: Tick }) {
       {time}
       {tick && <Ticks state={tick} />}
     </span>
-  )
+  );
 }
 
 /** Local CC0 photograph shared with the Wikipedia study. */
 function Trail() {
-  return <img className="tg-photo__img" src={new URL('../wikipedia/kawaguchiko.jpg', import.meta.url).href} width={252} height={168} alt="Mount Fuji above Lake Kawaguchi" />
+  return (
+    <img
+      className="tg-photo__img"
+      src={new URL("../wikipedia/kawaguchiko.jpg", import.meta.url).href}
+      width={252}
+      height={168}
+      alt="Mount Fuji above Lake Kawaguchi"
+    />
+  );
 }
 
 function Back() {
   return (
     <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden>
-      <path d="M14.5 5 7.5 12l7 7" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M14.5 5 7.5 12l7 7"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
-  )
+  );
 }
 
 function Clip() {
@@ -99,16 +121,31 @@ function Clip() {
         strokeLinejoin="round"
       />
     </svg>
-  )
+  );
 }
 
 function Mic() {
   return (
     <svg viewBox="0 0 24 24" width="25" height="25" aria-hidden>
-      <rect x="8.6" y="2.6" width="6.8" height="12" rx="3.4" fill="none" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M5.4 11a6.6 6.6 0 0 0 13.2 0M12 17.6v3.6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <rect
+        x="8.6"
+        y="2.6"
+        width="6.8"
+        height="12"
+        rx="3.4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
+      <path
+        d="M5.4 11a6.6 6.6 0 0 0 13.2 0M12 17.6v3.6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
     </svg>
-  )
+  );
 }
 
 function Sticker() {
@@ -124,20 +161,36 @@ function Sticker() {
       <circle cx="9" cy="10.4" r="1.15" fill="currentColor" />
       <circle cx="14" cy="10.4" r="1.15" fill="currentColor" />
     </svg>
-  )
+  );
 }
 
 function Send() {
   return (
     <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>
-      <path d="M12 19V5.6M6 11.2 12 5.2l6 6" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M12 19V5.6M6 11.2 12 5.2l6 6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
-  )
+  );
 }
 
 export default function Telegram() {
   return (
-    <Stage<S> width={400} height={520} initial={initial} poster={poster} script={script} play="once" cursor={{ at: REST, style: 'touch' }} className="tg">
+    <Stage<S>
+      width={400}
+      height={520}
+      initial={initial}
+      poster={poster}
+      script={script}
+      play="once"
+      cursor={{ at: REST, style: "touch" }}
+      className="tg"
+    >
       {(s) => {
         return (
           <Phone width={340} className="tg-phone">
@@ -150,7 +203,12 @@ export default function Telegram() {
                 <span className="tg-name">Nika</span>
                 <span className="tg-status">online</span>
               </span>
-              <Avatar name="Nika" size={48} className="tg-avatar" style={{ background: 'linear-gradient(#f5a26b, #e9655e)' }} />
+              <Avatar
+                name="Nika"
+                size={48}
+                className="tg-avatar"
+                style={{ background: "linear-gradient(#f5a26b, #e9655e)" }}
+              />
             </header>
 
             <Thread className="tg-thread">
@@ -203,7 +261,7 @@ export default function Telegram() {
                   {s.draft}
                   {s.draft && <i className="tg-caret" />}
                 </span>
-                <span className="tg-field__ph" data-hide={s.draft ? '' : undefined}>
+                <span className="tg-field__ph" data-hide={s.draft ? "" : undefined}>
                   Message
                 </span>
                 <span className="tg-field__icon">
@@ -211,17 +269,17 @@ export default function Telegram() {
                 </span>
               </span>
               <span className="tg-action">
-                <span className="tg-glass tg-round tg-mic" data-off={s.draft ? '' : undefined}>
+                <span className="tg-glass tg-round tg-mic" data-off={s.draft ? "" : undefined}>
                   <Mic />
                 </span>
-                <span className="tg-send" data-on={s.draft ? '' : undefined} data-target="send">
+                <span className="tg-send" data-on={s.draft ? "" : undefined} data-target="send">
                   <Send />
                 </span>
               </span>
             </div>
           </Phone>
-        )
+        );
       }}
     </Stage>
-  )
+  );
 }

@@ -11,10 +11,12 @@
   /* Off the right by a little: the columns end inside the stage, so only
      the window's empty margin is cut */
   width: 744px;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), 0 0 0 1px rgb(255 255 255 / 0.06);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.06),
+    0 0 0 1px rgb(255 255 255 / 0.06);
 }
 
-.dh .ss-stage[data-layout='compact'] .dh-win {
+.dh .ss-stage[data-layout="compact"] .dh-win {
   left: 16px;
   width: 326px;
 }
@@ -45,7 +47,7 @@
   background: var(--ss-surface);
 }
 
-.dh .ss-stage[data-layout='compact'] .dh-body {
+.dh .ss-stage[data-layout="compact"] .dh-body {
   padding: 18px 16px 0;
 }
 
@@ -85,7 +87,7 @@
   white-space: nowrap;
 }
 
-.dh .ss-stage[data-layout='compact'] .dh-row {
+.dh .ss-stage[data-layout="compact"] .dh-row {
   grid-template-columns: minmax(0, 1fr) 84px 28px;
   gap: 10px;
 }
@@ -131,7 +133,7 @@
   color: var(--ss-text-faint);
 }
 
-.dh .ss-stage[data-layout='compact'] .dh-when {
+.dh .ss-stage[data-layout="compact"] .dh-when {
   display: none;
 }
 
@@ -154,14 +156,13 @@
   opacity: 1;
 }
 
-.dh .ss-stage[data-layout='compact'] .dh-current {
+.dh .ss-stage[data-layout="compact"] .dh-current {
   display: none;
 }
 
 .dh-badge {
   justify-self: start;
 }
-
 
 .dh-badge .ss-spinner {
   flex-shrink: 0;

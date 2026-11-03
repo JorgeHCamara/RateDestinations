@@ -48,7 +48,9 @@
   }
 
   .hd-sidebar-icon {
-    transition: box-shadow 0.15s ease, background 0.15s ease;
+    transition:
+      box-shadow 0.15s ease,
+      background 0.15s ease;
   }
 
   .hd-sidebar-icon[data-selected="true"] {
@@ -146,7 +148,9 @@
     overflow: hidden;
     background: #1a1a1a;
     color: #dadadc;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), 0 4px 16px rgba(0, 0, 0, 0.15);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.25),
+      0 4px 16px rgba(0, 0, 0, 0.15);
     transition:
       width 0.4s cubic-bezier(0.19, 1, 0.22, 1),
       border-radius 0.4s cubic-bezier(0.19, 1, 0.22, 1),
@@ -183,13 +187,17 @@
     height: 36px;
     opacity: 1;
     visibility: visible;
-    transition: opacity 0.16s ease 0.22s, visibility 0s;
+    transition:
+      opacity 0.16s ease 0.22s,
+      visibility 0s;
   }
 
   .hd-toolbar[data-open="true"] .hd-toolbar-icon {
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.12s ease, visibility 0s 0.12s;
+    transition:
+      opacity 0.12s ease,
+      visibility 0s 0.12s;
   }
 
   .hd-toolbar-buttons {
@@ -202,14 +210,18 @@
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.12s ease, visibility 0s 0.12s;
+    transition:
+      opacity 0.12s ease,
+      visibility 0s 0.12s;
   }
 
   .hd-toolbar[data-open="true"] .hd-toolbar-buttons {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
-    transition: opacity 0.16s ease 0.22s, visibility 0s;
+    transition:
+      opacity 0.16s ease 0.22s,
+      visibility 0s;
   }
 
   .hd-toolbar-btn {
@@ -219,7 +231,9 @@
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    transition: color 0.2s ease, background-color 0.2s ease;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
   }
 
   .hd-toolbar-btn[data-hover] {
@@ -246,7 +260,9 @@
     border-radius: 8px;
     opacity: 0;
     transform: scale(0.98);
-    transition: opacity 0.12s ease-out, transform 0.12s ease-out;
+    transition:
+      opacity 0.12s ease-out,
+      transform 0.12s ease-out;
     pointer-events: none;
   }
 
@@ -307,7 +323,9 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.3);
-    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .hd-marker[data-show="true"] {
@@ -335,10 +353,14 @@
     padding: 10px 12px 12px;
     border-radius: 14px;
     background: #1a1a1a;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.08);
     opacity: 0;
     transform: translate(-50%, 0) scale(0.95) translateY(4px);
-    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .hd-popup[data-show="true"] {
@@ -384,8 +406,12 @@
     color: #fff;
   }
 
-  .hd-popup[data-tone="green"] .submit { background: #22c55e; }
-  .hd-popup[data-tone="orange"] .submit { background: #f59e0b; }
+  .hd-popup[data-tone="green"] .submit {
+    background: #22c55e;
+  }
+  .hd-popup[data-tone="orange"] .submit {
+    background: #f59e0b;
+  }
 
   /* ---- Terminal ---- */
 
@@ -403,7 +429,9 @@
     opacity: 0;
     transform: translateY(8px) scale(0.98);
     will-change: transform;
-    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .hd-terminal[data-show="true"] {
@@ -426,18 +454,49 @@
   }
 
   /* A narrower dashboard, with two metrics and the same readable controls. */
-  & .ss-stage[data-layout='compact'] { --gutter: 16px; }
-  & .ss-stage[data-layout='compact'] .hd-browser { width: 326px; height: 400px; }
-  & .ss-stage[data-layout='compact'] .hd-main { padding: 12px; }
-  & .ss-stage[data-layout='compact'] .hd-header-left { gap: 6px; }
-  & .ss-stage[data-layout='compact'] .hd-logo { display: none; }
-  & .ss-stage[data-layout='compact'] .hd-metrics { gap: 8px; }
-  & .ss-stage[data-layout='compact'] .hd-card:nth-child(3) { display: none; }
-  & .ss-stage[data-layout='compact'] .hd-row { gap: 14px; padding-inline: 12px; }
-  & .ss-stage[data-layout='compact'] .hd-terminal { left: 32px; right: 16px; width: 310px; top: 72px; height: 296px; }
-  & .ss-stage[data-layout='compact'] .hd-toolbar { right: 12px; bottom: 48px; }
-  .hd-popup-btn[data-hover] { filter: brightness(1.15); }
-  .hd-popup-btn[data-pressed] { filter: brightness(0.9); }
+  & .ss-stage[data-layout="compact"] {
+    --gutter: 16px;
+  }
+  & .ss-stage[data-layout="compact"] .hd-browser {
+    width: 326px;
+    height: 400px;
+  }
+  & .ss-stage[data-layout="compact"] .hd-main {
+    padding: 12px;
+  }
+  & .ss-stage[data-layout="compact"] .hd-header-left {
+    gap: 6px;
+  }
+  & .ss-stage[data-layout="compact"] .hd-logo {
+    display: none;
+  }
+  & .ss-stage[data-layout="compact"] .hd-metrics {
+    gap: 8px;
+  }
+  & .ss-stage[data-layout="compact"] .hd-card:nth-child(3) {
+    display: none;
+  }
+  & .ss-stage[data-layout="compact"] .hd-row {
+    gap: 14px;
+    padding-inline: 12px;
+  }
+  & .ss-stage[data-layout="compact"] .hd-terminal {
+    left: 32px;
+    right: 16px;
+    width: 310px;
+    top: 72px;
+    height: 296px;
+  }
+  & .ss-stage[data-layout="compact"] .hd-toolbar {
+    right: 12px;
+    bottom: 48px;
+  }
+  .hd-popup-btn[data-hover] {
+    filter: brightness(1.15);
+  }
+  .hd-popup-btn[data-pressed] {
+    filter: brightness(0.9);
+  }
 
   .hd-cell {
     font-size: 11px;

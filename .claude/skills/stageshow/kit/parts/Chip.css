@@ -16,14 +16,20 @@
     opacity: 0;
     /* Closing, it fades first and the gap closes behind it, so the narrowing
        edge never slices a visible chip */
-    transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) 0.1s, margin 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) 0.1s, opacity 0.14s ease;
+    transition:
+      width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) 0.1s,
+      margin 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) 0.1s,
+      opacity 0.14s ease;
   }
 
   /* Opening, it shows once the slot is nearly its width, so the edge never
      slices a visible chip */
   .ss-chip-slot[data-show] {
     opacity: 1;
-    transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), margin 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.22s ease 0.16s;
+    transition:
+      width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+      margin 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+      opacity 0.22s ease 0.16s;
   }
 
   .ss-chip-slot > .ss-chip {

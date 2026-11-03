@@ -11,5 +11,5 @@ in the Stage; the shape does not keep a second selected-style state. Reduced
 motion settles directly. The compact layout uses a 318px control in a 358px
 stage, preserving 14px labels.
 
-Use this when a cursor changes *identity*. Ordinary pointer/hand/ibeam changes
+Use this when a cursor changes _identity_. Ordinary pointer/hand/ibeam changes
 should use the kit's cursor kinds.

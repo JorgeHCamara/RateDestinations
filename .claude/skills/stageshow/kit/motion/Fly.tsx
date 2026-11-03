@@ -1,21 +1,21 @@
-import { useEffect, useRef, type ReactNode } from 'react'
-import { useReducedMotion } from '../reduced-motion'
-import type { Rect } from '../measure'
-import { warn } from '../util'
-import './Fly.css'
+import { useEffect, useRef, type ReactNode } from "react";
+import { useReducedMotion } from "../reduced-motion";
+import type { Rect } from "../measure";
+import { warn } from "../util";
+import "./Fly.css";
 
 export interface FlyProps {
   /** Where it starts and where it lands, in stage pixels (from `rect()`): the source element's own rect and the landing element's own rect, never a slot or wrapper around them. */
-  from: Rect
-  to: Rect
+  from: Rect;
+  to: Rect;
   /** False waits at `from`, hidden; true shows it there and flies to `to`. Hide the source in the same set that turns it true. */
-  go: boolean
+  go: boolean;
   /** Shown while it waits at `from`: the thing being carried (under the cursor, before it flies), or a chip budding off a value, which grows out of it (it scales up from the source as it fades in) rather than popping in whole. Off by default, so it never doubles the element it leaves. */
-  held?: boolean
+  held?: boolean;
   /** ms for the flight. Default 750. */
-  duration?: number
-  children: ReactNode
-  className?: string
+  duration?: number;
+  children: ReactNode;
+  className?: string;
 }
 
 /**
@@ -32,38 +32,48 @@ export interface FlyProps {
  * different shape, or a `to` taken from a slot rather than the element that
  * lands, changes size in flight and snaps on the handoff (film.mjs: `fly size`).
  */
-export function Fly({ from: liveFrom, to: liveTo, go, held: shownAtRest = false, duration = 750, children, className }: FlyProps) {
-  const reduced = useReducedMotion()
+export function Fly({
+  from: liveFrom,
+  to: liveTo,
+  go,
+  held: shownAtRest = false,
+  duration = 750,
+  children,
+  className,
+}: FlyProps) {
+  const reduced = useReducedMotion();
   // Both ends are fixed at take-off. Measured live, they move under the flight
   // (a closing menu scales the start away) and every change restarts the
   // transition: a creep near the end, then a jump when the real one appears.
-  const held = useRef<{ from: Rect; to: Rect } | null>(null)
-  if (!go) held.current = null
-  else if (!held.current) held.current = { from: liveFrom, to: liveTo }
-  const { from: start, to } = held.current ?? { from: liveFrom, to: liveTo }
+  const held = useRef<{ from: Rect; to: Rect } | null>(null);
+  if (!go) held.current = null;
+  else if (!held.current) held.current = { from: liveFrom, to: liveTo };
+  const { from: start, to } = held.current ?? { from: liveFrom, to: liveTo };
   // An empty start (nothing measured yet) takes the landing size, so the
   // flyer never grows from a point
-  const from = start.width ? start : { ...start, width: to.width || 1, height: to.height || 1 }
-  const at = go ? to : from
-  const ms = reduced ? 0 : duration
-  const sx = at.width / (from.width || 1)
+  const from = start.width ? start : { ...start, width: to.width || 1, height: to.height || 1 };
+  const at = go ? to : from;
+  const ms = reduced ? 0 : duration;
+  const sx = at.width / (from.width || 1);
   // A child that doesn't fill the start box takes off or lands at the wrong size
-  const body = useRef<HTMLDivElement>(null)
+  const body = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const el = body.current?.firstElementChild as HTMLElement | null
-    if (!el || !start.width) return
+    const el = body.current?.firstElementChild as HTMLElement | null;
+    if (!el || !start.width) return;
     if (Math.abs(el.offsetWidth - from.width) > 1 || Math.abs(el.offsetHeight - from.height) > 1)
-      warn(`Fly: the child is ${el.offsetWidth}×${el.offsetHeight} but takes off from ${Math.round(from.width)}×${Math.round(from.height)}. Draw it at the start size, and pass the landing element's own rect as \`to\`.`)
-  }, [from.width, from.height, start.width])
+      warn(
+        `Fly: the child is ${el.offsetWidth}×${el.offsetHeight} but takes off from ${Math.round(from.width)}×${Math.round(from.height)}. Draw it at the start size, and pass the landing element's own rect as \`to\`.`,
+      );
+  }, [from.width, from.height, start.width]);
   return (
     // Horizontal and vertical travel on slightly different curves make a gentle
     // arc. Far apart curves (a fast-out x) read as a skid sideways, then a drop.
     <div
-      className={`ss-fly${className ? ` ${className}` : ''}`}
+      className={`ss-fly${className ? ` ${className}` : ""}`}
       data-go={go || undefined}
       data-held={shownAtRest || undefined}
       style={{
-        visibility: go || shownAtRest ? undefined : 'hidden',
+        visibility: go || shownAtRest ? undefined : "hidden",
         left: from.x,
         top: from.y,
         width: from.width,
@@ -78,14 +88,18 @@ export function Fly({ from: liveFrom, to: liveTo, go, held: shownAtRest = false,
       <div
         style={{
           transform: `translateY(${at.y - from.y}px) scale(${sx})`,
-          transformOrigin: '0 0',
+          transformOrigin: "0 0",
           transition: `transform ${ms}ms cubic-bezier(0.3, 0.6, 0.15, 1)`,
         }}
       >
-        <div ref={body} className="ss-fly__lift" style={go ? { animationDuration: `${ms}ms` } : undefined}>
+        <div
+          ref={body}
+          className="ss-fly__lift"
+          style={go ? { animationDuration: `${ms}ms` } : undefined}
+        >
           {children}
         </div>
       </div>
     </div>
-  )
+  );
 }

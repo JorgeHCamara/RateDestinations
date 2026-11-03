@@ -20,7 +20,9 @@
   flex: 1;
 }
 
-.pp-spacer { flex: 1; }
+.pp-spacer {
+  flex: 1;
+}
 
 /* ---- Tabs ---- */
 
@@ -34,7 +36,10 @@
   background: var(--ss-chrome);
 }
 
-.pp-window[data-layout="compact"] .pp-tabs { gap: 14px; padding: 0 12px; }
+.pp-window[data-layout="compact"] .pp-tabs {
+  gap: 14px;
+  padding: 0 12px;
+}
 
 .pp-tab {
   position: relative;
@@ -70,7 +75,9 @@
   background: var(--ss-accent);
 }
 
-.pp-share-bar { background: rgba(255, 255, 255, 0.6) !important; }
+.pp-share-bar {
+  background: rgba(255, 255, 255, 0.6) !important;
+}
 
 /* ---- Ribbon ---- */
 
@@ -86,7 +93,10 @@
   color: var(--ss-icon);
 }
 
-.pp-window[data-layout="compact"] .pp-ribbon { gap: 10px; padding: 0 12px; }
+.pp-window[data-layout="compact"] .pp-ribbon {
+  gap: 10px;
+  padding: 0 12px;
+}
 
 .pp-big {
   display: flex;
@@ -115,7 +125,9 @@
   height: 20px;
 }
 
-.pp-icons { gap: 11px; }
+.pp-icons {
+  gap: 11px;
+}
 
 .pp-field {
   display: inline-flex;
@@ -143,7 +155,9 @@
   background: var(--ss-ink-2);
 }
 
-.pp-designer-icon { color: var(--ss-accent); }
+.pp-designer-icon {
+  color: var(--ss-accent);
+}
 
 .pp-designer-label {
   font-size: 10.5px;
@@ -177,7 +191,10 @@
   padding-left: 10px;
 }
 
-.pp-window[data-layout="compact"] .pp-thumb { gap: 5px; padding-left: 6px; }
+.pp-window[data-layout="compact"] .pp-thumb {
+  gap: 5px;
+  padding-left: 6px;
+}
 
 .pp-num {
   width: 10px;
@@ -187,16 +204,23 @@
   text-align: right;
 }
 
-.pp-window[data-layout="compact"] .pp-num { width: 7px; font-size: 9px; }
+.pp-window[data-layout="compact"] .pp-num {
+  width: 7px;
+  font-size: 9px;
+}
 
 .pp-thumb-box {
   border-radius: 3px;
-  box-shadow: 0 0 0 1px var(--ss-line), 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 0 0 1px var(--ss-line),
+    0 1px 2px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.18s ease;
 }
 
 .pp-thumb-box[data-selected] {
-  box-shadow: 0 0 0 2px var(--ss-accent), 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 0 0 2px var(--ss-accent),
+    0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .pp-mini {
@@ -228,7 +252,9 @@
   height: 360px;
   transform-origin: 0 0;
   transition: transform 0.6s cubic-bezier(0.3, 0.75, 0.1, 1);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 4px 14px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
 /* A slide swap: the old one fades out, the new one fades in with a small rise. */
@@ -248,7 +274,9 @@
 }
 
 @keyframes pp-rise {
-  from { transform: translateY(8px); }
+  from {
+    transform: translateY(8px);
+  }
 }
 
 .pp-notes {
@@ -262,7 +290,10 @@
   border-top: 1px solid var(--ss-line);
 }
 
-.pp-window[data-layout="compact"] .pp-notes { height: 56px; padding: 12px 14px 0; }
+.pp-window[data-layout="compact"] .pp-notes {
+  height: 56px;
+  padding: 12px 14px 0;
+}
 
 .pp-status {
   display: flex;
@@ -291,9 +322,14 @@
   transition: transform 0.6s cubic-bezier(0.3, 0.75, 0.1, 1);
 }
 
-.pp-pane[data-open] { transform: none; }
+.pp-pane[data-open] {
+  transform: none;
+}
 
-.pp-window[data-layout="compact"] .pp-pane { gap: 10px; padding: 0 12px; }
+.pp-window[data-layout="compact"] .pp-pane {
+  gap: 10px;
+  padding: 0 12px;
+}
 
 .pp-pane-head {
   display: flex;
@@ -303,7 +339,9 @@
   flex-shrink: 0;
 }
 
-.pp-window[data-layout="compact"] .pp-pane-head { height: 34px; }
+.pp-window[data-layout="compact"] .pp-pane-head {
+  height: 34px;
+}
 
 .pp-pane-title {
   font-size: 13px;
@@ -311,7 +349,9 @@
   color: var(--ss-text-strong);
 }
 
-.pp-window[data-layout="compact"] .pp-pane-title { font-size: 12px; }
+.pp-window[data-layout="compact"] .pp-pane-title {
+  font-size: 12px;
+}
 
 .pp-close {
   display: inline-flex;
@@ -325,7 +365,9 @@
   transition: background 0.15s ease;
 }
 
-.pp-close[data-hover] { background: var(--ss-ink-2); }
+.pp-close[data-hover] {
+  background: var(--ss-ink-2);
+}
 
 .pp-idea {
   flex-shrink: 0;
@@ -339,13 +381,22 @@
     box-shadow 0.15s ease;
 }
 
-.pp-idea .pp-mini { border-radius: 4px; }
+.pp-idea .pp-mini {
+  border-radius: 4px;
+}
 
-.pp-idea[data-show] { opacity: 1; transform: none; }
+.pp-idea[data-show] {
+  opacity: 1;
+  transform: none;
+}
 
-.pp-idea[data-hover] { box-shadow: 0 0 0 2px var(--ss-ink-5); }
+.pp-idea[data-hover] {
+  box-shadow: 0 0 0 2px var(--ss-ink-5);
+}
 
-.pp-idea[data-picked] { box-shadow: 0 0 0 2px var(--ss-accent); }
+.pp-idea[data-picked] {
+  box-shadow: 0 0 0 2px var(--ss-accent);
+}
 
 /* ---- The slide (640 × 360) ---- */
 
@@ -370,12 +421,18 @@
   transition: transform var(--move);
 }
 
-.pp-panel[data-show] { transform: none; }
+.pp-panel[data-show] {
+  transform: none;
+}
 
 .pp-photo {
   position: absolute;
   overflow: hidden;
-  transition: left var(--move), top var(--move), width var(--move), height var(--move);
+  transition:
+    left var(--move),
+    top var(--move),
+    width var(--move),
+    height var(--move);
 }
 
 .pp-photo-svg {
@@ -419,12 +476,16 @@
   letter-spacing: -0.01em;
   white-space: nowrap;
   color: #1f1f1f;
-  transition: transform var(--move), color 0.25s ease 0.15s;
+  transition:
+    transform var(--move),
+    color 0.25s ease 0.15s;
 }
 
 .pp-slide[data-light] .pp-title {
   color: #fff;
-  transition: transform var(--move), color 0.25s ease 0.55s;
+  transition:
+    transform var(--move),
+    color 0.25s ease 0.55s;
 }
 
 .pp-bullets {
@@ -458,8 +519,14 @@
   transition: background 0.25s ease 0.15s;
 }
 
-.pp-slide[data-light] .pp-dot { background: #e8834f; transition-delay: 0.6s; }
-.pp-slide[data-light] .pp-line { background: rgba(255, 255, 255, 0.32); transition-delay: 0.6s; }
+.pp-slide[data-light] .pp-dot {
+  background: #e8834f;
+  transition-delay: 0.6s;
+}
+.pp-slide[data-light] .pp-line {
+  background: rgba(255, 255, 255, 0.32);
+  transition-delay: 0.6s;
+}
 
 /* Slide 1: the title slide */
 .pp-slide[data-n="1"] {
@@ -510,5 +577,9 @@
    row and ribbon start that far in, so they begin in frame with Home, never
    a word sliced at the stage edge. Paste goes to make room. */
 .pp-window[data-layout="compact"] .pp-tabs,
-.pp-window[data-layout="compact"] .pp-ribbon { padding-left: 94px; }
-.pp-window[data-layout="compact"] .pp-ribbon > :first-child { display: none; }
+.pp-window[data-layout="compact"] .pp-ribbon {
+  padding-left: 94px;
+}
+.pp-window[data-layout="compact"] .pp-ribbon > :first-child {
+  display: none;
+}

@@ -18,12 +18,12 @@ import { BrandMark } from './kit'
 
 A real company named in the scene (Chase, Wells Fargo, Stripe, Slack) carries its real mark from `kit/brands/`, never an initial in a brand-colored tile: that is an invented logo beside a real name, and film flags `invented mark`. The kit carries the payment networks, the common product marks and seven banks (Chase, Wells Fargo, Bank of America, Barclays, HSBC, Monzo, Revolut, in `kit/brands/`, category Banks). If the kit has no mark for the company, name one it has, or a fictional one with the neutral initial tile; a real name and a fake mark together are the one thing never shipped.
 
-| Group | `brand` values |
-|---|---|
-| Payments | `visa`, `mastercard`, `amex`, `discover`, `paypal`, `stripe` |
-| Crypto | `bitcoin`, `ethereum`, `solana`, `usdc`, `tether` |
-| Banks | `chase`, `wellsfargo`, `bankofamerica`, `barclays`, `hsbc`, `monzo`, `revolut` |
-| Apps | `notion`, `gmail`, `google-calendar`, `google-docs`, `1password`, `figma`, `slack`, `github`, `linear`, `dropbox`, `google-drive`, `google-sheets`, `google-slides`, `google-meet`, `zoom`, `vercel`, `shopify` |
+| Group    | `brand` values                                                                                                                                                                                                  |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Payments | `visa`, `mastercard`, `amex`, `discover`, `paypal`, `stripe`                                                                                                                                                    |
+| Crypto   | `bitcoin`, `ethereum`, `solana`, `usdc`, `tether`                                                                                                                                                               |
+| Banks    | `chase`, `wellsfargo`, `bankofamerica`, `barclays`, `hsbc`, `monzo`, `revolut`                                                                                                                                  |
+| Apps     | `notion`, `gmail`, `google-calendar`, `google-docs`, `1password`, `figma`, `slack`, `github`, `linear`, `dropbox`, `google-drive`, `google-sheets`, `google-slides`, `google-meet`, `zoom`, `vercel`, `shopify` |
 
 Use only the integrations or payment methods the scene needs. A small row explains a relationship; it does not fill spare space with logos. Keep equal row tracks and align the marks by eye: their different silhouettes are no excuse for ragged labels or uneven gaps.
 

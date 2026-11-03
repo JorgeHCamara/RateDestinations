@@ -17,7 +17,9 @@
     stroke-width: 1.5;
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
-    transition: stroke-dashoffset 1s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.25s ease;
+    transition:
+      stroke-dashoffset 1s cubic-bezier(0.65, 0, 0.35, 1),
+      opacity 0.25s ease;
   }
 
   .ss-connector[data-dashed] .ss-connector__line {
@@ -31,7 +33,9 @@
     transition: stroke-dashoffset 1s cubic-bezier(0.65, 0, 0.35, 1);
   }
 
-  .ss-connector[data-show] .ss-connector__reveal { stroke-dashoffset: 0; }
+  .ss-connector[data-show] .ss-connector__reveal {
+    stroke-dashoffset: 0;
+  }
   .ss-connector:not([data-show]) .ss-connector__reveal {
     transition: stroke-dashoffset 0s 0.25s;
   }
@@ -46,19 +50,23 @@
 
   .ss-connector:not([data-show]) .ss-connector__line {
     opacity: 0;
-    transition: opacity 0.25s ease, stroke-dashoffset 0s 0.25s;
+    transition:
+      opacity 0.25s ease,
+      stroke-dashoffset 0s 0.25s;
   }
 
   .ss-connector__dot {
     fill: var(--ss-accent);
     stroke: #fff;
     stroke-width: 2;
-    filter: drop-shadow(0 1px 1px rgb(20 35 55 / .16));
+    filter: drop-shadow(0 1px 1px rgb(20 35 55 / 0.16));
     opacity: 0;
     transform-box: fill-box;
     transform-origin: center;
     transform: scale(0.4);
-    transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      opacity 0.2s ease,
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .ss-connector[data-arrived] .ss-connector__dot {
@@ -99,7 +107,9 @@
     padding: 2px 7px;
     border-radius: 999px;
     background: var(--ss-raised);
-    box-shadow: 0 0 0 1px var(--ss-line), var(--ss-shadow-card);
+    box-shadow:
+      0 0 0 1px var(--ss-line),
+      var(--ss-shadow-card);
     font-size: 10.5px;
     font-weight: 500;
     line-height: 14px;

@@ -3,18 +3,22 @@
 // to fix it rather than failing on the import. Chrome is the installed one
 // (CHROME_PATH overrides), found on macOS, Windows and Linux alike.
 export async function launch() {
-  let chromium
+  let chromium;
   try {
-    ;({ chromium } = await import('playwright-core'))
+    ({ chromium } = await import("playwright-core"));
   } catch {
-    console.error('Filming needs playwright-core: run `npm i -D playwright-core` (or pnpm/yarn) in this project, then try again.')
-    process.exit(2)
+    console.error(
+      "Filming needs playwright-core: run `npm i -D playwright-core` (or pnpm/yarn) in this project, then try again.",
+    );
+    process.exit(2);
   }
-  const path = process.env.CHROME_PATH
+  const path = process.env.CHROME_PATH;
   try {
-    return await chromium.launch(path ? { executablePath: path } : { channel: 'chrome' })
+    return await chromium.launch(path ? { executablePath: path } : { channel: "chrome" });
   } catch {
-    console.error(`Couldn't start Chrome${path ? ` at ${path}` : ''}. Install Google Chrome, or set CHROME_PATH to a Chrome or Chromium binary.`)
-    process.exit(2)
+    console.error(
+      `Couldn't start Chrome${path ? ` at ${path}` : ""}. Install Google Chrome, or set CHROME_PATH to a Chrome or Chromium binary.`,
+    );
+    process.exit(2);
   }
 }
