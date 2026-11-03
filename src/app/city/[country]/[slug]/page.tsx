@@ -187,6 +187,7 @@ async function CityRatingPanel({ city, returnTo }: { city: City; returnTo: strin
       existing={existing}
       existingRole={existingRole}
       signedIn={Boolean(user)}
+      hasName={Boolean(user?.name)}
       returnTo={returnTo}
     />
   );

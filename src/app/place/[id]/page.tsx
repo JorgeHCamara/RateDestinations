@@ -163,6 +163,9 @@ async function PlaceDetail({ params }: { params: Props["params"] }) {
                         })}
                       </time>
                     </div>
+                    <p className="text-muted-foreground mt-1 text-xs">
+                      {reviewerLine(r.rater_role, r.reviewer_ratings, r.member_since)}
+                    </p>
                     {r.tags.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-1">
                         {r.tags.map((t) => (
@@ -252,7 +255,13 @@ async function RatingPanel({ placeId }: { placeId: number }) {
   const [user, tags] = await Promise.all([getSessionUser(), getRatingTags()]);
   const existing = user ? await getMyPlaceRating(user.id, placeId) : null;
   return (
-    <PlaceRatingForm placeId={placeId} tags={tags} existing={existing} signedIn={Boolean(user)} />
+    <PlaceRatingForm
+      placeId={placeId}
+      tags={tags}
+      existing={existing}
+      signedIn={Boolean(user)}
+      hasName={Boolean(user?.name)}
+    />
   );
 }
 
@@ -308,4 +317,23 @@ function Facts({ place }: { place: Place }) {
       ))}
     </dl>
   );
+}
+
+/**
+ * Who wrote a review, so readers can judge it: "Visitor · 14 ratings · member since Nov 2026".
+ * A brand-new account reads "1 rating · member since" this month. Locals have their badge already.
+ */
+function reviewerLine(
+  role: "local" | "visitor" | null,
+  ratings: number,
+  memberSince: string | null,
+): string {
+  const parts: string[] = [];
+  if (role === "visitor") parts.push("Visitor");
+  parts.push(`${ratings} ${ratings === 1 ? "rating" : "ratings"}`);
+  if (memberSince)
+    parts.push(
+      `member since ${new Date(memberSince).toLocaleDateString("en", { month: "short", year: "numeric" })}`,
+    );
+  return parts.join(" · ");
 }

@@ -1,6 +1,6 @@
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
-import { nextFromRedirectTo } from "@/lib/auth-next";
+import { landingAfterSignIn, nextFromRedirectTo } from "@/lib/auth-next";
 import { createSupabaseServerClient, isAuthConfigured } from "@/lib/supabase/server";
 
 const EMAIL_TYPES = new Set<EmailOtpType>([
@@ -24,8 +24,11 @@ export async function GET(request: Request) {
   const next = nextFromRedirectTo(url.searchParams.get("next"), url.origin);
   if (tokenHash && type && EMAIL_TYPES.has(type) && isAuthConfigured()) {
     const supabase = await createSupabaseServerClient();
-    const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
-    if (!error) return NextResponse.redirect(new URL(next, url.origin));
+    const { data, error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
+    if (!error && data.user) {
+      const landing = await landingAfterSignIn(data.user.id, next);
+      return NextResponse.redirect(new URL(landing, url.origin));
+    }
   }
   // Expired, already used, or opened in a different browser than it was asked from: say so.
   const login = new URL("/login", url.origin);

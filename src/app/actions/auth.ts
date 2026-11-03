@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { safeNext } from "@/lib/auth-next";
+import { isThrowawayEmail } from "@/lib/blocked-email";
 import { createSupabaseServerClient, isAuthConfigured } from "@/lib/supabase/server";
 
 function siteUrl() {
@@ -31,6 +32,10 @@ export async function signInWithEmail(
     .trim()
     .toLowerCase();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { error: "Enter a valid email address." };
+  if (isThrowawayEmail(email))
+    return {
+      error: "Temporary email addresses can't be used here. Please use your usual email or Google.",
+    };
   const next = safeNext(formData.get("next"));
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.signInWithOtp({

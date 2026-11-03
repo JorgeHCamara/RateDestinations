@@ -42,10 +42,10 @@ run("watch-out list (database)", () => {
     await client.connect();
     await client.query("begin");
     for (const [i, id] of users.entries())
-      await client.query("insert into auth.users (id, email) values ($1, $2)", [
-        id,
-        `w${i}@example.com`,
-      ]);
+      await client.query(
+        "insert into auth.users (id, email, raw_user_meta_data) values ($1, $2, $3)",
+        [id, `w${i}@example.com`, JSON.stringify({ full_name: `Tester ${i + 1}` })],
+      );
     cityId = (
       await client.query<{ id: number }>("select id from cities order by population desc limit 1")
     ).rows[0].id;

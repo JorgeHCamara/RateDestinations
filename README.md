@@ -49,6 +49,12 @@ Tailwind v4 + shadcn/ui, MapLibre with OpenFreeMap tiles. Deploys on Vercel.
   best-known places and a place with many good ratings ranks above one with a single perfect score. The same formula lives
   in `src/lib/scoring.ts` and the SQL functions (`blend_score`, `place_prior`), with tests
   asserting they agree.
+- **Who rates.** Every account needs a verified email or a Google account, chooses the public
+  name shown on its reviews (never taken from the email; `/welcome` after a first email sign-in,
+  editable on "My ratings"), and can't rate from a throwaway email service (the CC0 list in
+  `src/data/disposable-email-domains.json`, checked at sign-in and, through
+  `blocked_email_domains`, by the database for every rating; synced by the scheduled workflow).
+  Reviews show the reviewer's number of ratings and how long they've been a member.
 - **The bad is a feature.** Travellers rate nine city dimensions (safety and cleanliness weigh
   1.5×) and tag places as dirty, unsafe, a scam, overpriced… Warnings get their own section.
 - **Google Places: do not enable** (`GOOGLE_PLACES_ENABLED`, `src/lib/providers/ratings`). It

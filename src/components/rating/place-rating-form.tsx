@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useActionState, useState } from "react";
 import { ratePlace, type RatingActionState } from "@/app/actions/ratings";
 import { Stars } from "@/components/stars";
@@ -15,14 +16,18 @@ export function PlaceRatingForm({
   tags,
   existing,
   signedIn,
+  hasName = true,
 }: {
   placeId: number;
   tags: RatingTag[];
   existing: MyPlaceRating | null;
   signedIn: boolean;
+  /** Signed in with a public name; without one the form asks for it first. */
+  hasName?: boolean;
 }) {
   const [stars, setStars] = useState(existing?.stars ?? 0);
   const [picked, setPicked] = useState<string[]>(existing?.tags ?? []);
+  const pathname = usePathname();
   const [state, action, pending] = useActionState<RatingActionState, FormData>(ratePlace, {
     ok: false,
   });
@@ -40,6 +45,7 @@ export function PlaceRatingForm({
       </div>
     );
   }
+  if (!hasName) return <NeedsNameCard returnTo={`/place/${placeId}`} />;
 
   function toggle(tag: string) {
     setPicked((p) =>
@@ -91,7 +97,22 @@ export function PlaceRatingForm({
         rows={3}
         placeholder="One or two sentences that would help someone deciding whether to go (optional)"
       />
-      {state.error && <p className="text-bad text-sm">{state.error}</p>}
+      {state.error && (
+        <p className="text-bad text-sm">
+          {state.error}
+          {state.needsName && (
+            <>
+              {" "}
+              <Link
+                href={`/welcome?next=${encodeURIComponent(pathname)}`}
+                className="font-medium underline underline-offset-2"
+              >
+                Choose your name
+              </Link>
+            </>
+          )}
+        </p>
+      )}
       {state.ok && (
         <p className="text-good text-sm">
           Saved. Thank you — your rating is already in the city score.
@@ -101,5 +122,20 @@ export function PlaceRatingForm({
         {pending ? "Saving…" : existing ? "Update rating" : "Submit rating"}
       </Button>
     </form>
+  );
+}
+
+/** Signed in but no public name yet: choose one first, then come back here to rate. */
+export function NeedsNameCard({ returnTo }: { returnTo: string }) {
+  return (
+    <div className="bg-card rounded-xl border p-5 text-sm">
+      <p className="font-medium">One step before rating</p>
+      <p className="text-muted-foreground mb-3">
+        Choose the name shown next to your reviews. A nickname is fine; your email is never shown.
+      </p>
+      <Button asChild size="sm">
+        <Link href={`/welcome?next=${encodeURIComponent(returnTo)}`}>Choose your name</Link>
+      </Button>
+    </div>
   );
 }

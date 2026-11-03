@@ -46,6 +46,12 @@ jobs:
               --backfill "${{ github.event_name == 'workflow_dispatch' && (inputs.top || '300') || '25' }}" \
               --max-minutes 18
           fi
+      # The throwaway-email list the rating trigger checks (migration 0010). Quick when unchanged.
+      - name: Sync blocked email domains
+        continue-on-error: true
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: pnpm tsx scripts/sync-blocked-email-domains.ts
       # Photos for the places each guide shows first, so hovering them is instant. Best-effort:
       # a slow website or Wikidata never fails the run.
       - name: Look up place photos

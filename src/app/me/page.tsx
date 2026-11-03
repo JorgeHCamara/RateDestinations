@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { PublicNameForm } from "@/components/public-name-form";
 import { Stars } from "@/components/stars";
 import { DIMENSION_META, type CityDimension } from "@/lib/dimensions";
 import { getMyRatings } from "@/lib/queries/ratings";
@@ -13,9 +14,21 @@ export default function MePage() {
     <div className="container-page py-10">
       <h1 className="font-display text-3xl font-semibold">My ratings</h1>
       <Suspense fallback={<div className="bg-muted mt-6 h-40 animate-pulse rounded-xl" />}>
+        <PublicName />
         <MyRatings />
       </Suspense>
     </div>
+  );
+}
+
+/** The name shown on this person's reviews, editable here (a Google name can be swapped too). */
+async function PublicName() {
+  const user = await getSessionUser();
+  if (!user) redirect("/login?next=/me");
+  return (
+    <section className="bg-card mt-6 max-w-md rounded-xl border p-5">
+      <PublicNameForm initial={user.name} />
+    </section>
   );
 }
 

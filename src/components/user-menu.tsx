@@ -48,7 +48,15 @@ export function UserMenu({
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel className="truncate">{user.name ?? user.email}</DropdownMenuLabel>
+        {/* The public name; the email only for the person themselves, small, under it */}
+        <DropdownMenuLabel className="max-w-56">
+          <span className="block truncate">{user.name ?? "Your account"}</span>
+          {user.email && (
+            <span className="text-muted-foreground block truncate text-xs font-normal">
+              {user.email}
+            </span>
+          )}
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href="/me">My ratings</Link>
