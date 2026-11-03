@@ -5,6 +5,8 @@ import {
   overtureCategory,
   overtureProminence,
   overtureQuery,
+  overtureRowCategory,
+  OVERTURE_PIPELINE,
   selectOverturePlaces,
   type OvertureRow,
 } from "@/lib/import/overture";
@@ -58,25 +60,51 @@ describe("Overture categories", () => {
 });
 
 describe("Overture selection", () => {
-  it("scores documented places higher and chains lower", () => {
+  it("scores documented places higher and fast-food chains lower", () => {
+    const base = { hierarchy: ["food_and_drink", "restaurant"], source_count: 1 };
     expect(
       overtureProminence({
+        ...base,
         confidence: 1,
         websites: ["a"],
         socials: ["b"],
         phones: ["c"],
         brand: null,
       }),
-    ).toBe(70);
+    ).toBe(65);
+    // Listed by three providers: more likely real and known.
     expect(
       overtureProminence({
+        ...base,
+        source_count: 3,
+        confidence: 1,
+        websites: ["a"],
+        socials: ["b"],
+        phones: ["c"],
+        brand: null,
+      }),
+    ).toBe(75);
+    expect(
+      overtureProminence({
+        hierarchy: ["food_and_drink", "casual_eatery", "fast_food_restaurant"],
         confidence: 1,
         websites: ["a"],
         socials: null,
         phones: null,
         brand: "McDonald's",
       }),
-    ).toBe(40);
+    ).toBe(35);
+    // A sit-down chain people go out to keeps its score.
+    expect(
+      overtureProminence({
+        hierarchy: ["food_and_drink", "restaurant", "bar_and_grill_restaurant"],
+        confidence: 1,
+        websites: ["a"],
+        socials: null,
+        phones: null,
+        brand: "Moxies",
+      }),
+    ).toBe(50);
   });
   it("drops closed, low-confidence and unnamed places and keeps the best per category", () => {
     const rows = [
@@ -105,5 +133,122 @@ describe("Overture selection", () => {
   it("finds the newest release in the bucket listing", async () => {
     const listing = `<ListBucketResult><CommonPrefixes><Prefix>release/2026-09-23.0/</Prefix></CommonPrefixes><CommonPrefixes><Prefix>release/2026-10-21.0/</Prefix></CommonPrefixes><CommonPrefixes><Prefix>release/2026-09-23.1/</Prefix></CommonPrefixes></ListBucketResult>`;
     expect(await latestOvertureRelease(async () => new Response(listing))).toBe("2026-10-21.0");
+  });
+});
+
+describe("Overture filters", () => {
+  const centre = { lat: 43.8361, lng: -79.4983 };
+  it("lists bar-and-grills, gastropubs and bar-named restaurants with bars", () => {
+    expect(
+      overtureRowCategory({
+        name: "Jack Astor's Bar & Grill",
+        hierarchy: ["food_and_drink", "restaurant", "bar_and_grill_restaurant"],
+      }),
+    ).toBe("bar");
+    expect(
+      overtureRowCategory({
+        name: "The Pint",
+        hierarchy: ["food_and_drink", "casual_eatery", "gastropub"],
+      }),
+    ).toBe("bar");
+    expect(
+      overtureRowCategory({
+        name: "Moxies Vaughan Colossus Restaurant & Bar",
+        hierarchy: ["food_and_drink", "restaurant"],
+      }),
+    ).toBe("bar");
+    // Known bar-and-grill chains, by brand or name, even when the name doesn't say "bar".
+    expect(
+      overtureRowCategory({
+        name: "Moxies Vaughan Colossus Restaurant",
+        brand: "Moxies",
+        hierarchy: ["food_and_drink", "restaurant"],
+      }),
+    ).toBe("bar");
+    expect(
+      overtureRowCategory({ name: "Jack Astor's", hierarchy: ["food_and_drink", "restaurant"] }),
+    ).toBe("bar");
+    expect(
+      overtureRowCategory({
+        name: "Joeys Fish Shack",
+        hierarchy: ["food_and_drink", "restaurant"],
+      }),
+    ).toBe("restaurant");
+    expect(
+      overtureRowCategory({ name: "Sushi Bar Ken", hierarchy: ["food_and_drink", "restaurant"] }),
+    ).toBe("restaurant");
+    expect(
+      overtureRowCategory({ name: "Bar-B-Q Shack", hierarchy: ["food_and_drink", "restaurant"] }),
+    ).toBe("restaurant");
+    expect(
+      overtureRowCategory({ name: "Barbecue House", hierarchy: ["food_and_drink", "restaurant"] }),
+    ).toBe("restaurant");
+  });
+  it("drops test and placeholder entries", () => {
+    const out = selectOverturePlaces(
+      [
+        row({ id: "test", name: "Test", hierarchy: ["shopping", "shopping_mall"] }),
+        row({ id: "mall", name: "Vaughan Mills", hierarchy: ["shopping", "shopping_mall"] }),
+      ],
+      centre,
+    );
+    expect(out.map((p) => p.source_id)).toEqual(["mall"]);
+  });
+  it("flags adult venues and keeps them out of the listed places' cap", () => {
+    const rows = [
+      row({
+        id: "strip",
+        name: "Inner Club",
+        hierarchy: [
+          "arts_and_entertainment",
+          "nightlife_venue",
+          "adult_entertainment_venue",
+          "strip_club",
+        ],
+      }),
+      row({
+        id: "named",
+        name: "Zeus Bar show club strip",
+        hierarchy: ["arts_and_entertainment", "nightlife_venue", "dance_club"],
+      }),
+      row({
+        id: "shop",
+        name: "Sex Shop Prazer",
+        hierarchy: ["shopping", "specialty_store", "adult_store"],
+      }),
+      row({
+        id: "club",
+        name: "D-Edge",
+        hierarchy: ["arts_and_entertainment", "nightlife_venue", "dance_club"],
+      }),
+    ];
+    const out = selectOverturePlaces(rows, centre, { perCategory: 1 });
+    const byId = Object.fromEntries(out.map((p) => [p.source_id, p]));
+    expect(byId.club).toMatchObject({ category: "nightlife", adult: false });
+    expect(byId.strip).toMatchObject({ category: "nightlife", adult: true });
+    expect(byId.named).toMatchObject({ category: "nightlife", adult: true });
+    expect(byId.shop).toMatchObject({ category: "shopping", adult: true });
+    expect(byId.club.tags.overture_category).toBe(
+      "arts_and_entertainment>nightlife_venue>dance_club",
+    );
+  });
+  it("rebuilds cities when the selection rules change", () => {
+    expect(OVERTURE_PIPELINE).toMatch(/^p\d+$/);
+  });
+});
+
+describe("Overture chains", () => {
+  it("lowers further locations of the same chain", () => {
+    const hierarchy = ["food_and_drink", "restaurant", "bar_and_grill_restaurant"];
+    const out = selectOverturePlaces(
+      [
+        row({ id: "a", name: "St. Louis Bar & Grill", hierarchy, websites: ["x"], lat: 38.721 }),
+        row({ id: "b", name: "St. Louis Bar & Grill", hierarchy, websites: ["x"], lat: 38.722 }),
+        row({ id: "c", name: "The Local Tap", hierarchy, websites: ["x"], lat: 38.73 }),
+      ],
+      { lat: 38.72, lng: -9.14 },
+    );
+    expect(out.map((p) => p.source_id)).toEqual(["a", "c", "b"]);
+    expect(out[2].prominence).toBe(out[0].prominence - 10);
   });
 });

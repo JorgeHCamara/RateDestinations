@@ -55,7 +55,7 @@ export async function getPlace(placeId: number): Promise<Place | null> {
      join cities c on c.id = p.city_id
      join countries co on co.code = c.country_code
      join place_stats s on s.place_id = p.id
-     where p.id = $1`,
+     where p.id = $1 and not p.adult and not p.hidden`,
     [placeId],
   );
 }
@@ -93,7 +93,7 @@ export async function getNearbyPlaces(placeId: number, limit = 6): Promise<Nearb
      from places p
      join places q on q.city_id = p.city_id and q.id <> p.id
      join place_stats s on s.place_id = q.id
-     where p.id = $1 and st_dwithin(q.location, p.location, 1500)
+     where p.id = $1 and st_dwithin(q.location, p.location, 1500) and not q.adult and not q.hidden
      order by s.blended_score desc, distance_m asc
      limit $2`,
     [placeId, limit],

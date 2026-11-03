@@ -197,7 +197,7 @@ export async function upsertPlaces(cityId: number, places: PlaceInput[]) {
       const batch = places.slice(i, i + BATCH);
       const values: unknown[] = [];
       const tuples = batch.map((p, j) => {
-        const b = j * 16;
+        const b = j * 17;
         values.push(
           cityId,
           p.source,
@@ -215,18 +215,21 @@ export async function upsertPlaces(cityId: number, places: PlaceInput[]) {
           p.wikipedia,
           p.prominence,
           JSON.stringify(p.tags),
+          p.adult ?? false,
         );
-        return `($${b + 1},$${b + 2},$${b + 3},$${b + 4},$${b + 5},$${b + 6},$${b + 7},$${b + 8},$${b + 9},$${b + 10},$${b + 11},$${b + 12},$${b + 13},$${b + 14},$${b + 15},$${b + 16})`;
+        return `(${Array.from({ length: 17 }, (_, k) => `$${b + k + 1}`).join(",")})`;
       });
       await client.query(
         `insert into places (city_id, source, source_id, name, category, subcategory, lat, lng, address, website, phone,
-                             opening_hours, wikidata_id, wikipedia, prominence, tags)
+                             opening_hours, wikidata_id, wikipedia, prominence, tags, adult)
          values ${tuples.join(",")}
          on conflict (source, source_id) do update set
            city_id = excluded.city_id, name = excluded.name, category = excluded.category, subcategory = excluded.subcategory,
            lat = excluded.lat, lng = excluded.lng, address = excluded.address, website = excluded.website,
            phone = excluded.phone, opening_hours = excluded.opening_hours, wikidata_id = excluded.wikidata_id,
-           wikipedia = excluded.wikipedia, prominence = excluded.prominence, tags = excluded.tags`,
+           wikipedia = excluded.wikipedia, prominence = excluded.prominence, tags = excluded.tags,
+           -- once flagged +18 by any source, a place stays flagged (place_overrides can clear it)
+           adult = places.adult or excluded.adult`,
         values,
       );
     }

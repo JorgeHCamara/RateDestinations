@@ -20,6 +20,16 @@ Tailwind v4 + shadcn/ui, MapLibre with OpenFreeMap tiles. Deploys on Vercel.
     (`GEOAPIFY_API_KEY`), then the public Overpass servers for whatever Geoapify missed.
   - The same place from two sources is merged by name and distance (`src/lib/import/merge.ts`);
     ratings always stay on the original row.
+  - **Filters** (`src/lib/import/filters.ts`) apply to every source: test and placeholder
+    entries ("Test", "asdf", "N/A") are dropped; +18 venues (strip clubs, brothels, swinger clubs,
+    sex shops) are stored with `adult = true` but never listed anywhere on the site or the public
+    Data API. They are detected from the provider's category and from words in the name. Chains
+    are ranked below local places, and bar-and-grills (Moxies, Jack Astor's) are listed as bars.
+  - Sources get categories wrong (a strip club filed as a dance club), so places can be flagged
+    by hand in the SQL Editor with the id from the place's URL: `select flag_adult_place(123,
+    'why');` or `select hide_place(123, 'why');`. The flag lives in `place_overrides`, survives
+    re-imports, and covers the same name in that city from any source. To un-flag one, insert a
+    row with `adult = false` for its `source`/`source_id`.
 - **Scores** blend community ratings with a prior (an external rating when there is one,
   otherwise prominence): `w = n / (n + 10)`, `score = w·user_avg + (1 − w)·prior`. One rating
   barely moves a place; thirty dominate it. The same formula lives in `src/lib/scoring.ts` and in
@@ -125,7 +135,8 @@ Import the repo, then set these environment variables (Production and Preview):
 once, places are saved as each search returns, and the city is always marked `done` or `failed`
 before the budget ends. A city still `pending` after 6 minutes can be claimed again (the page's
 "Try again" button, or the daily cron). After pulling this change, run
-`supabase/migrations/0002_import_claims.sql` and `0003_overture.sql` in the SQL Editor.
+`supabase/migrations/0002_import_claims.sql`, `0003_overture.sql` and `0004_place_filters.sql`
+in the SQL Editor.
 
 ## Data and attribution
 

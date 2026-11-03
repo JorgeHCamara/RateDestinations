@@ -20,7 +20,8 @@ export async function refreshExternalRatings(
     category: string;
   }>(
     `select id, name, lat, lng, category::text from places
-     where external_fetched_at is null or external_fetched_at < now() - make_interval(days => $2)
+     where not adult and not hidden
+       and (external_fetched_at is null or external_fetched_at < now() - make_interval(days => $2))
      order by prominence desc, external_fetched_at nulls first
      limit $1`,
     [limit, provider.maxCacheDays],

@@ -123,6 +123,43 @@ export async function getTrendingCities(limit = 12): Promise<TrendingCity[]> {
   }
 }
 
+// Lisbon, Tokyo, Mexico City, Cape Town, New York, Barcelona, Bangkok, Buenos Aires
+const FEATURED_GEONAMES_IDS = [
+  2267057, 1850147, 3530597, 3369157, 5128581, 3128760, 1609350, 3435910,
+];
+const FEATURED_FALLBACK = [
+  ["pt", "lisbon"],
+  ["jp", "tokyo"],
+  ["mx", "mexico-city"],
+  ["za", "cape-town"],
+  ["us", "new-york-city"],
+  ["es", "barcelona"],
+  ["th", "bangkok"],
+  ["ar", "buenos-aires"],
+] as const;
+
+/**
+ * The featured cities' URL params, for generateStaticParams. Reads only the cities table, and falls
+ * back to a fixed list when the database can't answer: with Cache Components an empty list fails
+ * the build, and a build must not depend on the database being reachable or fully migrated.
+ */
+export async function getFeaturedCityParams(): Promise<{ country: string; slug: string }[]> {
+  if (isDatabaseConfigured()) {
+    try {
+      const rows = await query<{ country_code: string; slug: string }>(
+        `select country_code, slug from cities where geonames_id = any($1::int[])
+         order by array_position($1::int[], geonames_id)`,
+        [FEATURED_GEONAMES_IDS],
+      );
+      if (rows.length)
+        return rows.map((r) => ({ country: r.country_code.toLowerCase(), slug: r.slug }));
+    } catch {
+      // fall through
+    }
+  }
+  return FEATURED_FALLBACK.map(([country, slug]) => ({ country, slug }));
+}
+
 /** A handful of big cities to show on the home page before anyone has visited anything. */
 export async function getFeaturedCities(): Promise<TrendingCity[]> {
   "use cache";
@@ -132,13 +169,12 @@ export async function getFeaturedCities(): Promise<TrendingCity[]> {
     return await query<TrendingCity>(
       `select c.id, c.name, c.country_code, co.name as country_name, c.slug, c.population,
               cs.overall, coalesce(cs.rating_count, 0) as rating_count,
-              (select count(*) from places p where p.city_id = c.id) as place_count
+              (select count(*) from places p where p.city_id = c.id and not p.adult and not p.hidden) as place_count
        from cities c join countries co on co.code = c.country_code
        left join city_stats cs on cs.city_id = c.id
        where c.geonames_id = any($1::int[])
        order by array_position($1::int[], c.geonames_id)`,
-      // Lisbon, Tokyo, Mexico City, Cape Town, New York, Barcelona, Bangkok, Buenos Aires
-      [[2267057, 1850147, 3530597, 3369157, 5128581, 3128760, 1609350, 3435910]],
+      [FEATURED_GEONAMES_IDS],
     );
   } catch {
     return [];
@@ -156,7 +192,7 @@ export async function getCityGuide(cityId: number, version: string) {
     query<WatchOutPlace>("select * from city_watch_out($1, 12)", [cityId]),
     getCityStats(cityId),
     query<{ category: PlaceCategory; n: number }>(
-      "select category, count(*)::int as n from places where city_id = $1 group by category",
+      "select category, count(*)::int as n from places where city_id = $1 and not adult and not hidden group by category",
       [cityId],
     ),
   ]);
@@ -197,7 +233,7 @@ export async function getCityCategory(cityId: number, category: PlaceCategory, v
             s.blended_score, s.user_avg, s.user_count, s.warning_count,
             row_number() over (order by s.blended_score desc, p.prominence desc, p.location <-> c.location, p.name)::int as rank
      from places p join place_stats s on s.place_id = p.id join cities c on c.id = p.city_id
-     where p.city_id = $1 and p.category = $2
+     where p.city_id = $1 and p.category = $2 and not p.adult and not p.hidden
      order by rank limit 200`,
     [cityId, category],
   );
