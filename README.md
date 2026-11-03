@@ -158,13 +158,16 @@ Supabase's built-in email service only delivers to members of the Supabase proje
 hour) and is not for production: with it, other people can't sign in by email. Use your own
 sender, which also makes the email come from RateDestinations instead of "Supabase Auth".
 
-1. **Resend** (free: 3,000 emails/month, 100/day): sign up at resend.com, add the domain
-   `ratedestinations.com`, and add the DNS records it shows (SPF, DKIM, optionally DMARC) where
-   the domain's DNS is managed. Wait until Resend shows the domain as verified, then create an
-   API key (sending access).
+1. **Resend** (free: 3,000 emails/month, 100/day): sign up at resend.com and add the subdomain
+   `mail.ratedestinations.com` (region US East, next to the Supabase project). A sending
+   subdomain keeps the sign-in emails' reputation separate from `ratedestinations.com`'s own
+   mail. The domain's DNS is on Vercel, so "Auto configure" adds the records (SPF, DKIM) after
+   you approve them in Vercel; they are all under `mail`. Otherwise add them by hand in Vercel →
+   Domains → DNS Records. Wait until Resend shows the domain as verified, then create an API key
+   (sending access).
 2. **Supabase → Authentication → Emails → SMTP Settings**: enable custom SMTP with host
    `smtp.resend.com`, port `465`, username `resend`, password = the Resend API key, sender email
-   `noreply@ratedestinations.com`, sender name `RateDestinations`.
+   `noreply@mail.ratedestinations.com`, sender name `RateDestinations`.
 3. **Supabase → Authentication → Rate Limits**: custom SMTP starts at 30 emails an hour; raise
    it if needed.
 4. **Supabase → Authentication → Emails → Templates**, paste the HTML from `supabase/templates/`:
