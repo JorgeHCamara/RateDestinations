@@ -151,6 +151,12 @@ minutes; trigger it once by hand (Actions → Overture import → Run workflow) 
 cities straight away. Each city takes about 2 seconds; the free plan's 2,000 Actions minutes a
 month is plenty.
 
+To build a region, fill **continent** (`EU`, `NA`, `SA`, `AS`, `AF`, `OC`) or **countries**
+(`US,CA,AU`) and **min_population** in the Run workflow form: its cities are built biggest first.
+A city guide takes roughly 0.4 MB, and the free Supabase plan allows 500 MB, so every run has a
+safety stop (**max_db_mb**, default 400): once the database reaches it, no new guides are added
+(rebuilds and cities visitors open still go ahead). Check Supabase → Usage before raising it.
+
 ### 3. Vercel
 
 Import the repo, then set these environment variables (Production and Preview):
