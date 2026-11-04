@@ -17,6 +17,20 @@ on:
         description: "Pre-build up to this many of the most populous cities"
         required: false
         default: "300"
+      continent:
+        description: "Only build cities on these continents: EU, NA, SA, AS, AF, OC (comma-separated)"
+        required: false
+      countries:
+        description: "Only build cities in these countries: ISO codes, e.g. US,CA,AU"
+        required: false
+      min_population:
+        description: "With continent or countries: only cities of at least this population"
+        required: false
+        default: "200000"
+      max_db_mb:
+        description: "Safety stop: add no new guides once the database reaches this size (MB)"
+        required: false
+        default: "400"
 
 concurrency:
   group: overture-import
@@ -25,7 +39,7 @@ concurrency:
 jobs:
   import:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -40,11 +54,19 @@ jobs:
         run: |
           if [ -n "${{ inputs.city }}" ]; then
             pnpm tsx scripts/import-overture.ts --city "${{ inputs.city }}"
+          elif [ -n "${{ inputs.continent }}${{ inputs.countries }}" ]; then
+            # A region, biggest cities first, until the safety stop or the time limit (run it
+            # again to continue: built cities are skipped).
+            pnpm tsx scripts/import-overture.ts \
+              --continent "${{ inputs.continent }}" --countries "${{ inputs.countries }}" \
+              --min-population "${{ inputs.min_population || '200000' }}" \
+              --max-db-mb "${{ inputs.max_db_mb || '400' }}" \
+              --backfill 2000 --max-minutes 38
           else
             # A manual run pre-builds all of --top now; scheduled runs add 25 more each time.
             pnpm tsx scripts/import-overture.ts --top "${{ inputs.top || '300' }}" \
               --backfill "${{ github.event_name == 'workflow_dispatch' && (inputs.top || '300') || '25' }}" \
-              --max-minutes 18
+              --max-minutes 18 --max-db-mb "${{ inputs.max_db_mb || '400' }}"
           fi
       # The throwaway-email list the rating trigger checks (migration 0010). Quick when unchanged.
       - name: Sync blocked email domains
