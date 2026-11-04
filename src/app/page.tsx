@@ -50,6 +50,14 @@ export default function HomePage() {
       <section className="container-page py-12">
         <Header title="Start somewhere" subtitle="A few cities to get a feel for it." />
         <FeaturedCities />
+        <p className="mt-4 text-sm">
+          <Link
+            href="/cities"
+            className="text-brand font-medium underline-offset-4 hover:underline"
+          >
+            Browse all city guides →
+          </Link>
+        </p>
       </section>
 
       <section className="container-page py-6">

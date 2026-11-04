@@ -282,6 +282,36 @@ export async function getCityCategory(cityId: number, category: PlaceCategory, v
   );
 }
 
+export type DirectoryCity = TrendingCity & { continent: string | null };
+
+/**
+ * Every city with a guide (places or ratings), for /cities: the same cities the sitemap lists, so
+ * each guide is one link away from a page every page links to. Not the ~30,000 cities nobody has
+ * opened yet. Grouped by the page; ordered here by continent, country and size.
+ */
+export async function getCityDirectory(): Promise<DirectoryCity[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("city-directory");
+  if (!isDatabaseConfigured()) return [];
+  try {
+    return await query<DirectoryCity>(
+      `select c.id, c.name, c.country_code, co.name as country_name, co.continent, c.slug,
+              c.population, cs.overall, coalesce(cs.rating_count, 0)::int as rating_count,
+              coalesce(pc.n, 0)::int as place_count
+       from cities c
+       join countries co on co.code = c.country_code
+       left join city_stats cs on cs.city_id = c.id
+       left join (select city_id, count(*) as n from places
+                  where not adult and not hidden group by city_id) pc on pc.city_id = c.id
+       where coalesce(pc.n, 0) > 0 or coalesce(cs.rating_count, 0) > 0
+       order by co.continent, co.name, c.population desc`,
+    );
+  } catch {
+    return [];
+  }
+}
+
 /** Cached minimal city lookup for metadata and breadcrumbs (names don't change). */
 export async function getCityBasic(countryCode: string, slug: string) {
   "use cache";

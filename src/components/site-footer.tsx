@@ -50,6 +50,10 @@ export function SiteFooter() {
             Geoapify
           </a>
           .{" "}
+          <Link className="underline-offset-2 hover:underline" href="/cities">
+            All city guides
+          </Link>
+          {" · "}
           <Link className="underline-offset-2 hover:underline" href="/#how-it-works">
             How scores work
           </Link>
