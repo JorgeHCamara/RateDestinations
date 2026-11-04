@@ -3,7 +3,7 @@ import { getSitemapRows } from "@/lib/queries/seo";
 import { SITE_URL } from "@/lib/site-url";
 
 /**
- * /sitemap.xml: the home page, every city with a guide, its category lists and the places people
+ * /sitemap.xml: the home page, the list of all city guides, every city with a guide, its category lists and the places people
  * have rated (see lib/queries/seo.ts for what is left out and why). Refreshed hourly, so a guide
  * built today is listed today.
  */
@@ -13,6 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const city = (cc: string, slug: string) => `${SITE_URL}/city/${cc.toLowerCase()}/${slug}`;
   return [
     { url: `${SITE_URL}/`, changeFrequency: "daily", priority: 1 },
+    { url: `${SITE_URL}/cities`, changeFrequency: "daily", priority: 0.9 },
     ...cities.map((c) => ({
       url: city(c.country_code, c.slug),
       lastModified: date(c.updated),
