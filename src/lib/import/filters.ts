@@ -3,7 +3,8 @@
  *
  * - Junk names: test and placeholder entries that map datasets pick up ("Test", "asdf", "123").
  *   Dropped at import, and hidden in the database by migration 0004.
- * - Adult (+18) venues: strip clubs, brothels, swinger clubs, sex shops. Kept with `adult = true`
+ * - Adult (+18) venues: strip clubs, brothels, swinger clubs, sex shops, nude and naturist
+ *   beaches and clubs. Kept with `adult = true`
  *   so a dedicated section is possible later, but never listed on the site. Detected from the
  *   source's own category first, then from words in the name, because categories are sometimes
  *   wrong (a strip club filed as a dance club). Anything both misses is flagged by hand in the
@@ -144,6 +145,23 @@ const ADULT_NAME_WORDS = [
   "18+",
   "+18",
   "xxx",
+  // Nude and naturist places (Hanlan's Point Nude Beach, Toronto). Not "naturista": in Spanish and
+  // Portuguese that is mostly a health-food shop ("Tienda Naturista").
+  "nude beach",
+  "nudist",
+  "nudists",
+  "nudism",
+  "nudismo",
+  "nudista",
+  "nudistas",
+  "naturist",
+  "naturists",
+  "naturism",
+  "naturiste",
+  "naturistes",
+  "naturisme",
+  "fkk",
+  "clothing optional",
 ];
 
 /**
@@ -169,6 +187,9 @@ export function isAdultOsm(tags: Record<string, string | undefined>): boolean {
   if (tags.shop === "erotic" || tags.shop === "sex" || tags.shop === "adult") return true;
   if (tags.nightclub === "striptease" || tags.nightclub === "strip_club") return true;
   if (tags.adult === "yes" || tags["adult:sex"] === "yes") return true;
+  // Nude beaches and naturist clubs: nudism=designated|yes|customary|obligatory, naturism=yes.
+  if (["yes", "designated", "customary", "obligatory"].includes(tags.nudism ?? "")) return true;
+  if (tags.naturism === "yes" || tags.club === "naturism" || tags.club === "naturist") return true;
   return false;
 }
 
@@ -185,6 +206,15 @@ const ADULT_TAXONOMY = [
 
 export function isAdultTaxonomy(hierarchy: readonly string[] | null | undefined): boolean {
   return Boolean(hierarchy?.some((node) => ADULT_TAXONOMY.includes(node)));
+}
+
+/**
+ * A photo file name that shows nudity or an adult venue ("Hanlans_Point_nudist.jpg"): never used,
+ * whichever place it would illustrate (a family beach next to a nude one).
+ */
+export function isAdultPhotoName(fileName: string | null | undefined): boolean {
+  if (!fileName) return false;
+  return hasAdultName(fileName) || /\b(nude|nudes|nudity|naked|topless)\b/.test(norm(fileName));
 }
 
 /** Name words that mark an adult venue. `nightlife` widens the list for clubs and bars. */

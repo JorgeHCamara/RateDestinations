@@ -8,6 +8,7 @@
  * since Wikimedia rarely has them.
  */
 import { query, queryOne } from "@/lib/db";
+import { isAdultPhotoName } from "@/lib/import/filters";
 import type { PlaceCategory } from "@/lib/import/categories";
 import {
   commonsImage,
@@ -61,7 +62,7 @@ export async function findPlaceImage(
     return null;
   };
   const fromCommons = async (file: string | null): Promise<PlaceImage | null> => {
-    if (!file) return null;
+    if (!file || isAdultPhotoName(file)) return null;
     const img = await commonsImage(file, { fetchImpl }).catch(failed);
     return img && { ...img, source: "commons" };
   };
