@@ -1,6 +1,7 @@
 import { Star } from "lucide-react";
 import { CategoryIcon } from "@/components/category-icon";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { CategorySection } from "@/components/category-section";
@@ -21,6 +22,7 @@ import {
   type City,
 } from "@/lib/queries/cities";
 import { getRatingTags } from "@/lib/queries/places";
+import { countryPath } from "@/lib/queries/countries";
 import { cityHasContent } from "@/lib/queries/seo";
 import {
   breadcrumbJsonLd,
@@ -95,6 +97,7 @@ async function CityGuide({ params }: { params: Props["params"] }) {
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "RateDestinations", path: "/" },
+          { name: city.country_name, path: countryPath(city.country_code) },
           { name: city.name, path: returnTo },
         ])}
       />
@@ -243,7 +246,9 @@ function Hero({
       <div className="container-page flex flex-col gap-6 py-10 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
           <p className="text-brand text-xs font-semibold tracking-[0.2em] uppercase">
-            {city.country_name}
+            <Link href={countryPath(city.country_code)} className="hover:underline">
+              {city.country_name}
+            </Link>
             {city.admin1 && city.admin1 !== city.name ? ` · ${city.admin1}` : ""}
           </p>
           <h1 className="font-display mt-1 text-5xl leading-none font-semibold tracking-tight sm:text-6xl">

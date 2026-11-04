@@ -20,6 +20,7 @@ import {
 import { getMyPlaceRating } from "@/lib/queries/ratings";
 import { getSessionUser } from "@/lib/supabase/server";
 import { JsonLd } from "@/components/json-ld";
+import { countryPath } from "@/lib/queries/countries";
 import { breadcrumbJsonLd, placeDescription, placeJsonLd, placeTitle } from "@/lib/structured-data";
 
 type Props = PageProps<"/place/[id]">;
@@ -88,12 +89,17 @@ async function PlaceDetail({ params }: { params: Props["params"] }) {
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "RateDestinations", path: "/" },
+          { name: place.country_name, path: countryPath(place.country_code) },
           { name: place.city_name, path: cityHref },
           { name: meta.plural, path: `${cityHref}/${place.category}` },
           { name: place.name, path: `/place/${place.id}` },
         ])}
       />
       <nav className="text-muted-foreground mb-4 text-sm">
+        <Link href={countryPath(place.country_code)} className="hover:underline">
+          {place.country_name}
+        </Link>{" "}
+        <span aria-hidden>/</span>{" "}
         <Link href={cityHref} prefetch={true} className="hover:underline">
           {place.city_name}
         </Link>{" "}

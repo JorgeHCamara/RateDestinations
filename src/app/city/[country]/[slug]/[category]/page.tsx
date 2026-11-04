@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/json-ld";
 import { PlaceCard } from "@/components/place-card";
 import { CATEGORY_META, PLACE_CATEGORIES, type PlaceCategory } from "@/lib/import/categories";
 import { getCityBySlug, getCityCategory, getCityGuide } from "@/lib/queries/cities";
+import { countryPath } from "@/lib/queries/countries";
 import { MIN_CATEGORY_PLACES } from "@/lib/queries/seo";
 import {
   breadcrumbJsonLd,
@@ -77,11 +78,16 @@ async function CategoryList({ params }: { params: Props["params"] }) {
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "RateDestinations", path: "/" },
+          { name: city.country_name, path: countryPath(city.country_code) },
           { name: city.name, path: back },
           { name: meta.plural, path: `${back}/${cat}` },
         ])}
       />
       <nav className="text-muted-foreground mb-4 text-sm">
+        <Link href={countryPath(city.country_code)} className="hover:underline">
+          {city.country_name}
+        </Link>{" "}
+        <span aria-hidden>/</span>{" "}
         <Link href={back} prefetch={true} className="hover:underline">
           {city.name}
         </Link>{" "}
