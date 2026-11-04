@@ -223,3 +223,19 @@ export function placeJsonLd(
   }
   return data;
 }
+
+export function countryTitle(country: { name: string }): string {
+  return `${country.name} travel guide: best cities and what to avoid`;
+}
+
+/** The country's search snippet, naming its biggest city guides. */
+export function countryDescription(country: { name: string }, cityNames: string[]): string {
+  if (cityNames.length === 0)
+    return clip(
+      `${country.name} city guides, rated by locals and travellers: the restaurants, sights and parks worth your time, and what to avoid.`,
+    );
+  const count = cityNames.length === 1 ? "a city guide" : `${n(cityNames.length)} city guides`;
+  return clip(
+    `${country.name}: ${count} rated by locals and travellers, including ${list(cityNames.slice(0, 3))}. The best restaurants, sights and parks in each, and what to avoid.`,
+  );
+}

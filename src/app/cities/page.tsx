@@ -4,6 +4,7 @@ import { CitySearch } from "@/components/city-search";
 import { JsonLd } from "@/components/json-ld";
 import { ScorePill } from "@/components/score";
 import { getCityDirectory, type DirectoryCity } from "@/lib/queries/cities";
+import { CONTINENTS, countryPath } from "@/lib/queries/countries";
 import { breadcrumbJsonLd, cityPath } from "@/lib/structured-data";
 
 /**
@@ -12,15 +13,6 @@ import { breadcrumbJsonLd, cityPath } from "@/lib/structured-data";
  * and the home page, this puts every guide one link from any page.
  */
 
-const CONTINENTS: Record<string, string> = {
-  AF: "Africa",
-  AS: "Asia",
-  EU: "Europe",
-  NA: "North America",
-  OC: "Oceania",
-  SA: "South America",
-  AN: "Antarctica",
-};
 const CONTINENT_ORDER = ["EU", "NA", "SA", "AS", "AF", "OC", "AN"];
 
 type CountryGroup = { code: string; name: string; cities: DirectoryCity[] };
@@ -141,7 +133,13 @@ export default async function CitiesPage() {
               {continent.countries.map((country) => (
                 <div key={country.code} className="mb-6 break-inside-avoid">
                   <h3 className="text-muted-foreground mb-1.5 text-xs font-semibold tracking-[0.15em] uppercase">
-                    {country.name}
+                    <Link
+                      href={countryPath(country.code)}
+                      prefetch={false}
+                      className="hover:text-foreground underline-offset-4 hover:underline"
+                    >
+                      {country.name}
+                    </Link>
                   </h3>
                   <ul className="space-y-1">
                     {country.cities.map((c) => (

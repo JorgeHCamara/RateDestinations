@@ -282,7 +282,7 @@ export async function getCityCategory(cityId: number, category: PlaceCategory, v
   );
 }
 
-export type DirectoryCity = TrendingCity & { continent: string | null };
+export type DirectoryCity = TrendingCity & { continent: string | null; lat: number; lng: number };
 
 /**
  * Every city with a guide (places or ratings), for /cities: the same cities the sitemap lists, so
@@ -297,7 +297,7 @@ export async function getCityDirectory(): Promise<DirectoryCity[]> {
   try {
     return await query<DirectoryCity>(
       `select c.id, c.name, c.country_code, co.name as country_name, co.continent, c.slug,
-              c.population, cs.overall, coalesce(cs.rating_count, 0)::int as rating_count,
+              c.population, c.lat, c.lng, cs.overall, coalesce(cs.rating_count, 0)::int as rating_count,
               coalesce(pc.n, 0)::int as place_count
        from cities c
        join countries co on co.code = c.country_code
