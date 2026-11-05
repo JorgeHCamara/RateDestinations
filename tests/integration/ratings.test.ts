@@ -98,6 +98,66 @@ run("ratings → stats (database)", () => {
     await client.query("rollback to savepoint s");
   });
 
+  it("limits a day to 10 cities, however many ratings each takes", async () => {
+    const userC = "33333333-3333-4333-8333-333333333333";
+    await client.query("savepoint lim");
+    await client.query(
+      "insert into auth.users (id, email, raw_user_meta_data) values ($1, 'c@example.com', '{\"full_name\":\"Caio\"}')",
+      [userC],
+    );
+    const cities = await client.query<{ id: number }>(
+      "select id from cities order by population desc limit 11",
+    );
+    const ids = cities.rows.map((r) => r.id);
+    // 10 cities, all 9 categories each: 90 ratings, more than the old cap of 30
+    for (const id of ids.slice(0, 10))
+      await client.query(
+        `insert into city_ratings (city_id, user_id, dimension, stars)
+         select $1, $2, d, 4 from unnest(enum_range(null::city_dimension)) d`,
+        [id, userC],
+      );
+    // a place in a city already rated today is fine
+    await client.query("insert into place_ratings (place_id, user_id, stars) values ($1, $2, 4)", [
+      placeId,
+      userC,
+    ]);
+    // an 11th city is not
+    await expect(
+      client.query(
+        "insert into city_ratings (city_id, user_id, dimension, stars) values ($1, $2, 'food', 4)",
+        [ids[10], userC],
+      ),
+    ).rejects.toThrow(/max 10 cities/);
+    await client.query("rollback to savepoint lim");
+  });
+
+  it("stops place ratings at 100 a day", async () => {
+    const userD = "44444444-4444-4444-8444-444444444444";
+    await client.query("savepoint lim2");
+    await client.query(
+      "insert into auth.users (id, email, raw_user_meta_data) values ($1, 'd@example.com', '{\"full_name\":\"Duda\"}')",
+      [userD],
+    );
+    const many = await client.query<{ id: number }>(
+      `insert into places (city_id, source, source_id, name, category, lat, lng, prominence)
+       select $1, 'osm', 'node/limit-' || g, 'Limit Test ' || g, 'restaurant', lat, lng, 1
+       from cities, generate_series(1, 101) g where id = $1 returning id`,
+      [cityId],
+    );
+    for (const { id } of many.rows.slice(0, 100))
+      await client.query(
+        "insert into place_ratings (place_id, user_id, stars) values ($1, $2, 3)",
+        [id, userD],
+      );
+    await expect(
+      client.query("insert into place_ratings (place_id, user_id, stars) values ($1, $2, 3)", [
+        many.rows[100].id,
+        userD,
+      ]),
+    ).rejects.toThrow(/max 100 places/);
+    await client.query("rollback to savepoint lim2");
+  });
+
   it("aggregates city dimensions with safety weighted higher", async () => {
     await client.query(
       "insert into city_ratings (city_id, user_id, dimension, stars) values ($1, $2, 'safety', 2), ($1, $2, 'food', 5)",
