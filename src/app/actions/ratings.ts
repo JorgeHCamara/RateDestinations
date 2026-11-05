@@ -109,8 +109,10 @@ function friendlyDbError(err: unknown): string {
   if (msg.includes("public name required")) return NEEDS_NAME.error!;
   if (msg.includes("email domain not allowed"))
     return "Ratings from temporary email addresses aren't accepted. Sign in with your usual email or Google.";
+  if (msg.includes("max 10 cities"))
+    return "You can rate up to 10 different cities a day, and you've reached that. Cities you've already rated today are still open: come back tomorrow for new ones!";
   if (msg.includes("rating limit"))
-    return "You've hit the limit of 30 ratings per day. Come back tomorrow!";
+    return "You've rated 100 places today, the daily maximum. Come back tomorrow!";
   if (msg.includes("unknown rating tag") || msg.includes("tags per rating"))
     return "One of the tags isn't valid.";
   return "Something went wrong saving your rating. Please try again.";
