@@ -9,7 +9,7 @@ export type Place = {
   city_slug: string;
   country_code: string;
   country_name: string;
-  source: "osm" | "google";
+  source: "osm" | "google" | "overture" | "wikidata";
   source_id: string;
   name: string;
   category: PlaceCategory;

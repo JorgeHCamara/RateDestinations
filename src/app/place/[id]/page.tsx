@@ -230,7 +230,12 @@ async function PlaceDetail({ params }: { params: Props["params"] }) {
             />
             <a
               className="text-muted-foreground mt-2 inline-block text-xs underline-offset-2 hover:underline"
-              href={`https://www.openstreetmap.org/${place.source_id}`}
+              // OSM ids ("node/123") open the map feature itself; other sources open the map there.
+              href={
+                place.source === "osm"
+                  ? `https://www.openstreetmap.org/${place.source_id}`
+                  : `https://www.openstreetmap.org/?mlat=${place.lat}&mlon=${place.lng}#map=18/${place.lat}/${place.lng}`
+              }
               rel="noreferrer"
               target="_blank"
             >

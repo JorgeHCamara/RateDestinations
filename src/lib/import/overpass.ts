@@ -18,7 +18,7 @@ export type OverpassElement = {
 };
 
 export type PlaceInput = {
-  source: "osm" | "overture";
+  source: "osm" | "overture" | "wikidata";
   source_id: string;
   name: string;
   category: PlaceCategory;

@@ -223,16 +223,50 @@ export async function upsertPlaces(cityId: number, places: PlaceInput[]) {
         `insert into places (city_id, source, source_id, name, category, subcategory, lat, lng, address, website, phone,
                              opening_hours, wikidata_id, wikipedia, prominence, tags, adult)
          values ${tuples.join(",")}
-         on conflict (source, source_id) do update set
-           city_id = excluded.city_id, name = excluded.name, category = excluded.category, subcategory = excluded.subcategory,
+         -- Unique per city (migration 0014): overlapping cities each keep their own copy.
+         on conflict (city_id, source, source_id) do update set
+           name = excluded.name, category = excluded.category, subcategory = excluded.subcategory,
            lat = excluded.lat, lng = excluded.lng, address = excluded.address, website = excluded.website,
            phone = excluded.phone, opening_hours = excluded.opening_hours, wikidata_id = excluded.wikidata_id,
            wikipedia = excluded.wikipedia, prominence = excluded.prominence, tags = excluded.tags,
            -- once flagged +18 by any source, a place stays flagged (place_overrides can clear it)
-           adult = places.adult or excluded.adult`,
+           adult = places.adult or excluded.adult
+         -- Rewriting a row that didn't change only leaves a dead row behind (database size).
+         where (places.name, places.category, places.subcategory, places.lat, places.lng, places.address,
+                places.website, places.phone, places.opening_hours, places.wikidata_id, places.wikipedia,
+                places.prominence, places.tags, places.adult)
+           is distinct from
+               (excluded.name, excluded.category, excluded.subcategory, excluded.lat, excluded.lng, excluded.address,
+                excluded.website, excluded.phone, excluded.opening_hours, excluded.wikidata_id, excluded.wikipedia,
+                excluded.prominence, excluded.tags, places.adult or excluded.adult)`,
         values,
       );
     }
+    // A place new to this city may already be in a neighbouring city's guide: take its photo, and
+    // its +18 and hijacked-website flags, instead of looking them up again.
+    await client.query(
+      `update places p set
+         image_url = case when p.image_checked_at is null then o.image_url else p.image_url end,
+         image_source = case when p.image_checked_at is null then o.image_source else p.image_source end,
+         image_credit = case when p.image_checked_at is null then o.image_credit else p.image_credit end,
+         image_page = case when p.image_checked_at is null then o.image_page else p.image_page end,
+         image_checked_at = coalesce(p.image_checked_at, o.image_checked_at),
+         adult = p.adult or o.adult,
+         website_hijacked = p.website_hijacked or o.website_hijacked
+       from (
+         select distinct on (source, source_id) source, source_id, image_url, image_source, image_credit,
+                image_page, image_checked_at, adult, website_hijacked
+         from places
+         where city_id <> $1
+           and (image_checked_at is not null or adult or website_hijacked)
+           and (source, source_id) in (select source, source_id from places where city_id = $1)
+         order by source, source_id, image_checked_at desc nulls last
+       ) o
+       where p.city_id = $1 and p.source = o.source and p.source_id = o.source_id
+         and ((p.image_checked_at is null and o.image_checked_at is not null)
+              or (o.adult and not p.adult) or (o.website_hijacked and not p.website_hijacked))`,
+      [cityId],
+    );
     await client.query("commit");
   } catch (err) {
     await client.query("rollback");
