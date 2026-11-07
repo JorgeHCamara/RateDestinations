@@ -8,14 +8,22 @@
  */
 import type { PlaceCategory } from "./categories";
 import { stripDiacritics } from "@/lib/slug";
+import {
+  FAME_MATCH_M,
+  famousNameScore,
+  famousProminence,
+  isFamousVariant,
+  type FamousPlace,
+} from "./famous";
 import { hasAdultName, isAdultTaxonomy, isJunkName } from "./filters";
+import { distanceM, normalizeName } from "./names";
 import { normalizeUrl, type PlaceInput } from "./overpass";
 
 /**
  * Bumped when the selection rules below change, so the scheduled job rebuilds every city from the
  * same Overture release (it compares `${release}+${OVERTURE_PIPELINE}` with cities.overture_release).
  */
-export const OVERTURE_PIPELINE = "p2";
+export const OVERTURE_PIPELINE = "p3";
 
 /**
  * Overture taxonomy paths (taxonomy.hierarchy joined with ">") → our categories. First match wins,
@@ -213,9 +221,44 @@ function subcategoryOf(hierarchy: string[]): string | null {
   return leaf.replace(/_/g, " ").replace(/ (restaurant|venue|shop)$/, "") || null;
 }
 
+/** The categories a visitor's guide is built around: famous places are looked up for these. */
+const SIGHT_CATEGORIES = new Set<PlaceCategory>([
+  "park",
+  "attraction",
+  "museum",
+  "viewpoint",
+  "beach",
+  "market",
+]);
+
 /**
- * Map rows to place inputs: drop closed, unnamed, test/placeholder and low-confidence places, then
- * keep the best `perCategory` in each category (highest prominence, then nearest the centre).
+ * Buildings people live in, which Overture often files as historic sites or plazas ("49 Chambers",
+ * "140 Franklin Condominium", "Southbridge Towers"): not sights. A famous one (30 Rockefeller
+ * Plaza) is kept through Wikidata before this applies.
+ */
+const RESIDENTIAL_NAME =
+  /\b(condo|condos|condominium|condominiums|apartment|apartments|apts|residences|residence|lofts?|luxury suites|owners|co-?op|tenants|townhomes?|housing)\b/i;
+/** "49 Chambers", "108 Leonard", "2 River Terrace Apartment 12j": a street number then a name. */
+const ADDRESS_NAME = /^\d+[a-z]?(-\d+)?\s+\p{L}/iu;
+/** Words a real beach's name has (a "beach" called "Maui, Hawaii" pinned in New York isn't one). */
+const BEACH_WORD =
+  /\b(beach|beaches|praia|praias|playa|playas|plage|plages|spiaggia|lido|strand|strandbad|plaj|pantai|pla[zž]a|cala|bay|cove|sands?|shore|seafront|waterfront)\b/i;
+
+type Candidate = PlaceInput & { _d: number; _claimed?: boolean };
+
+/**
+ * Map rows to place inputs, then keep the best `perCategory` in each category.
+ *
+ * 1. Drop closed, unnamed, test/placeholder and low-confidence listings.
+ * 2. Famous places (Wikidata, see lib/import/famous.ts) come first: each claims its best-matching
+ *    listing (same name nearby), which takes its category and a fame-based prominence; one with no
+ *    listing is added from Wikidata. Check-in variants of a famous place ("New York Central Park",
+ *    "Central Park - Wagner Cove") are dropped.
+ * 3. Noise: buildings people live in are not sights, commercial art galleries rank below museums,
+ *    and a "beach" needs a beach-like name.
+ * 4. Per category: highest prominence first, then nearest the centre; a chain's further locations
+ *    drop, and the same name twice within 300 m is kept once.
+ *
  * Adult venues are kept apart, flagged `adult`, under their own smaller cap, so they never take a
  * listed place's slot.
  */
@@ -226,16 +269,30 @@ export function selectOverturePlaces(
     perCategory = 50,
     minConfidence = 0.5,
     adultPerCategory = 15,
-  }: { perCategory?: number; minConfidence?: number; adultPerCategory?: number } = {},
+    famous = [],
+    cityName = "",
+  }: {
+    perCategory?: number;
+    minConfidence?: number;
+    adultPerCategory?: number;
+    famous?: FamousPlace[];
+    /** Its words don't tell two listings apart ("Central Park NYC" is Central Park). */
+    cityName?: string;
+  } = {},
 ): PlaceInput[] {
-  const byCategory = new Map<string, (PlaceInput & { _d: number })[]>();
   const cosLat = Math.cos((centre.lat * Math.PI) / 180);
+  const sq = (p: { lat: number; lng: number }) => {
+    const dx = (p.lng - centre.lng) * cosLat;
+    const dy = p.lat - centre.lat;
+    return dx * dx + dy * dy;
+  };
   // How many places around share each name: three Pizza Huts make a chain even without a brand.
   const locations = new Map<string, number>();
   for (const r of rows) {
     const k = brandKey(r.brand || r.name || "");
     if (k) locations.set(k, (locations.get(k) ?? 0) + 1);
   }
+  const candidates: Candidate[] = [];
   for (const r of rows) {
     if (r.operating_status && r.operating_status !== "open") continue;
     if ((r.confidence ?? 0) < minConfidence) continue;
@@ -244,11 +301,7 @@ export function selectOverturePlaces(
     const category = overtureRowCategory({ hierarchy: r.hierarchy, name, brand: r.brand });
     if (!category) continue;
     const adult = isAdultOverture({ hierarchy: r.hierarchy, name }, category);
-    const key = adult ? `adult:${category}` : category;
-    const dx = (r.lng - centre.lng) * cosLat;
-    const dy = r.lat - centre.lat;
-    const list = byCategory.get(key) ?? [];
-    list.push({
+    candidates.push({
       source: "overture",
       source_id: r.id,
       name,
@@ -272,19 +325,99 @@ export function selectOverturePlaces(
           ["overture_category", r.hierarchy?.join(">")],
         ].filter((e): e is [string, string] => Boolean(e[1])),
       ),
-      _d: dx * dx + dy * dy,
+      _d: sq(r),
     });
+  }
+
+  // 2. Famous places, most famous first, each claiming its listing.
+  const famousSorted = [...famous].sort((a, b) => b.sitelinks - a.sitelinks);
+  for (const f of famousSorted) {
+    let best: { c: Candidate; score: number; d: number } | null = null;
+    for (const c of candidates) {
+      if (c._claimed || c.adult) continue;
+      if (!SIGHT_CATEGORIES.has(c.category) && c.category !== f.category) continue;
+      const d = distanceM(c, f);
+      if (d > FAME_MATCH_M[f.category]) continue;
+      const score = famousNameScore(c.name, f.names, cityName, f.category);
+      if (score < 2) continue;
+      if (
+        !best ||
+        score > best.score ||
+        (score === best.score &&
+          (c.prominence > best.c.prominence || (c.prominence === best.c.prominence && d < best.d)))
+      )
+        best = { c, score, d };
+    }
+    const prominence = famousProminence(f.sitelinks);
+    if (best) {
+      const c = best.c;
+      c._claimed = true;
+      // Shown under Wikidata's name (the listing's, if different, stays as the local name).
+      if (normalizeName(c.name) !== normalizeName(f.name))
+        c.tags = { ...c.tags, local_name: c.name };
+      c.name = f.name;
+      c.category = f.category;
+      c.prominence = prominence;
+      c.wikidata_id = f.qid;
+      c.website = c.website ?? f.website;
+      c.tags = { ...c.tags, wikidata_sitelinks: String(f.sitelinks) };
+    } else {
+      candidates.push({
+        source: "wikidata",
+        source_id: f.qid,
+        name: f.name,
+        category: f.category,
+        subcategory: null,
+        lat: f.lat,
+        lng: f.lng,
+        address: null,
+        website: f.website,
+        phone: null,
+        opening_hours: null,
+        wikidata_id: f.qid,
+        wikipedia: null,
+        prominence,
+        adult: false,
+        tags: { wikidata_sitelinks: String(f.sitelinks) },
+        _d: sq(f),
+        _claimed: true,
+      });
+    }
+  }
+
+  // 2b and 3: drop famous places' variants and the noise.
+  const kept = candidates.filter((c) => {
+    if (c._claimed || c.adult || !SIGHT_CATEGORIES.has(c.category)) return true;
+    if (famousSorted.some((f) => isFamousVariant(c, f))) return false;
+    const path = c.tags.overture_category ?? "";
+    if (c.category === "attraction" && (RESIDENTIAL_NAME.test(c.name) || ADDRESS_NAME.test(c.name)))
+      return false;
+    // Check-in pages named like "Brighton Beach, NY" or "Eagle Beach, Aruba" are pinned wherever
+    // someone checked in, not at the beach.
+    if (c.category === "beach" && (!BEACH_WORD.test(c.name) || /[,|]|\.\s/.test(c.name)))
+      return false;
+    if (c.category === "museum" && path.includes("art_gallery"))
+      c.prominence = Math.max(0, c.prominence - 12);
+    return true;
+  });
+
+  // 4. Per category.
+  const byCategory = new Map<string, Candidate[]>();
+  for (const c of kept) {
+    const key = c.adult ? `adult:${c.category}` : c.category;
+    const list = byCategory.get(key) ?? [];
+    list.push(c);
     byCategory.set(key, list);
   }
   const out: PlaceInput[] = [];
-  const byProminence = (a: { prominence: number; _d: number }, b: typeof a) =>
-    b.prominence - a.prominence || a._d - b._d;
+  const byProminence = (a: Candidate, b: Candidate) => b.prominence - a.prominence || a._d - b._d;
   for (const [key, list] of byCategory) {
     list.sort(byProminence);
     // More locations of one chain add little to a guide: the nearest-best one keeps its score, each
     // further one drops 10 points (up to 30), so a top six isn't one brand three times.
     const seen = new Map<string, number>();
     for (const p of list) {
+      if (p._claimed) continue;
       const chain = brandKey(p.tags.brand ?? p.name);
       const n = seen.get(chain) ?? 0;
       seen.set(chain, n + 1);
@@ -292,8 +425,20 @@ export function selectOverturePlaces(
     }
     list.sort(byProminence);
     const cap = key.startsWith("adult:") ? adultPerCategory : perCategory;
-    for (const { _d, ...p } of list.slice(0, cap)) {
+    const chosen: Candidate[] = [];
+    for (const p of list) {
+      if (chosen.length >= cap) break;
+      // The same sight twice (check-ins of one place): keep the first. Not for restaurants and
+      // shops, where two branches of a chain can be a street apart.
+      if (SIGHT_CATEGORIES.has(p.category)) {
+        const n = normalizeName(p.name);
+        if (chosen.some((q) => normalizeName(q.name) === n && distanceM(p, q) < 300)) continue;
+      }
+      chosen.push(p);
+    }
+    for (const { _d, _claimed, ...p } of chosen) {
       void _d;
+      void _claimed;
       out.push(p);
     }
   }

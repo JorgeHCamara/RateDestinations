@@ -16,6 +16,18 @@ Tailwind v4 + shadcn/ui, MapLibre with OpenFreeMap tiles. Deploys on Vercel.
     others) is read offline by a scheduled GitHub Action (`.github/workflows/overture-import.yml`,
     every 30 min). It builds every city a visitor opened, then pre-builds the most populous cities
     (`OVERTURE_TOP_CITIES`, default 300), and refreshes them when Overture publishes a new release.
+  - **Famous places** come from **Wikidata** (`src/lib/import/famous.ts`): each build asks for the
+    parks, museums, sights, viewpoints, beaches and markets in the city's radius that have
+    Wikipedia articles, and puts them first in their lists, most-written-about first (Central
+    Park, the Met, the Empire State Building). A famous place takes over its Overture listing or,
+    when Overture has none, is added from Wikidata (source `wikidata`); check-in duplicates of it
+    are dropped. Overture alone ranks by how complete a listing is, so a big city's lists filled
+    with condo buildings and commercial galleries. Wikidata classes are mapped to categories
+    through `src/data/wikidata-place-types.json` (refresh with
+    `pnpm tsx scripts/sync-wikidata-place-types.ts`). If Wikidata doesn't answer, the guide is
+    built without them and retried on the next run.
+  - Each city keeps **its own copy** of its places: New York, Manhattan and Brooklyn overlap, and
+    all three list Central Park. A new copy reuses the photo another city already found.
   - On a first visit to a city that isn't built yet, the site fetches places live: Geoapify
     (`GEOAPIFY_API_KEY`), then the public Overpass servers for whatever Geoapify missed.
   - The same place from two sources is merged by name and distance (`src/lib/import/merge.ts`);
@@ -237,7 +249,7 @@ Bing's index also feeds DuckDuckGo, Yahoo and ChatGPT search.
 
 Place data © OpenStreetMap contributors (ODbL) and Overture Maps Foundation (CDLA Permissive
 2.0 / Apache 2.0). City data by GeoNames (CC BY 4.0). Map tiles
-by OpenFreeMap. Notability signal from Wikidata (CC0). Keep the attribution in the footer.
+by OpenFreeMap. Famous places and notability from Wikidata (CC0). Keep the attribution in the footer.
 
 ## Roadmap (not in the MVP)
 

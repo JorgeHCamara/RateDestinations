@@ -22,6 +22,7 @@
 import "dotenv/config";
 import { DuckDBInstance } from "@duckdb/node-api";
 import { getPool, query, queryOne } from "../src/lib/db";
+import { fetchFamousPlaces, type FamousPlace } from "../src/lib/import/famous";
 import { mergePlaces } from "../src/lib/import/merge";
 import { radiusForPopulation } from "../src/lib/import/overpass";
 import {
@@ -55,6 +56,9 @@ async function databaseMb(): Promise<number> {
   return Number(row?.bytes ?? 0) / 1024 / 1024;
 }
 
+/** A build without Wikidata's famous places is marked like this, so the next run tries again. */
+const PARTIAL = "~no-famous";
+
 type CityRow = {
   /** A new guide from the backfill (counts against --max-db-mb), not a rebuild or a request. */
   isNew?: boolean;
@@ -69,7 +73,9 @@ type CityRow = {
 
 async function main() {
   const top = Number(arg("top", process.env.OVERTURE_TOP_CITIES ?? "300"));
-  const requestedLimit = Number(arg("requested", "40"));
+  // Cities to (re)build first: visitors' requests and guides from an older release or older
+  // rules. The time limit bounds a run, so this can be generous.
+  const requestedLimit = Number(arg("requested", "150"));
   const backfillLimit = Number(arg("backfill", "25"));
   const maxMinutes = Number(arg("max-minutes", "20"));
   const perCategory = Number(process.env.OVERTURE_PER_CATEGORY ?? 50);
@@ -164,12 +170,25 @@ async function main() {
         overtureQuery(release, bboxAround(city.lat, city.lng, radius)),
       );
       const rows = reader.getRowObjectsJS() as unknown as OvertureRow[];
-      const places = selectOverturePlaces(rows, city, { perCategory });
+      // Famous places (Wikidata): without them a big city's lists fill with whatever has the most
+      // complete listing. If Wikidata can't answer, the guide is still built, marked so the next
+      // run tries again.
+      let famous: FamousPlace[] = [];
+      let famousOk = true;
+      try {
+        famous = await fetchFamousPlaces(city, radius, city.country_code);
+      } catch (err) {
+        famousOk = false;
+        console.error(
+          `${city.country_code.toLowerCase()}/${city.slug}: no famous places (${(err as Error).message}); will retry`,
+        );
+      }
+      const places = selectOverturePlaces(rows, city, { perCategory, famous, cityName: city.name });
       const { added, enriched } = await mergePlaces(city.id, places);
       // Overture places this build no longer selects (filtered out, or below the cap) go, unless
       // someone has rated them.
       const pruned = await query(
-        `delete from places p where p.city_id = $1 and p.source = 'overture'
+        `delete from places p where p.city_id = $1 and p.source in ('overture', 'wikidata')
            and p.source_id <> all($2::text[])
            and not exists (select 1 from place_ratings r where r.place_id = p.id)
          returning p.id`,
@@ -181,11 +200,12 @@ async function main() {
                 import_status = case when $3 > 0 or import_status = 'done' then 'done'::import_status else import_status end,
                 import_error = case when $3 > 0 then null else import_error end
          where id = $1`,
-        [city.id, build, places.length],
+        [city.id, famousOk ? build : `${build}${PARTIAL}`, places.length],
       );
       built++;
+      const famousKept = places.filter((p) => p.wikidata_id).length;
       console.log(
-        `${city.country_code.toLowerCase()}/${city.slug}: ${rows.length} candidates, ${places.length} kept (${added} added, ${enriched} merged, ${pruned.length} dropped) in ${Date.now() - started}ms`,
+        `${city.country_code.toLowerCase()}/${city.slug}: ${rows.length} candidates, ${famous.length} famous, ${places.length} kept (${famousKept} famous, ${added} added, ${enriched} merged, ${pruned.length} dropped) in ${Date.now() - started}ms`,
       );
     } catch (err) {
       console.error(
