@@ -20,6 +20,7 @@ import {
 import { getMyPlaceRating } from "@/lib/queries/ratings";
 import { getSessionUser } from "@/lib/supabase/server";
 import { JsonLd } from "@/components/json-ld";
+import { SignInGate } from "@/components/sign-in-gate";
 import { countryPath } from "@/lib/queries/countries";
 import { breadcrumbJsonLd, placeDescription, placeJsonLd, placeTitle } from "@/lib/structured-data";
 
@@ -85,6 +86,9 @@ async function PlaceDetail({ params }: { params: Props["params"] }) {
 
   return (
     <article className="container-page py-8">
+      <Suspense fallback={null}>
+        <SignInGate next={`/place/${place.id}`} />
+      </Suspense>
       <JsonLd data={placeJsonLd(place)} />
       <JsonLd
         data={breadcrumbJsonLd([
