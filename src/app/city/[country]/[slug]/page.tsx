@@ -13,6 +13,7 @@ import { CityRatingForm } from "@/components/rating/city-rating-form";
 import { ScoreRing } from "@/components/score";
 import { StickyAside } from "@/components/sticky-aside";
 import { JsonLd } from "@/components/json-ld";
+import { SignInGate } from "@/components/sign-in-gate";
 import { WatchOutList } from "@/components/watch-out-list";
 import { CATEGORY_META, PLACE_CATEGORIES } from "@/lib/import/categories";
 import {
@@ -93,6 +94,9 @@ async function CityGuide({ params }: { params: Props["params"] }) {
 
   return (
     <article>
+      <Suspense fallback={null}>
+        <SignInGate next={returnTo} />
+      </Suspense>
       <JsonLd data={cityJsonLd(city, cityDescription(city, seoGuide(guide)))} />
       <JsonLd
         data={breadcrumbJsonLd([
