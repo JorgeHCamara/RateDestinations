@@ -6,7 +6,12 @@ import { Suspense } from "react";
 import { JsonLd } from "@/components/json-ld";
 import { PlaceCard } from "@/components/place-card";
 import { CATEGORY_META, PLACE_CATEGORIES, type PlaceCategory } from "@/lib/import/categories";
-import { getCityBySlug, getCityCategory, getCityGuide } from "@/lib/queries/cities";
+import {
+  getCityBySlug,
+  getCityCategory,
+  getCityGuide,
+  getFeaturedCityParams,
+} from "@/lib/queries/cities";
 import { countryPath } from "@/lib/queries/countries";
 import { MIN_CATEGORY_PLACES } from "@/lib/queries/seo";
 import {
@@ -16,17 +21,34 @@ import {
   cityPath,
 } from "@/lib/structured-data";
 
+/**
+ * The page checks its URL before anything streams (a missing place or city is a real 404, not a
+ * 200 with a not-found page), so a first visit waits for that cached lookup instead of showing the
+ * generic shell. Navigation to it is not expected to be instant.
+ */
+export const instant = false;
+
 type Props = PageProps<"/city/[country]/[slug]/[category]">;
 
 function asCategory(c: string): PlaceCategory | null {
   return (PLACE_CATEGORIES as readonly string[]).includes(c) ? (c as PlaceCategory) : null;
 }
 
+/**
+ * One category of each featured city. Cache Components needs at least one full set of params (the
+ * parent's come from its page, not a layout, so they aren't passed down); without it every
+ * category URL was served the generic shell forever. Every other category page renders on its
+ * first visit and is cached, as before.
+ */
+export async function generateStaticParams() {
+  return (await getFeaturedCityParams()).map((p) => ({ ...p, category: "restaurant" }));
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { country, slug, category } = await params;
   const cat = asCategory(category);
   const city = cat ? await getCityBySlug(country, slug) : null;
-  if (!city || !cat) return { title: "Not found" };
+  if (!city || !cat) notFound();
   const version = city.imported_at ?? "0";
   const [places, guide] = await Promise.all([
     getCityCategory(city.id, cat, version),
@@ -50,7 +72,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function CategoryPage(props: Props) {
+// Checked before anything streams, so an unknown city or category is a real 404 (cached lookup).
+export default async function CategoryPage(props: Props) {
+  const { country, slug, category } = await props.params;
+  if (!asCategory(category) || !(await getCityBySlug(country, slug))) notFound();
   return (
     <Suspense
       fallback={

@@ -35,6 +35,13 @@ import {
 import { getMyCityRatings, getMyCityRole } from "@/lib/queries/ratings";
 import { getSessionUser } from "@/lib/supabase/server";
 
+/**
+ * The page checks its URL before anything streams (a missing place or city is a real 404, not a
+ * 200 with a not-found page), so a first visit waits for that cached lookup instead of showing the
+ * generic shell. Navigation to it is not expected to be instant.
+ */
+export const instant = false;
+
 type Props = PageProps<"/city/[country]/[slug]">;
 
 // Only the featured cities are prerendered at build time; every other city gets the App
@@ -46,7 +53,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { country, slug } = await params;
   const city = await getCityBySlug(country, slug);
-  if (!city) return { title: "City not found" };
+  if (!city) notFound();
   const guide =
     city.import_status === "done" ? await getCityGuide(city.id, city.imported_at ?? "0") : null;
   // A city nobody has opened yet shows only "Building this guide…": kept out of search results
@@ -75,7 +82,10 @@ function seoGuide(guide: Awaited<ReturnType<typeof getCityGuide>> | null) {
   return { placeCount: guide.placeCount, ratingCount: guide.stats.rating_count, topNames };
 }
 
-export default function CityPage(props: Props) {
+// Checked before anything streams, so an unknown city is a real 404. getCityBySlug is cached.
+export default async function CityPage(props: Props) {
+  const { country, slug } = await props.params;
+  if (!(await getCityBySlug(country, slug))) notFound();
   return (
     <Suspense fallback={<CitySkeleton />}>
       <CityGuide params={props.params} />

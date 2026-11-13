@@ -54,7 +54,7 @@ export type PlaceReview = {
 
 export async function getPlace(placeId: number): Promise<Place | null> {
   "use cache";
-  cacheLife("hours");
+  cacheLife("guide");
   cacheTag(`place:${placeId}`);
   return queryOne<Place>(
     `select p.id, p.city_id, c.name as city_name, c.slug as city_slug, c.country_code, co.name as country_name,
@@ -75,7 +75,7 @@ export async function getPlace(placeId: number): Promise<Place | null> {
 
 export async function getPlaceReviews(placeId: number, limit = 20): Promise<PlaceReview[]> {
   "use cache";
-  cacheLife("hours");
+  cacheLife("guide");
   cacheTag(`place:${placeId}`);
   return query<PlaceReview>(
     `select r.id, r.stars, r.tags, r.comment, r.created_at::text as created_at, pr.display_name,
@@ -105,7 +105,7 @@ export type NearbyPlace = {
 
 export async function getNearbyPlaces(placeId: number, limit = 6): Promise<NearbyPlace[]> {
   "use cache";
-  cacheLife("days");
+  cacheLife("reference");
   cacheTag(`place:${placeId}`);
   return query<NearbyPlace>(
     `select q.id, q.name, q.category, s.blended_score, s.user_avg, s.user_count,
@@ -124,7 +124,7 @@ export type RatingTag = { tag: string; label: string; is_warning: boolean };
 
 export async function getRatingTags(): Promise<RatingTag[]> {
   "use cache";
-  cacheLife("max");
+  cacheLife("stable");
   return query<RatingTag>(
     "select tag, label, is_warning from rating_tags order by is_warning, tag",
   );

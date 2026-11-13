@@ -23,7 +23,7 @@ export function countryPath(code: string): string {
 
 export async function getCountry(code: string): Promise<Country | null> {
   "use cache";
-  cacheLife("days");
+  cacheLife("reference");
   if (!/^[a-z]{2}$/i.test(code) || !isDatabaseConfigured()) return null;
   return queryOne<Country>(
     "select trim(code) as code, name, continent from countries where code = upper($1)",
@@ -64,7 +64,7 @@ export type CityWithoutGuide = {
 /** The country's biggest cities nobody has opened yet: each guide builds on its first visit. */
 export async function getCitiesWithoutGuide(code: string, limit = 24): Promise<CityWithoutGuide[]> {
   "use cache";
-  cacheLife("hours");
+  cacheLife("guide");
   cacheTag("city-directory");
   if (!isDatabaseConfigured()) return [];
   try {

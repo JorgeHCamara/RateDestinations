@@ -1,6 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
-import { isDatabaseConfigured, queryOne } from "@/lib/db";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
+import { cache } from "react";
+import { hasAuthCookie } from "@/lib/auth/session-cookie";
+import { isDatabaseConfigured, queryOne } from "@/lib/db";
 
 export function isAuthConfigured(): boolean {
   return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
@@ -41,10 +44,20 @@ export type SessionUser = {
 
 /**
  * The signed-in user, verified against Supabase Auth (not just decoded from the cookie).
- * Returns null when signed out or when auth isn't configured. Reads cookies: call it behind Suspense.
+ * Returns null when signed out or when auth isn't configured. Reads cookies: call it behind
+ * Suspense, never in generateMetadata or a page's static shell.
+ *
+ * Without a Supabase cookie it returns null before creating a client: crawlers and signed-out
+ * visitors cost no auth call. Shared within a request, so the header, the sign-in prompt and the
+ * rating form ask once.
  */
-export async function getSessionUser(): Promise<SessionUser | null> {
+export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
   if (!isAuthConfigured()) return null;
+  const cookieStore = await cookies();
+  if (!hasAuthCookie(cookieStore.getAll().map((c) => c.name))) return null;
+  // supabase-js reads the clock as it loads the session; mark this as request-time work so a
+  // prerender never reaches it ("Date.now() while prerendering").
+  await connection();
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
@@ -63,4 +76,4 @@ export async function getSessionUser(): Promise<SessionUser | null> {
     name: profile?.display_name ?? null,
     avatarUrl: (meta.avatar_url as string) ?? null,
   };
-}
+});
