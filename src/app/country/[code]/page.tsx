@@ -27,6 +27,13 @@ import {
  * repeating one city adds nothing) until they have more.
  */
 
+/**
+ * The page checks its URL before anything streams (a missing place or city is a real 404, not a
+ * 200 with a not-found page), so a first visit waits for that cached lookup instead of showing the
+ * generic shell. Navigation to it is not expected to be instant.
+ */
+export const instant = false;
+
 type Props = PageProps<"/country/[code]">;
 
 // The countries with enough guides are prerendered; any other country renders on its first visit.
@@ -40,7 +47,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { code } = await params;
   const country = await getCountry(code);
-  if (!country) return { title: "Country not found" };
+  if (!country) notFound();
   const guides = await getCountryGuides(country.code);
   const description = countryDescription(
     country,
@@ -55,7 +62,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function CountryPage(props: Props) {
+// Checked before anything streams, so an unknown country is a real 404 (cached lookup).
+export default async function CountryPage(props: Props) {
+  if (!(await getCountry((await props.params).code))) notFound();
   return (
     <Suspense
       fallback={

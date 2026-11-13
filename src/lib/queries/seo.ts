@@ -27,7 +27,7 @@ export type SitemapRows = {
 
 export async function getSitemapRows(): Promise<SitemapRows> {
   "use cache";
-  cacheLife("hours");
+  cacheLife("guide");
   cacheTag("sitemap");
   if (!isDatabaseConfigured()) return { cities: [], categories: [], places: [] };
   const cities = await query<SitemapRows["cities"][number]>(
@@ -62,6 +62,9 @@ export async function getSitemapRows(): Promise<SitemapRows> {
 
 /** Whether a city's page has anything on it besides "Building this guide…". */
 export async function cityHasContent(cityId: number): Promise<boolean> {
+  "use cache";
+  cacheLife("guide");
+  cacheTag(`city:${cityId}`);
   const row = await queryOne<{ ok: boolean }>(
     `select exists (select 1 from places where city_id = $1 and not adult and not hidden)
          or exists (select 1 from city_stats where city_id = $1 and rating_count > 0) as ok`,

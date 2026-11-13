@@ -83,15 +83,24 @@ export type WatchOutPlace = {
   tag_counts: Record<string, number>;
 };
 
-/** Uncached: tiny indexed lookup. Its imported_at doubles as the cache version for the guide. */
+/**
+ * A city by its URL. Cached (crawlers open city pages in bursts, and each used to cost a database
+ * connection), tagged `city:<id>` so a rating busts it, and refreshed by the import-status route
+ * when a guide finishes building. Its imported_at doubles as the cache version for the guide.
+ */
 export async function getCityBySlug(countryCode: string, slug: string): Promise<City | null> {
-  return queryOne<City>(
+  "use cache";
+  cacheLife("guide");
+  cacheTag(`city-slug:${countryCode.toLowerCase()}/${slug}`);
+  const city = await queryOne<City>(
     `select c.id, c.name, c.ascii_name, c.country_code, co.name as country_name, co.continent, c.admin1,
             c.population, c.lat, c.lng, c.slug, c.timezone, c.import_status, c.imported_at::text as imported_at
      from cities c join countries co on co.code = c.country_code
      where c.country_code = upper($1) and c.slug = $2`,
     [countryCode, slug],
   );
+  if (city) cacheTag(`city:${city.id}`);
+  return city;
 }
 
 export async function getCityById(id: number): Promise<City | null> {
@@ -125,7 +134,7 @@ export type TrendingCity = {
 
 export async function getTrendingCities(limit = 12): Promise<TrendingCity[]> {
   "use cache";
-  cacheLife("hours");
+  cacheLife("guide");
   cacheTag("trending");
   if (!isDatabaseConfigured()) return [];
   try {
@@ -175,7 +184,7 @@ export async function getFeaturedCityParams(): Promise<{ country: string; slug: 
 /** A handful of big cities to show on the home page before anyone has visited anything. */
 export async function getFeaturedCities(): Promise<TrendingCity[]> {
   "use cache";
-  cacheLife("days");
+  cacheLife("reference");
   if (!isDatabaseConfigured()) return [];
   try {
     return await query<TrendingCity>(
@@ -196,7 +205,7 @@ export async function getFeaturedCities(): Promise<TrendingCity[]> {
 /** Everything the city guide page needs, cached per city and per import version. */
 export async function getCityGuide(cityId: number, version: string) {
   "use cache";
-  cacheLife("hours");
+  cacheLife("guide");
   cacheTag(`city:${cityId}`);
   void version; // part of the cache key: a re-import changes imported_at and busts this entry
   const [top, watchOut, stats, counts] = await Promise.all([
@@ -266,7 +275,7 @@ export type CategoryPlace = TopPlace & { address: string | null; opening_hours: 
 
 export async function getCityCategory(cityId: number, category: PlaceCategory, version: string) {
   "use cache";
-  cacheLife("hours");
+  cacheLife("guide");
   cacheTag(`city:${cityId}`);
   void version;
   return query<CategoryPlace>(
@@ -291,7 +300,7 @@ export type DirectoryCity = TrendingCity & { continent: string | null; lat: numb
  */
 export async function getCityDirectory(): Promise<DirectoryCity[]> {
   "use cache";
-  cacheLife("hours");
+  cacheLife("guide");
   cacheTag("city-directory");
   if (!isDatabaseConfigured()) return [];
   try {
@@ -315,7 +324,7 @@ export async function getCityDirectory(): Promise<DirectoryCity[]> {
 /** Cached minimal city lookup for metadata and breadcrumbs (names don't change). */
 export async function getCityBasic(countryCode: string, slug: string) {
   "use cache";
-  cacheLife("days");
+  cacheLife("reference");
   return queryOne<{
     id: number;
     name: string;

@@ -24,6 +24,13 @@ import { SignInGate } from "@/components/sign-in-gate";
 import { countryPath } from "@/lib/queries/countries";
 import { breadcrumbJsonLd, placeDescription, placeJsonLd, placeTitle } from "@/lib/structured-data";
 
+/**
+ * The page checks its URL before anything streams (a missing place or city is a real 404, not a
+ * 200 with a not-found page), so a first visit waits for that cached lookup instead of showing the
+ * generic shell. Navigation to it is not expected to be instant.
+ */
+export const instant = false;
+
 type Props = PageProps<"/place/[id]">;
 
 function parseId(id: string): number | null {
@@ -31,11 +38,20 @@ function parseId(id: string): number | null {
   return Number.isInteger(n) && n > 0 ? n : null;
 }
 
+/**
+ * A single sample place. Cache Components needs at least one, so the page can check the URL before
+ * streaming (a real 404 for a missing place); every place renders on its first visit and is
+ * cached, as before. Not a prerender of all places.
+ */
+export function generateStaticParams() {
+  return [{ id: "1" }];
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const placeId = parseId(id);
   const place = placeId ? await getPlace(placeId) : null;
-  if (!place) return { title: "Place not found" };
+  if (!place) notFound();
   const description = placeDescription(place);
   return {
     title: placeTitle(place),
@@ -49,7 +65,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function PlacePage(props: Props) {
+// Checked before anything streams, so a missing place is a real 404 (not a 200 with a not-found
+// page). getPlace is cached, so this costs no database query once warm.
+export default async function PlacePage(props: Props) {
+  const placeId = parseId((await props.params).id);
+  if (!placeId || !(await getPlace(placeId))) notFound();
   return (
     <Suspense
       fallback={

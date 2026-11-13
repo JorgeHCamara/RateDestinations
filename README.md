@@ -245,6 +245,17 @@ In [Google Search Console](https://search.google.com/search-console) (Domain pro
 In [Bing Webmaster Tools](https://www.bing.com/webmasters), import the site from Search Console;
 Bing's index also feeds DuckDuckGo, Yahoo and ChatGPT search.
 
+### 6. Hosting costs (Vercel)
+
+Public pages (home, cities, places, categories, countries) are partial prerenders served from
+Vercel's cache; their data uses the `guide` / `reference` / `stable` cache profiles in
+`next.config.ts` (an hour or more, cleared at once by ratings via `updateTag`). The proxy
+(`src/proxy.ts`), which refreshes Supabase sessions, only runs on the session pages and, on public
+pages, for browsers with the `rd-session` marker cookie (signed-in visitors): crawlers and
+signed-out visitors never invoke it, and their responses carry no Set-Cookie. `robots.txt` keeps
+search engines in and AI-training scrapers out; for crawlers that ignore it, add a Vercel Firewall
+rate limit on `/place/*` and `/city/*`.
+
 ## Data and attribution
 
 Place data © OpenStreetMap contributors (ODbL) and Overture Maps Foundation (CDLA Permissive
