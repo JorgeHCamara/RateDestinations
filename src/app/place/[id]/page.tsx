@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PlacePagePhoto } from "@/components/place-hover-preview";
 import { toPlaceImage } from "@/lib/images/place-image";
-import { Suspense } from "react";
+import { Suspense, type ReactNode } from "react";
 import { CityMapLazy } from "@/components/city-map-lazy";
 import { PlaceRatingForm } from "@/components/rating/place-rating-form";
 import { ScorePill, ScoreRing } from "@/components/score";
@@ -67,6 +67,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 // Checked before anything streams, so a missing place is a real 404 (not a 200 with a not-found
 // page). getPlace is cached, so this costs no database query once warm.
+//
+// The session-dependent parts (sign-in prompt, rating form) are created here and handed to
+// PlaceDetail as slots: PlaceDetail itself only reads cached data, so resuming the page for a
+// visitor renders those two holes without re-reading the place.
 export default async function PlacePage(props: Props) {
   const placeId = parseId((await props.params).id);
   if (!placeId || !(await getPlace(placeId))) notFound();
@@ -78,15 +82,33 @@ export default async function PlacePage(props: Props) {
         </div>
       }
     >
-      <PlaceDetail params={props.params} />
+      <PlaceDetail
+        placeId={placeId}
+        signInSlot={
+          <Suspense fallback={null}>
+            <SignInGate next={`/place/${placeId}`} />
+          </Suspense>
+        }
+        ratingSlot={
+          <Suspense fallback={<div className="bg-muted h-64 animate-pulse rounded-xl border" />}>
+            <RatingPanel placeId={placeId} />
+          </Suspense>
+        }
+      />
     </Suspense>
   );
 }
 
-async function PlaceDetail({ params }: { params: Props["params"] }) {
-  const { id } = await params;
-  const placeId = parseId(id);
-  if (!placeId) notFound();
+/** The place itself, from cached data only (no session or request APIs here). */
+async function PlaceDetail({
+  placeId,
+  signInSlot,
+  ratingSlot,
+}: {
+  placeId: number;
+  signInSlot: ReactNode;
+  ratingSlot: ReactNode;
+}) {
   const place = await getPlace(placeId);
   if (!place) notFound();
   const [reviews, nearby, tags] = await Promise.all([
@@ -106,9 +128,7 @@ async function PlaceDetail({ params }: { params: Props["params"] }) {
 
   return (
     <article className="container-page py-8">
-      <Suspense fallback={null}>
-        <SignInGate next={`/place/${place.id}`} />
-      </Suspense>
+      {signInSlot}
       <JsonLd data={placeJsonLd(place)} />
       <JsonLd
         data={breadcrumbJsonLd([
@@ -294,11 +314,7 @@ async function PlaceDetail({ params }: { params: Props["params"] }) {
           )}
         </div>
 
-        <aside className="lg:sticky lg:top-20 lg:self-start">
-          <Suspense fallback={<div className="bg-muted h-64 animate-pulse rounded-xl border" />}>
-            <RatingPanel placeId={place.id} />
-          </Suspense>
-        </aside>
+        <aside className="lg:sticky lg:top-20 lg:self-start">{ratingSlot}</aside>
       </div>
     </article>
   );

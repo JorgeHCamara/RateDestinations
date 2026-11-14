@@ -64,7 +64,7 @@ export type CityWithoutGuide = {
 /** The country's biggest cities nobody has opened yet: each guide builds on its first visit. */
 export async function getCitiesWithoutGuide(code: string, limit = 24): Promise<CityWithoutGuide[]> {
   "use cache";
-  cacheLife("guide");
+  cacheLife("directory");
   cacheTag("city-directory");
   if (!isDatabaseConfigured()) return [];
   try {

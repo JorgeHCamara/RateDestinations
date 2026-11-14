@@ -56,7 +56,7 @@ export async function getPlace(placeId: number): Promise<Place | null> {
   "use cache";
   cacheLife("guide");
   cacheTag(`place:${placeId}`);
-  return queryOne<Place>(
+  const place = await queryOne<Place>(
     `select p.id, p.city_id, c.name as city_name, c.slug as city_slug, c.country_code, co.name as country_name,
             p.source, p.source_id, p.name, p.category, p.subcategory, p.lat, p.lng, p.address,
             case when p.website_hijacked then null else p.website end as website, p.phone,
@@ -71,6 +71,10 @@ export async function getPlace(placeId: number): Promise<Place | null> {
      where p.id = $1 and not p.adult and not p.hidden`,
     [placeId],
   );
+  // A re-import can rename or remove the place: imports revalidate city-places:<city id>. (Not
+  // city:<id>, which every rating in the city clears.)
+  if (place) cacheTag(`city-places:${place.city_id}`);
+  return place;
 }
 
 export async function getPlaceReviews(placeId: number, limit = 20): Promise<PlaceReview[]> {

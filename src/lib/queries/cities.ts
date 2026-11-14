@@ -113,8 +113,6 @@ export async function getCityById(id: number): Promise<City | null> {
 }
 
 export async function searchCities(q: string, limit = 8): Promise<CitySearchHit[]> {
-  "use cache";
-  cacheLife("minutes");
   const trimmed = q.trim();
   if (trimmed.length < 2) return [];
   return query<CitySearchHit>("select * from search_cities($1, $2)", [trimmed.slice(0, 80), limit]);
@@ -300,7 +298,7 @@ export type DirectoryCity = TrendingCity & { continent: string | null; lat: numb
  */
 export async function getCityDirectory(): Promise<DirectoryCity[]> {
   "use cache";
-  cacheLife("guide");
+  cacheLife("directory");
   cacheTag("city-directory");
   if (!isDatabaseConfigured()) return [];
   try {

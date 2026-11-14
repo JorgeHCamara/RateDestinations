@@ -26,10 +26,11 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/places/[id]
     revalidateTag(`place:${placeId}`, { expire: 0 });
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
-  // The place page and the city's lists (thumbnails) show the photo too: let them pick it up.
+  // The place page shows the photo (or drops the hijacked website link). Not the city's lists:
+  // their thumbnails fetch this route themselves (PlaceThumb, CDN-cached), and clearing a whole
+  // city for one photo rewrote every guide page in it.
   if (lookedUp && (image || hijacked)) {
     revalidateTag(`place:${placeId}`, "max");
-    revalidateTag(`city:${place.city_id}`, "max");
   }
 
   let websiteHost: string | null = null;
