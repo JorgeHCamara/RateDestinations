@@ -3,7 +3,7 @@ import { CategoryIcon } from "@/components/category-icon";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, type ReactNode } from "react";
 import { CategorySection } from "@/components/category-section";
 import { CityMapLazy, type MapPinInput } from "@/components/city-map-lazy";
 import { DimensionBars } from "@/components/dimension-bars";
@@ -83,30 +83,53 @@ function seoGuide(guide: Awaited<ReturnType<typeof getCityGuide>> | null) {
 }
 
 // Checked before anything streams, so an unknown city is a real 404. getCityBySlug is cached.
+//
+// The session-dependent parts (sign-in prompt, rating form) are created here, from the cached
+// lookup's small values, and handed to CityGuide as slots: CityGuide only reads cached data, so
+// resuming the page for a visitor renders those holes without re-reading the guide.
 export default async function CityPage(props: Props) {
   const { country, slug } = await props.params;
-  if (!(await getCityBySlug(country, slug))) notFound();
+  const city = await getCityBySlug(country, slug);
+  if (!city) notFound();
+  const returnTo = `/city/${country.toLowerCase()}/${slug}`;
   return (
     <Suspense fallback={<CitySkeleton />}>
-      <CityGuide params={props.params} />
+      <CityGuide
+        city={city}
+        returnTo={returnTo}
+        signInSlot={
+          <Suspense fallback={null}>
+            <SignInGate next={returnTo} />
+          </Suspense>
+        }
+        ratingSlot={
+          <Suspense fallback={<div className="bg-muted h-72 animate-pulse rounded-xl border" />}>
+            <CityRatingPanel cityId={city.id} cityName={city.name} returnTo={returnTo} />
+          </Suspense>
+        }
+      />
     </Suspense>
   );
 }
 
-async function CityGuide({ params }: { params: Props["params"] }) {
-  const { country, slug } = await params;
-  const city = await getCityBySlug(country, slug);
-  if (!city) notFound();
-
+/** The guide itself, from cached data only (no session or request APIs here). */
+async function CityGuide({
+  city,
+  returnTo,
+  signInSlot,
+  ratingSlot,
+}: {
+  city: City;
+  returnTo: string;
+  signInSlot: ReactNode;
+  ratingSlot: ReactNode;
+}) {
   const building = city.import_status !== "done";
   const guide = building ? null : await getCityGuide(city.id, city.imported_at ?? "0");
-  const returnTo = `/city/${country.toLowerCase()}/${slug}`;
 
   return (
     <article>
-      <Suspense fallback={null}>
-        <SignInGate next={returnTo} />
-      </Suspense>
+      {signInSlot}
       <JsonLd data={cityJsonLd(city, cityDescription(city, seoGuide(guide)))} />
       <JsonLd
         data={breadcrumbJsonLd([
@@ -212,9 +235,7 @@ async function CityGuide({ params }: { params: Props["params"] }) {
         {/* Stays in view beside the guide on wide screens, at full height: on a short screen it
             pins by its bottom edge, so Save is always a short scroll away. */}
         <StickyAside id="rate" className="scroll-mt-20">
-          <Suspense fallback={<div className="bg-muted h-72 animate-pulse rounded-xl border" />}>
-            <CityRatingPanel city={city} returnTo={returnTo} />
-          </Suspense>
+          {ratingSlot}
         </StickyAside>
       </div>
     </article>
@@ -226,15 +247,23 @@ async function WatchOutSection({ cityId, version }: { cityId: number; version: s
   return <WatchOutList places={guide.watchOut} tags={tags} />;
 }
 
-async function CityRatingPanel({ city, returnTo }: { city: City; returnTo: string }) {
+async function CityRatingPanel({
+  cityId,
+  cityName,
+  returnTo,
+}: {
+  cityId: number;
+  cityName: string;
+  returnTo: string;
+}) {
   const user = await getSessionUser();
   const [existing, existingRole] = user
-    ? await Promise.all([getMyCityRatings(user.id, city.id), getMyCityRole(user.id, city.id)])
+    ? await Promise.all([getMyCityRatings(user.id, cityId), getMyCityRole(user.id, cityId)])
     : [{}, null];
   return (
     <CityRatingForm
-      cityId={city.id}
-      cityName={city.name}
+      cityId={cityId}
+      cityName={cityName}
       existing={existing}
       existingRole={existingRole}
       signedIn={Boolean(user)}

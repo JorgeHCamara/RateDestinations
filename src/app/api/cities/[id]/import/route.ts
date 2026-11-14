@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { claimAndImport } from "@/lib/import/import-city";
 import { isAuthorizedCronRequest } from "@/lib/import/auth";
+import { revalidateCityImport } from "@/lib/import/revalidate";
 
 export const maxDuration = 300;
 
@@ -17,8 +18,10 @@ export async function POST(request: Request, ctx: RouteContext<"/api/cities/[id]
     const result = await claimAndImport(cityId, force ? 0 : 90);
     if (!result)
       return NextResponse.json({ skipped: true, reason: "already imported or in progress" });
+    revalidateCityImport(cityId);
     return NextResponse.json(result);
   } catch (err) {
+    revalidateCityImport(cityId); // marked failed: the page should say so
     return NextResponse.json({ error: (err as Error).message }, { status: 502 });
   }
 }

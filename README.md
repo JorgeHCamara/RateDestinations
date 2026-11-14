@@ -158,7 +158,9 @@ film it with `node .claude/skills/stageshow/scripts/film.mjs http://localhost:30
 ### 2. GitHub (offline guide builds)
 
 Add a repository secret **DATABASE_URL** (Settings → Secrets and variables → Actions) with the
-same Supabase connection string Vercel uses. The **Overture import** workflow then runs every 30
+same Supabase connection string Vercel uses, and **CRON_SECRET** with the same value as in Vercel: at
+the end of each run the job tells the site which guides changed (`POST /api/revalidate` with the
+cache tags), since cached guide pages last days. The **Overture import** workflow then runs every 30
 minutes; trigger it once by hand (Actions → Overture import → Run workflow) to pre-build the top
 cities straight away. Each city takes about 2 seconds; the free plan's 2,000 Actions minutes a
 month is plenty.
@@ -249,7 +251,10 @@ Bing's index also feeds DuckDuckGo, Yahoo and ChatGPT search.
 
 Public pages (home, cities, places, categories, countries) are partial prerenders served from
 Vercel's cache; their data uses the `guide` / `reference` / `stable` cache profiles in
-`next.config.ts` (an hour or more, cleared at once by ratings via `updateTag`). The proxy
+`next.config.ts`. Guide data (`guide`) is kept for days and refreshed by tags, not time: ratings
+and name changes call `updateTag`, imports call `revalidateTag` (the import, build, cron and status
+routes, and `/api/revalidate` for the offline job). The city lists and sitemap (`directory`)
+refresh daily. The proxy
 (`src/proxy.ts`), which refreshes Supabase sessions, only runs on the session pages and, on public
 pages, for browsers with the `rd-session` marker cookie (signed-in visitors): crawlers and
 signed-out visitors never invoke it, and their responses carry no Set-Cookie. `robots.txt` keeps

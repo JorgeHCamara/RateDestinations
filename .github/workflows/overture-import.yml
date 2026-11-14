@@ -51,6 +51,8 @@ jobs:
       - name: Build guides from Overture
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          # Tells the site which guides changed (POST /api/revalidate); same value as in Vercel.
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           if [ -n "${{ inputs.city }}" ]; then
             pnpm tsx scripts/import-overture.ts --city "${{ inputs.city }}"

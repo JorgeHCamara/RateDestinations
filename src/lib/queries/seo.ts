@@ -27,7 +27,7 @@ export type SitemapRows = {
 
 export async function getSitemapRows(): Promise<SitemapRows> {
   "use cache";
-  cacheLife("guide");
+  cacheLife("directory");
   cacheTag("sitemap");
   if (!isDatabaseConfigured()) return { cities: [], categories: [], places: [] };
   const cities = await query<SitemapRows["cities"][number]>(

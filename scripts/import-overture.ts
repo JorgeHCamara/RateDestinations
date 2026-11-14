@@ -24,6 +24,7 @@ import { DuckDBInstance } from "@duckdb/node-api";
 import { getPool, query, queryOne } from "../src/lib/db";
 import { fetchFamousPlaces, type FamousPlace } from "../src/lib/import/famous";
 import { mergePlaces } from "../src/lib/import/merge";
+import { cityImportTags } from "../src/lib/import/revalidate";
 import { radiusForPopulation } from "../src/lib/import/overpass";
 import {
   bboxAround,
@@ -149,6 +150,7 @@ async function main() {
 
   console.log(`database ${(await databaseMb()).toFixed(1)} MB, safety stop at ${maxDbMb} MB`);
   let built = 0;
+  const changed: number[] = [];
   let stoppedForSize = false;
   for (const city of cities) {
     if (Date.now() > deadline) {
@@ -203,6 +205,7 @@ async function main() {
         [city.id, famousOk ? build : `${build}${PARTIAL}`, places.length],
       );
       built++;
+      changed.push(city.id);
       const famousKept = places.filter((p) => p.wikidata_id).length;
       console.log(
         `${city.country_code.toLowerCase()}/${city.slug}: ${rows.length} candidates, ${famous.length} famous, ${places.length} kept (${famousKept} famous, ${added} added, ${enriched} merged, ${pruned.length} dropped) in ${Date.now() - started}ms`,
@@ -214,6 +217,39 @@ async function main() {
     }
   }
   console.log(`built ${built} of ${cities.length}; database ${(await databaseMb()).toFixed(1)} MB`);
+  await revalidateSite(changed);
+}
+
+/**
+ * Tell the site which cities changed: cached guide pages last days (next.config.ts cacheLife), so
+ * without this a rebuilt guide shows only when its cache expires. Needs NEXT_PUBLIC_SITE_URL (or
+ * the default) and CRON_SECRET; without the secret it only warns.
+ */
+async function revalidateSite(cityIds: number[]) {
+  if (!cityIds.length) return;
+  const secret = process.env.CRON_SECRET;
+  const site = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.ratedestinations.com").replace(
+    /\/+$/,
+    "",
+  );
+  if (!secret) {
+    console.warn(
+      `CRON_SECRET not set: ${cityIds.length} changed guides refresh only when their cache expires`,
+    );
+    return;
+  }
+  const tags = [...new Set(cityIds.flatMap(cityImportTags))];
+  try {
+    const res = await fetch(`${site}/api/revalidate`, {
+      method: "POST",
+      headers: { authorization: `Bearer ${secret}`, "content-type": "application/json" },
+      body: JSON.stringify({ tags }),
+      signal: AbortSignal.timeout(30_000),
+    });
+    console.log(`revalidate ${tags.length} tags: HTTP ${res.status} ${await res.text()}`);
+  } catch (err) {
+    console.error(`revalidate failed: ${(err as Error).message}`);
+  }
 }
 
 main()
