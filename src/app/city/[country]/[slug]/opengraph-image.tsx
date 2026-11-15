@@ -55,6 +55,11 @@ export default async function Image({
         The good, the bad, and what to avoid — rated by locals and travellers.
       </div>
     </div>,
-    size,
+    {
+      ...size,
+      // Rendered on demand (the route reads its URL), so cache it at the edge: a city's card only
+      // changes with its name, which doesn't. 30 days, then refreshed in the background.
+      headers: { "Cache-Control": "public, s-maxage=2592000, stale-while-revalidate=86400" },
+    },
   );
 }

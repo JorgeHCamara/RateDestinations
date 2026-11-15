@@ -1,9 +1,28 @@
 import { describe, expect, it } from "vitest";
-import { cityImportTags, REVALIDATE_TAG } from "@/lib/import/revalidate";
+import { compareGuides, EMPTY_GUIDE, UNKNOWN_GUIDE } from "@/lib/import/guide-changes";
+import { cityTags, DIRECTORY_TAGS, REVALIDATE_TAG } from "@/lib/import/revalidate";
 
-describe("import revalidation tags", () => {
-  it("clears a city's guide, its place pages, the lists and the sitemap", () => {
-    expect(cityImportTags(42)).toEqual(["city:42", "city-places:42", "city-directory", "sitemap"]);
+describe("import revalidation", () => {
+  it("names a city's guide tags, and the site-wide ones apart", () => {
+    expect(cityTags(42)).toEqual(["city:42", "city-places:42"]);
+    expect(DIRECTORY_TAGS).toEqual(["city-directory", "sitemap"]);
+  });
+
+  it("expires a city only when its guide changed, and the lists only when it gained or lost one", () => {
+    expect(compareGuides("aaa", "aaa")).toEqual({ changed: false, directoryChanged: false });
+    expect(compareGuides("aaa", "bbb")).toEqual({ changed: true, directoryChanged: false });
+    expect(compareGuides(EMPTY_GUIDE, "bbb")).toEqual({ changed: true, directoryChanged: true });
+    expect(compareGuides("", "bbb")).toEqual({ changed: true, directoryChanged: true });
+    expect(compareGuides("aaa", EMPTY_GUIDE)).toEqual({ changed: true, directoryChanged: true });
+    // without migration 0015: expire the city as before, never the site-wide lists
+    expect(compareGuides(UNKNOWN_GUIDE, UNKNOWN_GUIDE)).toEqual({
+      changed: true,
+      directoryChanged: false,
+    });
+    expect(compareGuides(EMPTY_GUIDE, EMPTY_GUIDE)).toEqual({
+      changed: false,
+      directoryChanged: false,
+    });
   });
 
   it("accepts only our own tag shapes on /api/revalidate", () => {

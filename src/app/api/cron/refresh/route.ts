@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { claimAndImport } from "@/lib/import/import-city";
 import { isAuthorizedCronRequest } from "@/lib/import/auth";
-import { revalidateCityImport } from "@/lib/import/revalidate";
+import { importWithRevalidation } from "@/lib/import/revalidate";
 import { refreshExternalRatings } from "@/lib/providers/ratings/refresh";
 
 export const maxDuration = 300;
@@ -32,11 +32,10 @@ export async function GET(request: Request) {
   for (const c of candidates) {
     if (Date.now() - started > budgetMs) break;
     try {
-      const r = await claimAndImport(c.id, 90);
-      if (r) revalidateCityImport(c.id);
+      // Expires only what changed; a failure only city:<id> (lib/import/revalidate.ts).
+      const r = await importWithRevalidation(c.id, () => claimAndImport(c.id, 90));
       refreshed.push({ id: c.id, name: c.name, ok: true, places: r?.places });
     } catch (err) {
-      revalidateCityImport(c.id);
       refreshed.push({ id: c.id, name: c.name, ok: false, error: (err as Error).message });
     }
   }

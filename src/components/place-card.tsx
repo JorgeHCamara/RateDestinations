@@ -5,17 +5,26 @@ import { ScorePill } from "@/components/score";
 import { CATEGORY_META } from "@/lib/import/categories";
 import type { TopPlace } from "@/lib/queries/cities";
 
-export function PlaceCard({
-  place,
-  rank,
-}: {
-  place: TopPlace & { address?: string | null };
-  rank?: number;
-}) {
+export function PlaceCard({ place, rank }: { place: TopPlace; rank?: number }) {
+  // Only what the preview renders goes to the browser (lists send 60–200 of these); the address
+  // and website come from /api/places/[id]/preview when it opens. lat/lng are for "Directions".
+  const preview = {
+    id: place.id,
+    name: place.name,
+    category: place.category,
+    subcategory: place.subcategory,
+    user_avg: place.user_avg,
+    user_count: place.user_count,
+    warning_count: place.warning_count,
+    lat: place.lat,
+    lng: place.lng,
+  };
   return (
-    <PlaceHoverPreview place={place}>
+    <PlaceHoverPreview place={preview}>
+      {/* No prefetch: lists render 60–200 of these. */}
       <Link
         href={`/place/${place.id}`}
+        prefetch={false}
         className="group bg-card focus-visible:ring-ring/60 flex min-w-0 items-center gap-3 rounded-xl border p-2.5 transition hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2"
       >
         <PlaceThumb

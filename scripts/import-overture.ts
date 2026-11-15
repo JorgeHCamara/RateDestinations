@@ -24,7 +24,8 @@ import { DuckDBInstance } from "@duckdb/node-api";
 import { getPool, query, queryOne } from "../src/lib/db";
 import { fetchFamousPlaces, type FamousPlace } from "../src/lib/import/famous";
 import { mergePlaces } from "../src/lib/import/merge";
-import { cityImportTags } from "../src/lib/import/revalidate";
+import { compareGuides, directoryTagsDue, guideHash } from "../src/lib/import/guide-changes";
+import { cityTags, DIRECTORY_TAGS } from "../src/lib/import/revalidate";
 import { radiusForPopulation } from "../src/lib/import/overpass";
 import {
   bboxAround,
@@ -57,8 +58,13 @@ async function databaseMb(): Promise<number> {
   return Number(row?.bytes ?? 0) / 1024 / 1024;
 }
 
-/** A build without Wikidata's famous places is marked like this, so the next run tries again. */
+/** A build without Wikidata's famous places is marked like this, so a later run tries again. */
 const PARTIAL = "~no-famous";
+/**
+ * …but at most once a day: during a Wikidata outage every run would otherwise rebuild (and
+ * re-expire) the same cities. SQL, with $1 = the current build.
+ */
+const RETRY_GATE = `not (overture_release = $1 || '${PARTIAL}' and overture_attempted_at > now() - interval '24 hours')`;
 
 type CityRow = {
   /** A new guide from the backfill (counts against --max-db-mb), not a rebuild or a request. */
@@ -107,6 +113,7 @@ async function main() {
       `select id, name, country_code, slug, lat, lng, population from cities
        where (requested_at is not null or imported_at is not null)
          and overture_release is distinct from $1
+         and ${RETRY_GATE}
        order by coalesce(requested_at, imported_at) desc limit $2`,
       [build, requestedLimit],
     );
@@ -118,13 +125,14 @@ async function main() {
              and ($3::text[] is null or trim(c.country_code) = any($3))
              and c.population >= $4
              and c.overture_release is distinct from $1
+             and ${RETRY_GATE.replace(/\b(overture_release|overture_attempted_at)\b/g, "c.$1")}
            order by c.population desc limit $5`,
           [build, continents, countries, minPopulation, backfillLimit],
         )
       : await query<CityRow>(
           `select id, name, country_code, slug, lat, lng, population from (
              select * from cities order by population desc limit $2
-           ) top where overture_release is distinct from $1
+           ) top where overture_release is distinct from $1 and ${RETRY_GATE}
            order by population desc limit $3`,
           [build, top, backfillLimit],
         );
@@ -150,7 +158,9 @@ async function main() {
 
   console.log(`database ${(await databaseMb()).toFixed(1)} MB, safety stop at ${maxDbMb} MB`);
   let built = 0;
+  let attempted = 0;
   const changed: number[] = [];
+  let directoryChanged = false;
   let stoppedForSize = false;
   for (const city of cities) {
     if (Date.now() > deadline) {
@@ -166,7 +176,9 @@ async function main() {
       continue; // rebuilds and visitors' cities later in the list still go ahead
     }
     const started = Date.now();
+    attempted++;
     try {
+      const before = await guideHash(city.id);
       const radius = radiusForPopulation(city.population);
       const reader = await duck.runAndReadAll(
         overtureQuery(release, bboxAround(city.lat, city.lng, radius)),
@@ -196,16 +208,22 @@ async function main() {
          returning p.id`,
         [city.id, places.map((p) => p.source_id)],
       );
-      // imported_at doubles as the guide's cache version: bumping it shows the new places.
+      // Did the guide really change? Only then are its pages expired (and imported_at, the
+      // guide's cache version, bumped).
+      const after = await guideHash(city.id);
+      const diff = compareGuides(before, after);
       await query(
-        `update cities set overture_release = $2, overture_imported_at = now(), imported_at = now(),
+        `update cities set overture_release = $2, overture_imported_at = now(), overture_attempted_at = now(),
+                imported_at = case when $4 or imported_at is null then now() else imported_at end,
+                guide_hash = $5,
                 import_status = case when $3 > 0 or import_status = 'done' then 'done'::import_status else import_status end,
                 import_error = case when $3 > 0 then null else import_error end
          where id = $1`,
-        [city.id, famousOk ? build : `${build}${PARTIAL}`, places.length],
+        [city.id, famousOk ? build : `${build}${PARTIAL}`, places.length, diff.changed, after],
       );
       built++;
-      changed.push(city.id);
+      if (diff.changed) changed.push(city.id);
+      if (diff.directoryChanged) directoryChanged = true;
       const famousKept = places.filter((p) => p.wikidata_id).length;
       console.log(
         `${city.country_code.toLowerCase()}/${city.slug}: ${rows.length} candidates, ${famous.length} famous, ${places.length} kept (${famousKept} famous, ${added} added, ${enriched} merged, ${pruned.length} dropped) in ${Date.now() - started}ms`,
@@ -216,8 +234,17 @@ async function main() {
       );
     }
   }
-  console.log(`built ${built} of ${cities.length}; database ${(await databaseMb()).toFixed(1)} MB`);
-  await revalidateSite(changed);
+  console.log(
+    `built ${built} of ${cities.length} (${changed.length} changed); database ${(await databaseMb()).toFixed(1)} MB`,
+  );
+  const directory = await directoryTagsDue(directoryChanged);
+  await revalidateSite([...changed.flatMap(cityTags), ...(directory ? DIRECTORY_TAGS : [])]);
+  // Tried cities and built none: something is broken (a missing migration, say). Fail the run so
+  // it shows in GitHub instead of passing quietly.
+  if (attempted > 0 && built === 0) {
+    console.error(`FAILED: ${attempted} cities attempted, none built`);
+    process.exitCode = 1;
+  }
 }
 
 /**
@@ -225,20 +252,20 @@ async function main() {
  * without this a rebuilt guide shows only when its cache expires. Needs NEXT_PUBLIC_SITE_URL (or
  * the default) and CRON_SECRET; without the secret it only warns.
  */
-async function revalidateSite(cityIds: number[]) {
-  if (!cityIds.length) return;
+async function revalidateSite(tags: string[]) {
+  if (!tags.length) {
+    console.log("nothing changed: no pages to refresh");
+    return;
+  }
   const secret = process.env.CRON_SECRET;
   const site = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.ratedestinations.com").replace(
     /\/+$/,
     "",
   );
   if (!secret) {
-    console.warn(
-      `CRON_SECRET not set: ${cityIds.length} changed guides refresh only when their cache expires`,
-    );
+    console.warn(`CRON_SECRET not set: ${tags.length} tags refresh only when their cache expires`);
     return;
   }
-  const tags = [...new Set(cityIds.flatMap(cityImportTags))];
   try {
     const res = await fetch(`${site}/api/revalidate`, {
       method: "POST",
@@ -254,7 +281,7 @@ async function revalidateSite(cityIds: number[]) {
 
 main()
   .then(() => getPool().end())
-  .then(() => process.exit(0))
+  .then(() => process.exit(process.exitCode ?? 0))
   .catch((err) => {
     console.error(err);
     process.exit(1);

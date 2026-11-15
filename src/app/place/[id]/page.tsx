@@ -57,6 +57,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: placeTitle(place),
     description,
     alternates: { canonical: `/place/${place.id}` },
+    // Unrated and without a photo, a place page is a name and a map pin: kept out of search
+    // results (links on it are still followed) until someone rates it or a photo is found.
+    robots: place.user_count === 0 && !place.image_url ? { index: false, follow: true } : undefined,
     openGraph: {
       title: `${place.name}, ${place.city_name}`,
       description,
@@ -144,11 +147,11 @@ async function PlaceDetail({
           {place.country_name}
         </Link>{" "}
         <span aria-hidden>/</span>{" "}
-        <Link href={cityHref} prefetch={true} className="hover:underline">
+        <Link href={cityHref} className="hover:underline">
           {place.city_name}
         </Link>{" "}
         <span aria-hidden>/</span>{" "}
-        <Link href={`${cityHref}/${place.category}`} prefetch={true} className="hover:underline">
+        <Link href={`${cityHref}/${place.category}`} className="hover:underline">
           {meta.plural}
         </Link>
       </nav>

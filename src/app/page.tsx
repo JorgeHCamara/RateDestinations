@@ -137,7 +137,7 @@ function CityGrid({ cities }: { cities: TrendingCity[] }) {
         <li key={c.id}>
           <Link
             href={`/city/${c.country_code.toLowerCase()}/${c.slug}`}
-            prefetch={true}
+           
             className="group bg-card block rounded-xl border p-4 transition hover:-translate-y-0.5 hover:shadow-md"
           >
             <div className="flex items-start justify-between gap-2">

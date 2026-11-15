@@ -1,5 +1,6 @@
 # Builds city guides from Overture Maps (free monthly bulk data) so the site never depends on a
-# live places API. Every 30 minutes: cities visitors opened, then the most populous cities not
+# live places API. Every 2 hours: cities visitors opened (they already have a live OSM guide from
+# /api/cities/[id]/build; this upgrades them), then the most populous cities not
 # built yet. A new Overture release (monthly) is picked up automatically.
 #
 # Needs the repository secret DATABASE_URL (Supabase connection string).
@@ -7,7 +8,7 @@ name: Overture import
 
 on:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "17 */2 * * *"
   workflow_dispatch:
     inputs:
       city:

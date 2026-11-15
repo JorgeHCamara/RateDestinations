@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { CitySearch } from "@/components/city-search";
 import { JsonLd } from "@/components/json-ld";
 import { ScorePill } from "@/components/score";
@@ -129,40 +128,39 @@ export default async function CitiesPage() {
                 {continent.cityCount} {continent.cityCount === 1 ? "city" : "cities"}
               </span>
             </h2>
+            {/*
+              Countries collapsed (native <details>, no JavaScript), cities as plain links: the list
+              is in the HTML for visitors and crawlers, without a client component per city (this
+              page lists over a thousand).
+            */}
             <div className="gap-8 sm:columns-2 lg:columns-3">
               {continent.countries.map((country) => (
-                <div key={country.code} className="mb-6 break-inside-avoid">
-                  <h3 className="text-muted-foreground mb-1.5 text-xs font-semibold tracking-[0.15em] uppercase">
-                    <Link
+                <details key={country.code} className="mb-3 break-inside-avoid">
+                  <summary className="text-muted-foreground hover:text-foreground cursor-pointer text-xs font-semibold tracking-[0.15em] uppercase">
+                    <a
                       href={countryPath(country.code)}
-                      prefetch={false}
-                      className="hover:text-foreground underline-offset-4 hover:underline"
+                      className="underline-offset-4 hover:underline"
                     >
                       {country.name}
-                    </Link>
-                  </h3>
-                  <ul className="space-y-1">
+                    </a>{" "}
+                    <span className="font-normal tracking-normal normal-case">
+                      ({country.cities.length})
+                    </span>
+                  </summary>
+                  <ul className="[&_small]:text-muted-foreground mt-1.5 mb-3 space-y-1 [&_a]:min-w-0 [&_a]:truncate [&_a]:underline-offset-4 [&_a:hover]:underline [&_small]:shrink-0 [&_small]:text-xs [&_small]:tabular-nums [&>li]:flex [&>li]:items-center [&>li]:justify-between [&>li]:gap-3">
+                    {/* Styled from the list, not per row: the page carries each row three times. */}
                     {country.cities.map((c) => (
-                      <li key={c.id} className="flex items-center justify-between gap-3">
-                        {/* No prefetch: hundreds of links would each preload a guide. */}
-                        <Link
-                          href={cityPath(c.country_code, c.slug)}
-                          prefetch={false}
-                          className="min-w-0 truncate underline-offset-4 hover:underline"
-                        >
-                          {c.name}
-                        </Link>
+                      <li key={c.id}>
+                        <a href={cityPath(c.country_code, c.slug)}>{c.name}</a>
                         {c.rating_count > 0 ? (
                           <ScorePill score={c.overall} count={c.rating_count} />
                         ) : (
-                          <span className="text-muted-foreground shrink-0 text-xs tabular-nums">
-                            {c.place_count.toLocaleString("en-US")} places
-                          </span>
+                          <small>{c.place_count.toLocaleString("en-US")} places</small>
                         )}
                       </li>
                     ))}
                   </ul>
-                </div>
+                </details>
               ))}
             </div>
           </section>
