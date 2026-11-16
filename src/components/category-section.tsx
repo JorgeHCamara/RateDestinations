@@ -31,7 +31,7 @@ export function CategorySection({
         {total > places.length && (
           <Link
             href={href}
-            prefetch={true}
+           
             className="text-brand shrink-0 text-sm font-medium underline-offset-4 hover:underline"
           >
             All {total} →

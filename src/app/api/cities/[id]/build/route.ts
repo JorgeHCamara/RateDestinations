@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { after } from "next/server";
 import { query, queryOne } from "@/lib/db";
 import { importCity } from "@/lib/import/import-city";
-import { revalidateCityImport } from "@/lib/import/revalidate";
+import { importWithRevalidation } from "@/lib/import/revalidate";
 
 export const maxDuration = 300;
 
@@ -33,12 +33,10 @@ export async function POST(_request: Request, ctx: RouteContext<"/api/cities/[id
   if (!claimed?.claim_city_import) return NextResponse.json({ status: "pending", started: false });
   after(async () => {
     try {
-      await claimAndImportAlreadyClaimed(cityId);
+      // Expires only what changed; a failure only city:<id> (lib/import/revalidate.ts).
+      await importWithRevalidation(cityId, () => claimAndImportAlreadyClaimed(cityId));
     } catch (err) {
       console.error(`[import] city ${cityId} failed:`, (err as Error).message);
-    } finally {
-      // Built or failed: the page, /cities and the sitemap should show it.
-      revalidateCityImport(cityId);
     }
   });
   return NextResponse.json({ status: "pending", started: true });

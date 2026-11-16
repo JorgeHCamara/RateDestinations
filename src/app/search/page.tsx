@@ -38,7 +38,6 @@ async function Results({ searchParams }: { searchParams: PageProps<"/search">["s
         <li key={h.id}>
           <Link
             href={`/city/${h.country_code.toLowerCase()}/${h.slug}`}
-            prefetch={true}
             className="hover:bg-accent flex items-baseline justify-between gap-3 px-4 py-3"
           >
             <span>
