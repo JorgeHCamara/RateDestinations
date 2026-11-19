@@ -67,7 +67,11 @@ jobs:
               --backfill 2000 --max-minutes 38
           else
             # A manual run pre-builds all of --top now; scheduled runs add 25 more each time.
+            # Scheduled runs rebuild at most 10 existing guides (visitors' cities first): a new
+            # monthly Overture release rolls out over days, not hundreds of cities in one night,
+            # since every rebuilt guide re-renders its cached pages.
             pnpm tsx scripts/import-overture.ts --top "${{ inputs.top || '300' }}" \
+              --requested "${{ github.event_name == 'workflow_dispatch' && '150' || '10' }}" \
               --backfill "${{ github.event_name == 'workflow_dispatch' && (inputs.top || '300') || '25' }}" \
               --max-minutes 18 --max-db-mb "${{ inputs.max_db_mb || '400' }}"
           fi

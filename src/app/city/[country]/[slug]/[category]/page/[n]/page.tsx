@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { getFeaturedCityParams } from "@/lib/queries/cities";
 import {
   CategoryFallback,
   CategoryList,
@@ -9,7 +8,13 @@ import {
   loadCategoryPage,
 } from "../../category-list";
 
-/** Pages 2+ of a category list (page 1 is the category URL itself). See ../../category-list.tsx. */
+/**
+ * Pages 2+ of a category list (page 1 is the category URL itself, cached as a page). See
+ * ../../category-list.tsx. Not stored in ISR: no param is prerendered, so all these URLs share one
+ * static shell and render per request from the cached page query. They are noindex, nofollow and
+ * not in the sitemap; one ISR entry per city, category and page was all cost. A page past the end
+ * shows the not-found page (noindex) with a 200 status, since the shell is sent first.
+ */
 export const instant = false;
 
 type Props = PageProps<"/city/[country]/[slug]/[category]/page/[n]">;
@@ -19,10 +24,12 @@ function pageNumber(n: string): number {
   return /^[2-9]\d*$/.test(n) ? Number(n) : 0;
 }
 
-/** One sample, which Cache Components needs; every other page renders on its first visit. */
-export async function generateStaticParams() {
-  return (await getFeaturedCityParams()).map((p) => ({ ...p, category: "restaurant", n: "2" }));
-}
+export const unstable_paramMatching = {
+  country: "dynamic",
+  slug: "dynamic",
+  category: "dynamic",
+  n: "dynamic",
+} as const;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { country, slug, category, n } = await params;
@@ -31,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return categoryMetadata(country, slug, category, page);
 }
 
-// Checked before anything streams (a page past the end is a 404), like the category page.
+// A page past the end (or a bad page number) shows the not-found page.
 export default async function CategoryPageN(props: Props) {
   const { country, slug, category, n } = await props.params;
   const page = pageNumber(n);

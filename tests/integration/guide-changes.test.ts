@@ -6,7 +6,13 @@
 import "dotenv/config";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { getPool, query, queryOne } from "@/lib/db";
-import { directoryTagsDue, EMPTY_GUIDE, guideHash } from "@/lib/import/guide-changes";
+import {
+  changedPlaceIds,
+  directoryTagsDue,
+  EMPTY_GUIDE,
+  guideHash,
+  placeHashes,
+} from "@/lib/import/guide-changes";
 
 const run = process.env.DATABASE_URL ? describe : describe.skip;
 
@@ -53,6 +59,21 @@ run("guide change tracking (database)", () => {
       [cityId],
     );
     expect(await guideHash(cityId)).not.toBe(one);
+  });
+
+  it("hashes each place page, so only edited places are expired", async () => {
+    const before = await placeHashes(cityId);
+    expect(before?.size).toBe(1);
+    await query(
+      "update places set updated_at = now(), prominence = prominence + 1 where source_id = 'gc-test-1' and city_id = $1",
+      [cityId],
+    );
+    expect(changedPlaceIds(before, await placeHashes(cityId))).toEqual([]);
+    await query(
+      "update places set phone = '+1 555' where source_id = 'gc-test-1' and city_id = $1",
+      [cityId],
+    );
+    expect(changedPlaceIds(before, await placeHashes(cityId))).toEqual([...before!.keys()]);
   });
 
   it("makes city-directory and sitemap due at most once a day, and keeps a change waiting", async () => {

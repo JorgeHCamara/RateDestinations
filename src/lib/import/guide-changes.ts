@@ -2,7 +2,7 @@
  * Has a city's guide really changed? Shared by the import routes (via lib/import/revalidate.ts)
  * and the offline Overture job (scripts/import-overture.ts). Database only, no Next APIs.
  */
-import { queryOne } from "@/lib/db";
+import { query, queryOne } from "@/lib/db";
 
 /** "Can't tell": compares as changed, so the city's pages are expired as before. */
 export const UNKNOWN_GUIDE = "unknown";
@@ -24,7 +24,7 @@ export async function guideHash(cityId: number): Promise<string> {
 export const EMPTY_GUIDE = "d41d8cd98f00b204e9800998ecf8427e";
 
 export type GuideChange = {
-  /** Its pages should show the new guide (city:<id>, city-places:<id>). */
+  /** Its city and category pages should show the new guide (city:<id>). */
   changed: boolean;
   /** It gained or lost its guide, so /cities and the sitemap list it differently. */
   directoryChanged: boolean;
@@ -78,4 +78,41 @@ async function claimDirectoryTags(directoryChanged: boolean): Promise<boolean> {
     "update site_state set value = 'false', updated_at = now() where key = 'directory_dirty'",
   );
   return true;
+}
+
+/**
+ * What each of a city's place pages shows that an import can change, one hash per place (adult and
+ * hidden places included: hiding one changes its page). Null when it can't be read: then no
+ * place page is expired and they refresh with their cache lifetime.
+ */
+export type PlaceHashes = Map<number, string>;
+
+export async function placeHashes(cityId: number): Promise<PlaceHashes | null> {
+  try {
+    const rows = await query<{ id: number; h: string }>(
+      `select id, md5(concat_ws('|', source, source_id, name, category, subcategory, address, website,
+                phone, opening_hours, round(lat::numeric, 6), round(lng::numeric, 6), wikidata_id,
+                wikipedia, tags::text, adult, hidden, website_hijacked, image_url, image_source,
+                image_credit, image_page, image_checked_at is not null)) as h
+       from places where city_id = $1`,
+      [cityId],
+    );
+    return new Map(rows.map((r) => [Number(r.id), r.h]));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Places whose page shows something different after an import: changed or removed (a removed
+ * place's page must 404). New places have no cached page yet. Null when either side is unknown.
+ */
+export function changedPlaceIds(
+  before: PlaceHashes | null,
+  after: PlaceHashes | null,
+): number[] | null {
+  if (!before || !after) return null;
+  const ids: number[] = [];
+  for (const [id, h] of before) if (after.get(id) !== h) ids.push(id);
+  return ids;
 }

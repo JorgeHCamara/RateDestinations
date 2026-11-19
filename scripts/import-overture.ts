@@ -24,7 +24,13 @@ import { DuckDBInstance } from "@duckdb/node-api";
 import { getPool, query, queryOne } from "../src/lib/db";
 import { fetchFamousPlaces, type FamousPlace } from "../src/lib/import/famous";
 import { mergePlaces } from "../src/lib/import/merge";
-import { compareGuides, directoryTagsDue, guideHash } from "../src/lib/import/guide-changes";
+import {
+  changedPlaceIds,
+  compareGuides,
+  directoryTagsDue,
+  guideHash,
+  placeHashes,
+} from "../src/lib/import/guide-changes";
 import { cityTags, DIRECTORY_TAGS } from "../src/lib/import/revalidate";
 import { radiusForPopulation } from "../src/lib/import/overpass";
 import {
@@ -81,7 +87,7 @@ type CityRow = {
 async function main() {
   const top = Number(arg("top", process.env.OVERTURE_TOP_CITIES ?? "300"));
   // Cities to (re)build first: visitors' requests and guides from an older release or older
-  // rules. The time limit bounds a run, so this can be generous.
+  // rules. Scheduled runs pass --requested 10 so a new release rolls out over days.
   const requestedLimit = Number(arg("requested", "150"));
   const backfillLimit = Number(arg("backfill", "25"));
   const maxMinutes = Number(arg("max-minutes", "20"));
@@ -159,7 +165,9 @@ async function main() {
   console.log(`database ${(await databaseMb()).toFixed(1)} MB, safety stop at ${maxDbMb} MB`);
   let built = 0;
   let attempted = 0;
-  const changed: number[] = [];
+  /** Tags for the cities whose guide changed: city:<id>, and place:<id> for a few changed places. */
+  const tags: string[] = [];
+  let changedCities = 0;
   let directoryChanged = false;
   let stoppedForSize = false;
   for (const city of cities) {
@@ -178,7 +186,7 @@ async function main() {
     const started = Date.now();
     attempted++;
     try {
-      const before = await guideHash(city.id);
+      const [before, placesBefore] = await Promise.all([guideHash(city.id), placeHashes(city.id)]);
       const radius = radiusForPopulation(city.population);
       const reader = await duck.runAndReadAll(
         overtureQuery(release, bboxAround(city.lat, city.lng, radius)),
@@ -222,7 +230,10 @@ async function main() {
         [city.id, famousOk ? build : `${build}${PARTIAL}`, places.length, diff.changed, after],
       );
       built++;
-      if (diff.changed) changed.push(city.id);
+      if (diff.changed) {
+        changedCities++;
+        tags.push(...cityTags(city.id, changedPlaceIds(placesBefore, await placeHashes(city.id))));
+      }
       if (diff.directoryChanged) directoryChanged = true;
       const famousKept = places.filter((p) => p.wikidata_id).length;
       console.log(
@@ -235,10 +246,10 @@ async function main() {
     }
   }
   console.log(
-    `built ${built} of ${cities.length} (${changed.length} changed); database ${(await databaseMb()).toFixed(1)} MB`,
+    `built ${built} of ${cities.length} (${changedCities} changed); database ${(await databaseMb()).toFixed(1)} MB`,
   );
   const directory = await directoryTagsDue(directoryChanged);
-  await revalidateSite([...changed.flatMap(cityTags), ...(directory ? DIRECTORY_TAGS : [])]);
+  await revalidateSite([...tags, ...(directory ? DIRECTORY_TAGS : [])]);
   // Tried cities and built none: something is broken (a missing migration, say). Fail the run so
   // it shows in GitHub instead of passing quietly.
   if (attempted > 0 && built === 0) {
@@ -266,16 +277,20 @@ async function revalidateSite(tags: string[]) {
     console.warn(`CRON_SECRET not set: ${tags.length} tags refresh only when their cache expires`);
     return;
   }
-  try {
-    const res = await fetch(`${site}/api/revalidate`, {
-      method: "POST",
-      headers: { authorization: `Bearer ${secret}`, "content-type": "application/json" },
-      body: JSON.stringify({ tags }),
-      signal: AbortSignal.timeout(30_000),
-    });
-    console.log(`revalidate ${tags.length} tags: HTTP ${res.status} ${await res.text()}`);
-  } catch (err) {
-    console.error(`revalidate failed: ${(err as Error).message}`);
+  // The route takes up to 2000 tags a request.
+  for (let i = 0; i < tags.length; i += 1000) {
+    const batch = tags.slice(i, i + 1000);
+    try {
+      const res = await fetch(`${site}/api/revalidate`, {
+        method: "POST",
+        headers: { authorization: `Bearer ${secret}`, "content-type": "application/json" },
+        body: JSON.stringify({ tags: batch }),
+        signal: AbortSignal.timeout(30_000),
+      });
+      console.log(`revalidate ${batch.length} tags: HTTP ${res.status} ${await res.text()}`);
+    } catch (err) {
+      console.error(`revalidate failed: ${(err as Error).message}`);
+    }
   }
 }
 
