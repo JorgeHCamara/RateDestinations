@@ -271,22 +271,44 @@ export async function getCityStats(cityId: number): Promise<CityStats> {
 
 export type CategoryPlace = TopPlace & { address: string | null; opening_hours: string | null };
 
-export async function getCityCategory(cityId: number, category: PlaceCategory, version: string) {
+/** The most places a category list shows, across all its pages. */
+export const CATEGORY_LIST_MAX = 200;
+
+/**
+ * One page of a category list, ranked over the whole category, and how many places the list has
+ * (at most CATEGORY_LIST_MAX). Only the page's rows leave the database.
+ */
+export async function getCityCategoryPage(
+  cityId: number,
+  category: PlaceCategory,
+  version: string,
+  page: number,
+  pageSize: number,
+): Promise<{ total: number; places: CategoryPlace[] }> {
   "use cache";
   cacheLife("guide");
   cacheTag(`city:${cityId}`);
   void version;
-  return query<CategoryPlace>(
-    `select p.id, p.name, p.category, p.subcategory, p.lat, p.lng,
-            case when p.website_hijacked then null else p.website end as website, p.prominence, p.address, p.opening_hours,
-            p.image_url, p.image_source, p.image_credit, p.image_page, p.image_checked_at is not null as image_checked,
-            s.blended_score, s.user_avg, s.user_count, s.warning_count,
-            row_number() over (order by s.blended_score desc, p.prominence desc, p.location <-> c.location, p.name)::int as rank
-     from places p join place_stats s on s.place_id = p.id join cities c on c.id = p.city_id
-     where p.city_id = $1 and p.category = $2 and not p.adult and not p.hidden
-     order by rank limit 200`,
-    [cityId, category],
+  const from = (page - 1) * pageSize;
+  const to = Math.min(page * pageSize, CATEGORY_LIST_MAX);
+  const rows = await query<CategoryPlace & { total: number }>(
+    `with ranked as (
+       select p.id, p.name, p.category, p.subcategory, p.lat, p.lng,
+              case when p.website_hijacked then null else p.website end as website, p.prominence, p.address, p.opening_hours,
+              p.image_url, p.image_source, p.image_credit, p.image_page, p.image_checked_at is not null as image_checked,
+              s.blended_score, s.user_avg, s.user_count, s.warning_count,
+              row_number() over (order by s.blended_score desc, p.prominence desc, p.location <-> c.location, p.name)::int as rank,
+              least(count(*) over (), $5)::int as total
+       from places p join place_stats s on s.place_id = p.id join cities c on c.id = p.city_id
+       where p.city_id = $1 and p.category = $2 and not p.adult and not p.hidden
+     )
+     select * from ranked where rank > $3 and rank <= $4 order by rank`,
+    [cityId, category, from, to, CATEGORY_LIST_MAX],
   );
+  // No rows: an empty category (page 1) or a page past the end.
+  const total = rows[0]?.total ?? 0;
+  for (const r of rows) delete (r as Partial<typeof r>).total;
+  return { total, places: rows };
 }
 
 export type DirectoryCity = TrendingCity & { continent: string | null; lat: number; lng: number };

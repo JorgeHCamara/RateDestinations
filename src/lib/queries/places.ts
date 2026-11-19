@@ -71,7 +71,8 @@ export async function getPlace(placeId: number): Promise<Place | null> {
      where p.id = $1 and not p.adult and not p.hidden`,
     [placeId],
   );
-  // A re-import can rename or remove the place: imports revalidate city-places:<city id>. (Not
+  // Imports expire place:<id> for the few places they changed (lib/import/revalidate.ts); the
+  // city-places:<city id> tag is kept for a manual purge of a whole city's place pages. (Not
   // city:<id>, which every rating in the city clears.)
   if (place) cacheTag(`city-places:${place.city_id}`);
   return place;

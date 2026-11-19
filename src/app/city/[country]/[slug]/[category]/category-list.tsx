@@ -5,7 +5,7 @@ import { CategoryIcon } from "@/components/category-icon";
 import { JsonLd } from "@/components/json-ld";
 import { PlaceCard } from "@/components/place-card";
 import { CATEGORY_META, PLACE_CATEGORIES, type PlaceCategory } from "@/lib/import/categories";
-import { getCityBySlug, getCityCategory, getCityGuide } from "@/lib/queries/cities";
+import { getCityBySlug, getCityCategoryPage, getCityGuide } from "@/lib/queries/cities";
 import { countryPath } from "@/lib/queries/countries";
 import { MIN_CATEGORY_PLACES } from "@/lib/queries/seo";
 import {
@@ -43,10 +43,16 @@ export async function loadCategoryPage(
   if (!cat || !Number.isInteger(page) || page < 1) return null;
   const city = await getCityBySlug(country, slug);
   if (!city) return null;
-  const all = await getCityCategory(city.id, cat, city.imported_at ?? "0");
-  const pages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
+  const { total, places } = await getCityCategoryPage(
+    city.id,
+    cat,
+    city.imported_at ?? "0",
+    page,
+    PAGE_SIZE,
+  );
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   if (page > pages) return null;
-  return { cat, city, all, pages, places: all.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE) };
+  return { cat, city, total, pages, places };
 }
 
 export async function categoryMetadata(
@@ -57,15 +63,15 @@ export async function categoryMetadata(
 ): Promise<Metadata> {
   const data = await loadCategoryPage(country, slug, category, page);
   if (!data) notFound();
-  const { cat, city, all } = data;
+  const { cat, city, total, places } = data;
   const guide = await getCityGuide(city.id, city.imported_at ?? "0");
   // The list shows at most 200; the guide counts them all.
-  const count = Math.max(all.length, guide.counts[cat] ?? 0);
+  const count = Math.max(total, guide.counts[cat] ?? 0);
   const description = categoryDescription(
     cat,
     city,
     count,
-    all.map((p) => p.name),
+    places.map((p) => p.name),
   );
   const title = page > 1 ? `${categoryTitle(cat, city)} (page ${page})` : categoryTitle(cat, city);
   return {
@@ -73,9 +79,13 @@ export async function categoryMetadata(
     description,
     alternates: { canonical: categoryPagePath(country, slug, cat, page) },
     // A list of one or two places isn't worth a search result (nor a sitemap entry); later pages
-    // are for browsing, page 1 is what search should show.
+    // are for browsing, page 1 is what search should show, and crawlers needn't walk them.
     robots:
-      all.length >= MIN_CATEGORY_PLACES && page === 1 ? undefined : { index: false, follow: true },
+      page > 1
+        ? { index: false, follow: false }
+        : total >= MIN_CATEGORY_PLACES
+          ? undefined
+          : { index: false, follow: true },
     openGraph: { title, description },
   };
 }
@@ -93,7 +103,7 @@ export async function CategoryList({
 }) {
   const data = await loadCategoryPage(country, slug, category, page);
   if (!data) notFound();
-  const { cat, city, all, pages, places } = data;
+  const { cat, city, total, pages, places } = data;
   const meta = CATEGORY_META[cat];
   const back = `/city/${country.toLowerCase()}/${slug}`;
   return (
@@ -123,15 +133,15 @@ export async function CategoryList({
         {meta.plural} in {city.name}
       </h1>
       <p className="text-muted-foreground mt-1 text-sm">
-        {all.length} places. Rated places are ranked by what people gave them; places nobody has
-        rated yet follow, best-known first.
+        {total} places. Rated places are ranked by what people gave them; places nobody has rated
+        yet follow, best-known first.
       </p>
       <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {places.map((p) => (
           <PlaceCard key={p.id} place={p} rank={p.rank} />
         ))}
       </div>
-      {all.length === 0 && (
+      {total === 0 && (
         <p className="text-muted-foreground mt-6 rounded-xl border border-dashed p-6 text-sm">
           Nothing in this category yet.
         </p>

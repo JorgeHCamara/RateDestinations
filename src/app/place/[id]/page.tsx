@@ -24,11 +24,7 @@ import { SignInGate } from "@/components/sign-in-gate";
 import { countryPath } from "@/lib/queries/countries";
 import { breadcrumbJsonLd, placeDescription, placeJsonLd, placeTitle } from "@/lib/structured-data";
 
-/**
- * The page checks its URL before anything streams (a missing place or city is a real 404, not a
- * 200 with a not-found page), so a first visit waits for that cached lookup instead of showing the
- * generic shell. Navigation to it is not expected to be instant.
- */
+/** The page looks the place up before its content streams; navigation isn't expected to be instant. */
 export const instant = false;
 
 type Props = PageProps<"/place/[id]">;
@@ -39,13 +35,16 @@ function parseId(id: string): number | null {
 }
 
 /**
- * A single sample place. Cache Components needs at least one, so the page can check the URL before
- * streaming (a real 404 for a missing place); every place renders on its first visit and is
- * cached, as before. Not a prerender of all places.
+ * No place page is stored in ISR: `id` is never prerendered, so every place URL shares one static
+ * shell and renders its content per request from cached data (getPlace & co. below, tagged
+ * place:<id>). There are hundreds of thousands of places and crawlers walk them; a per-URL ISR
+ * entry each (written on the first visit, again after every expiry) cost far more than a render
+ * from cache. Next can't make this per place (rated vs thin), only per route.
+ *
+ * The cost: a missing place can't be a 404 status (the shell is sent before the place is looked
+ * up). It is a not-found page with noindex, and writes nothing.
  */
-export function generateStaticParams() {
-  return [{ id: "1" }];
-}
+export const unstable_paramMatching = { id: "dynamic" } as const;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
@@ -58,8 +57,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     alternates: { canonical: `/place/${place.id}` },
     // Unrated and without a photo, a place page is a name and a map pin: kept out of search
-    // results (links on it are still followed) until someone rates it or a photo is found.
-    robots: place.user_count === 0 && !place.image_url ? { index: false, follow: true } : undefined,
+    // results, and its nearby-place links aren't followed (crawlers walking place to place),
+    // until someone rates it or a photo is found.
+    robots:
+      place.user_count === 0 && !place.image_url ? { index: false, follow: false } : undefined,
     openGraph: {
       title: `${place.name}, ${place.city_name}`,
       description,
@@ -68,8 +69,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-// Checked before anything streams, so a missing place is a real 404 (not a 200 with a not-found
-// page). getPlace is cached, so this costs no database query once warm.
+// A missing place shows the not-found page (noindex). getPlace is cached, so this costs no
+// database query once warm.
 //
 // The session-dependent parts (sign-in prompt, rating form) are created here and handed to
 // PlaceDetail as slots: PlaceDetail itself only reads cached data, so resuming the page for a
